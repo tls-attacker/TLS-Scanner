@@ -22,6 +22,12 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
     private List<NamedGroup> missingRequired;
     private Integer groupCount;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private NamedGroupsGuidelineCheckResult() {
+        super(null, null);
+    }
+
     public NamedGroupsGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
         super(checkName, adherence);
     }
@@ -63,7 +69,7 @@ public class NamedGroupsGuidelineCheckResult extends GuidelineCheckResult {
         if (groupCount != null) {
             return "Server only supports " + groupCount + " groups.";
         }
-        return null;
+        return "No specific named groups information available.";
     }
 
     public Set<NamedGroup> getNotRecommendedGroups() {

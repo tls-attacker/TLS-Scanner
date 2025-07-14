@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.LongResult;
@@ -21,15 +23,17 @@ import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.StringResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameters;
 import de.rub.nds.tlsattacker.core.quic.frame.ConnectionCloseFrame;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.converter.*;
+import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
+import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
+import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
+import de.rub.nds.tlsscanner.core.util.VersionInformation;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.constants.ApplicationProtocol;
@@ -42,21 +46,31 @@ import de.rub.nds.tlsscanner.serverscanner.probe.mac.CheckPattern;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.hpkp.HpkpPin;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.raccoonattack.RaccoonAttackProbabilities;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerReport extends TlsScanReport {
+    private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Returns Jackson modules for serialization configuration.
+     *
+     * @return array of Jackson modules for JSON serialization
+     */
     public static Module[] getSerializerModules() {
         return new Module[] {
             new SimpleModule()
                     .addSerializer(new ByteArraySerializer())
-                    .addSerializer(new ResponseFingerprintSerializer())
-                    .addSerializer(new VectorSerializer())
-                    .addSerializer(new PointSerializer())
-                    .addSerializer(new HttpsHeaderSerializer()),
+                    .addDeserializer(byte[].class, new ByteArrayDeserializer())
+                    .addKeyDeserializer(
+                            AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())
+                    .addKeyDeserializer(
+                            TrackableValue.class, new TrackableValueTypeKeyDeserializer()),
             new JodaModule()
         };
     }
@@ -65,26 +79,41 @@ public class ServerReport extends TlsScanReport {
     private final String host;
     private final Integer port;
 
+    // Version information for JSON output
+    private String tlsScannerVersion = VersionInformation.getTlsScannerVersion();
+    private String tlsAttackerVersion = VersionInformation.getTlsAttackerVersion();
+    private String javaVersion = VersionInformation.getJavaVersion();
+
     private Boolean serverIsAlive = null;
     private Boolean speaksProtocol = null;
     private Boolean isHandshaking = null;
-
-    // Rating
-    private int score;
-    private ScoreReport scoreReport;
 
     // Config profile used to limit our Client Hello
     private String configProfileIdentifier;
     private String configProfileIdentifierTls13;
 
+    /** Constructs an empty ServerReport. */
     public ServerReport() {
         this(null, null, null);
     }
 
+    /**
+     * Constructs a ServerReport for the specified host and port.
+     *
+     * @param host the hostname or IP address of the server
+     * @param port the port number of the server
+     */
     public ServerReport(String host, Integer port) {
         this(null, host, port);
     }
 
+    /**
+     * Constructs a ServerReport with SNI hostname, host and port.
+     *
+     * @param sniHostname the SNI hostname to use in the TLS handshake
+     * @param host the hostname or IP address of the server
+     * @param port the port number of the server
+     */
     public ServerReport(String sniHostname, String host, Integer port) {
         super();
         this.sniHostname = sniHostname;
@@ -93,12 +122,17 @@ public class ServerReport extends TlsScanReport {
     }
 
     @Override
-    public void serializeToJson(OutputStream outputStream) {
-        ServerReportSerializer.serialize(outputStream, this);
+    public synchronized void serializeToJson(OutputStream outputStream) {
+        try {
+            ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+            mapper.objectMapper.writeValue(outputStream, this);
+        } catch (IOException e) {
+            LOGGER.error("Error serializing ServerReport to JSON", e);
+        }
     }
 
     @Override
-    public String getRemoteName() {
+    public synchronized String getRemoteName() {
         if (sniHostname != null) {
             return sniHostname + "(" + host + "):" + port;
         } else {
@@ -110,14 +144,51 @@ public class ServerReport extends TlsScanReport {
         return host;
     }
 
-    public synchronized int getPort() {
+    public synchronized Integer getPort() {
         return port;
     }
 
+    /**
+     * Returns the version of TLS-Scanner used for this scan.
+     *
+     * @return the TLS-Scanner version string
+     */
+    public synchronized String getTlsScannerVersion() {
+        return tlsScannerVersion;
+    }
+
+    /**
+     * Returns the version of TLS-Attacker used for this scan.
+     *
+     * @return the TLS-Attacker version string
+     */
+    public synchronized String getTlsAttackerVersion() {
+        return tlsAttackerVersion;
+    }
+
+    /**
+     * Returns the Java version used for this scan.
+     *
+     * @return the Java version string
+     */
+    public synchronized String getJavaVersion() {
+        return javaVersion;
+    }
+
+    /**
+     * Returns whether the server was reachable during the scan.
+     *
+     * @return true if the server was reachable, false otherwise
+     */
     public synchronized Boolean getServerIsAlive() {
         return serverIsAlive;
     }
 
+    /**
+     * Sets whether the server was reachable during the scan.
+     *
+     * @param serverIsAlive true if the server was reachable, false otherwise
+     */
     public synchronized void setServerIsAlive(Boolean serverIsAlive) {
         this.serverIsAlive = serverIsAlive;
     }
@@ -134,19 +205,29 @@ public class ServerReport extends TlsScanReport {
         return objectResult == null ? null : objectResult.getValue();
     }
 
+    /**
+     * Returns whether the server speaks the expected protocol.
+     *
+     * @return true if the server speaks the protocol, false otherwise
+     */
     public synchronized Boolean getSpeaksProtocol() {
         return speaksProtocol;
     }
 
+    /**
+     * Sets whether the server speaks the expected protocol.
+     *
+     * @param speaksProtocol true if the server speaks the protocol, false otherwise
+     */
     public synchronized void setSpeaksProtocol(Boolean speaksProtocol) {
         this.speaksProtocol = speaksProtocol;
     }
 
-    public Boolean getIsHandshaking() {
+    public synchronized Boolean getIsHandshaking() {
         return isHandshaking;
     }
 
-    public void setIsHandshaking(Boolean isHandshaking) {
+    public synchronized void setIsHandshaking(Boolean isHandshaking) {
         this.isHandshaking = isHandshaking;
     }
 
@@ -295,26 +376,6 @@ public class ServerReport extends TlsScanReport {
                         NamedGroup.class,
                         NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
-    }
-
-    @Override
-    public synchronized int getScore() {
-        return score;
-    }
-
-    @Override
-    public synchronized void setScore(int score) {
-        this.score = score;
-    }
-
-    @Override
-    public synchronized ScoreReport getScoreReport() {
-        return scoreReport;
-    }
-
-    @Override
-    public synchronized void setScoreReport(ScoreReport scoreReport) {
-        this.scoreReport = scoreReport;
     }
 
     public synchronized String getConfigProfileIdentifier() {

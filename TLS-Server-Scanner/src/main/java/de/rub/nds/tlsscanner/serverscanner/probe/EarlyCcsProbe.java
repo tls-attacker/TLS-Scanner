@@ -40,6 +40,12 @@ public class EarlyCcsProbe extends TlsServerProbe {
 
     private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
+    /**
+     * Constructs a new EarlyCcsProbe to test for Early CCS vulnerability.
+     *
+     * @param configSelector the configuration selector for TLS configurations
+     * @param parallelExecutor the executor for parallel workflow execution
+     */
     public EarlyCcsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EARLY_CCS, configSelector);
         register(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
@@ -95,6 +101,11 @@ public class EarlyCcsProbe extends TlsServerProbe {
         return workflowTrace;
     }
 
+    /**
+     * Adjusts the configuration based on the server report.
+     *
+     * @param report the server report to use for configuration adjustment
+     */
     @Override
     public void adjustConfig(ServerReport report) {}
 
@@ -117,6 +128,11 @@ public class EarlyCcsProbe extends TlsServerProbe {
         }
     }
 
+    /**
+     * Gets the requirements for executing this probe.
+     *
+     * @return the requirements that must be satisfied before running this probe
+     */
     @Override
     public Requirement<ServerReport> getRequirements() {
         return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)

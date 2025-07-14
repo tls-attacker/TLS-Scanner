@@ -30,7 +30,6 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
@@ -50,14 +49,32 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Constructs a ServerContainerReportCreator with the specified scanner detail level.
+     *
+     * @param detail the level of detail for the scanner report
+     */
     public ServerContainerReportCreator(ScannerDetail detail) {
         super(detail, DefaultPrintingScheme.getDefaultPrintingScheme());
     }
 
+    /**
+     * Constructs a ServerContainerReportCreator with the specified scanner detail level and
+     * printing scheme.
+     *
+     * @param detail the level of detail for the scanner report
+     * @param scheme the printing scheme to use for formatting the report
+     */
     public ServerContainerReportCreator(ScannerDetail detail, PrintingScheme scheme) {
         super(detail, scheme);
     }
 
+    /**
+     * Creates a comprehensive report container from the provided server report.
+     *
+     * @param report the server report containing scan results
+     * @return a ReportContainer with formatted scan results
+     */
     public ReportContainer createReport(ServerReport report) {
         ListContainer container = new ListContainer();
         container.add(
@@ -393,7 +410,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, report));
         container.add(
                 createKeyValueContainer(
                         TlsAnalyzedProperty.VULNERABLE_TO_RENEGOTIATION_ATTACK_EXTENSION_V1,
@@ -496,11 +513,8 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                     container.add(createDefaultTextContainer("Not supported"));
                 }
                 container.add(new HeadlineContainer("HTTPS Response Header"));
-                for (HttpHeader header : report.getHttpHeader()) {
-                    container.add(
-                            createDefaultKeyValueContainer(
-                                    header.getHeaderName().getValue(),
-                                    header.getHeaderValue().getValue()));
+                for (String header : report.getHttpHeader()) {
+                    container.add(createDefaultTextContainer(header));
                 }
                 container.add(new HeadlineContainer("HTTP False Start"));
                 container.add(
@@ -520,7 +534,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(createKeyValueContainer(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY, report));
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, report));
-        if (report.getCommonDhValues() != null && report.getCommonDhValues().size() != 0) {
+        if (report.getCommonDhValues() != null && !report.getCommonDhValues().isEmpty()) {
             for (CommonDhValues value : report.getCommonDhValues()) {
                 container.add(new TextContainer(value.getName(), AnsiColor.YELLOW));
             }
@@ -748,6 +762,12 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                         color));
     }
 
+    /**
+     * Creates a performance data container showing scanner execution metrics.
+     *
+     * @param report the server report containing performance data
+     * @return a ReportContainer with performance metrics
+     */
     public ReportContainer createPerformanceDataContainer(ServerReport report) {
         ListContainer container = new ListContainer();
         if (detail.isGreaterEqualTo(ScannerDetail.ALL)) {

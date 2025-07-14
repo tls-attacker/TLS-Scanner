@@ -17,6 +17,12 @@ public class ModifiedTicket {
 
     private final Ticket resultingTicket;
 
+    /**
+     * Constructs a ModifiedTicket with an original ticket and a modification to apply.
+     *
+     * @param originalTicket The original ticket to modify
+     * @param modification The modification to apply to the ticket bytes
+     */
     public ModifiedTicket(Ticket originalTicket, VariableModification<byte[]> modification) {
         this.originalTicket = originalTicket;
         this.modification = modification;
@@ -33,14 +39,29 @@ public class ModifiedTicket {
         return newTicket;
     }
 
+    /**
+     * Gets the modification applied to the original ticket.
+     *
+     * @return The variable modification
+     */
     public VariableModification<byte[]> getModification() {
         return this.modification;
     }
 
+    /**
+     * Gets the original ticket before modification.
+     *
+     * @return The original ticket
+     */
     public Ticket getOriginalTicket() {
         return originalTicket;
     }
 
+    /**
+     * Gets the ticket after applying the modification.
+     *
+     * @return The modified ticket
+     */
     public Ticket getResultingTicket() {
         return this.resultingTicket;
     }

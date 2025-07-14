@@ -38,6 +38,11 @@ public enum CertificateIssue {
         this.humanReadable = humanReadable;
     }
 
+    /**
+     * Returns a human-readable description of the certificate issue.
+     *
+     * @return the human-readable description
+     */
     public String getHumanReadable() {
         return humanReadable;
     }

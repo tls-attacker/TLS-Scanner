@@ -19,6 +19,10 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * A task for testing invalid elliptic curve configurations. This task executes a TLS workflow and
+ * captures the server's response to invalid curve parameters.
+ */
 public class InvalidCurveTask extends TlsTask {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -31,17 +35,32 @@ public class InvalidCurveTask extends TlsTask {
 
     private Point receivedEcKey;
 
+    /**
+     * Constructs a new InvalidCurveTask with the specified parameters.
+     *
+     * @param state The TLS state to execute the task on
+     * @param reexecutions The number of times to retry execution if it fails
+     * @param appliedSecret The secret value applied for the invalid curve test
+     */
     public InvalidCurveTask(State state, int reexecutions, int appliedSecret) {
         super(reexecutions);
         this.appliedSecret = appliedSecret;
         this.state = state;
     }
 
+    /** Resets the task by resetting its associated TLS state. */
     @Override
     public void reset() {
         getState().reset();
     }
 
+    /**
+     * Executes the invalid curve task by running the workflow and extracting the server's response.
+     * Captures the server's ephemeral EC public key if present.
+     *
+     * @return true if the task executed successfully and a valid fingerprint was extracted, false
+     *     otherwise
+     */
     @Override
     public boolean execute() {
         try {
@@ -72,18 +91,38 @@ public class InvalidCurveTask extends TlsTask {
         }
     }
 
+    /**
+     * Gets the elliptic curve public key received from the server during task execution.
+     *
+     * @return The received EC public key point, or null if no key was received
+     */
     public Point getReceivedEcKey() {
         return receivedEcKey;
     }
 
+    /**
+     * Gets the TLS state associated with this task.
+     *
+     * @return The TLS state
+     */
     public State getState() {
         return state;
     }
 
+    /**
+     * Gets the response fingerprint extracted during task execution.
+     *
+     * @return The response fingerprint, or null if the task has not been executed successfully
+     */
     public ResponseFingerprint getFingerprint() {
         return fingerprint;
     }
 
+    /**
+     * Gets the secret value that was applied for the invalid curve test.
+     *
+     * @return The applied secret value
+     */
     public int getAppliedSecret() {
         return appliedSecret;
     }

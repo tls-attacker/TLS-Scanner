@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.afterprobe;
 
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.afterprobe.RandomnessAfterProbe;
 import de.rub.nds.tlsscanner.core.constants.RandomType;

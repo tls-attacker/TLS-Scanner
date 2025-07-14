@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
@@ -45,7 +45,7 @@ import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
 
-    public static Integer COOKIE_LENGTH_ERROR_VALUE = -1;
+    public static final Integer COOKIE_LENGTH_ERROR_VALUE = -1;
 
     private TestResult supportsCookieExchange = TestResults.COULD_NOT_TEST;
     private TestResult hasHvrRetransmissions = TestResults.COULD_NOT_TEST;
@@ -90,7 +90,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
                 usesCompressionsInCookie = usesCompressionsInCookie();
             }
         } catch (Exception E) {
-            LOGGER.error("Could not scan for " + getProbeName(), E);
+            LOGGER.error("Could not scan for {}", getProbeName(), E);
         }
     }
 
@@ -226,7 +226,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setSessionId(
-                Modifiable.explicit(ArrayConverter.hexStringToByteArray("FFFF")));
+                Modifiable.explicit(DataConverter.hexStringToByteArray("FFFF")));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -242,7 +242,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setCipherSuites(
-                Modifiable.insert(ArrayConverter.hexStringToByteArray("FFFF"), 0));
+                Modifiable.insert(DataConverter.hexStringToByteArray("FFFF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);
@@ -258,7 +258,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
         trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
         ClientHelloMessage clientHelloMessage = new ClientHelloMessage(config);
         clientHelloMessage.setCompressions(
-                Modifiable.insert(ArrayConverter.hexStringToByteArray("FF"), 0));
+                Modifiable.insert(DataConverter.hexStringToByteArray("FF"), 0));
         trace.addTlsAction(new SendAction(clientHelloMessage));
         trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
         State state = new State(config, trace);

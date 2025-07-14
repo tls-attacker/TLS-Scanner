@@ -47,6 +47,8 @@ public class DirectRaccoonProbe extends TlsServerProbe {
     private static final int ITERATIONS_PER_HANDSHAKE = 3;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
 
+    private final Random random = new Random();
+
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList =
             new LinkedList<>();
@@ -111,8 +113,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
             CipherSuite suite,
             DirectRaccoonWorkflowType type,
             int numberOfExecutionsEach) {
-        Random r = new Random();
-        BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
+        BigInteger initialDhSecret = new BigInteger("" + (random.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
         for (int i = 0; i < numberOfExecutionsEach; i++) {
             booleanList.add(true);

@@ -8,10 +8,16 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result.statistics;
 
+/** Represents the result of evaluating randomness in server responses or generated values. */
 public enum RandomEvaluationResult {
+    /** No duplicate values were found in the analyzed data */
     NO_DUPLICATES,
+    /** Duplicate values were detected in the analyzed data */
     DUPLICATES,
+    /** The data appears to be based on Unix timestamp values */
     UNIX_TIME,
+    /** The data does not exhibit random characteristics */
     NOT_RANDOM,
+    /** The data was not analyzed for randomness */
     NOT_ANALYZED
 }

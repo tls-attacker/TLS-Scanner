@@ -15,6 +15,10 @@ public class KeySizeData {
     private int minimumLength;
     private int actualLength;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private KeySizeData() {}
+
     public KeySizeData(AsymmetricAlgorithmType algorithm, int minimumLength, int actualLength) {
         this.algorithm = algorithm;
         this.minimumLength = minimumLength;

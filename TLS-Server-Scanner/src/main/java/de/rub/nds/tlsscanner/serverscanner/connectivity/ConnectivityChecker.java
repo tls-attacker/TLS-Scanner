@@ -23,6 +23,11 @@ public class ConnectivityChecker {
 
     private final Connection connection;
 
+    /**
+     * Constructs a new ConnectivityChecker with the given connection.
+     *
+     * @param connection the connection to check for connectivity
+     */
     public ConnectivityChecker(Connection connection) {
         this.connection = connection;
         if (connection instanceof AliasedConnection) {
@@ -30,6 +35,11 @@ public class ConnectivityChecker {
         }
     }
 
+    /**
+     * Checks whether the connection can be established.
+     *
+     * @return true if the connection can be established, false otherwise
+     */
     public boolean isConnectable() {
         if (connection.getTransportHandlerType() == null) {
             connection.setTransportHandlerType(TransportHandlerType.TCP);

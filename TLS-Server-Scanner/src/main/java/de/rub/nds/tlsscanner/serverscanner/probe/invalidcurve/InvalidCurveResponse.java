@@ -35,7 +35,7 @@ public class InvalidCurveResponse {
     private TestResult hadDistinctFps = TestResults.FALSE;
     private InvalidCurveScanType scanType = InvalidCurveScanType.REGULAR;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private InvalidCurveResponse() {}
 

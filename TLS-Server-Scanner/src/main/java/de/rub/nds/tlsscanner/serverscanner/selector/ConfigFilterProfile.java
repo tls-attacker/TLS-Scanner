@@ -8,8 +8,22 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
+/**
+ * Interface defining a configuration filter profile. Implementations provide a set of filter types
+ * that can be applied to TLS configurations and a unique identifier for the profile.
+ */
 public interface ConfigFilterProfile {
+    /**
+     * Returns the array of configuration filter types that define this profile.
+     *
+     * @return array of ConfigFilterType enums representing the filters to apply
+     */
     public abstract ConfigFilterType[] getConfigFilterTypes();
 
+    /**
+     * Returns a unique identifier for this configuration filter profile.
+     *
+     * @return string identifier for the profile
+     */
     public abstract String getIdentifier();
 }

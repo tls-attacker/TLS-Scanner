@@ -41,7 +41,7 @@ public class AlpacaProbe extends TlsServerProbe {
         register(
                 TlsAnalyzedProperty.STRICT_SNI,
                 TlsAnalyzedProperty.STRICT_ALPN,
-                TlsAnalyzedProperty.ALPACA_MITIGATED);
+                TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
     }
 
     @Override
@@ -105,22 +105,22 @@ public class AlpacaProbe extends TlsServerProbe {
     protected void mergeData(ServerReport report) {
         if ((strictSni == TestResults.TRUE || strictSni == TestResults.FALSE)
                 && (strictAlpn == TestResults.TRUE || strictAlpn == TestResults.FALSE)) {
-            TestResult alpacaMitigated;
+            TestResult vulnerableToAlpaca;
             if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
-                alpacaMitigated = TestResults.TRUE;
+                vulnerableToAlpaca = TestResults.FALSE;
             } else if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) {
-                alpacaMitigated = TestResults.PARTIALLY;
+                vulnerableToAlpaca = TestResults.PARTIALLY;
             } else {
-                alpacaMitigated = TestResults.FALSE;
+                vulnerableToAlpaca = TestResults.TRUE;
             }
 
             put(TlsAnalyzedProperty.STRICT_SNI, strictSni);
             put(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);
-            put(TlsAnalyzedProperty.ALPACA_MITIGATED, alpacaMitigated);
+            put(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, vulnerableToAlpaca);
         } else {
             put(TlsAnalyzedProperty.STRICT_SNI, strictSni);
             put(TlsAnalyzedProperty.STRICT_ALPN, strictAlpn);
-            put(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+            put(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.UNCERTAIN);
         }
     }
 }

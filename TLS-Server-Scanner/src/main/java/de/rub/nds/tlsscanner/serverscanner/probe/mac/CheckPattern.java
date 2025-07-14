@@ -22,7 +22,7 @@ public class CheckPattern {
 
     private List<ResponseFingerprint> responseFingerprintList = null;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private CheckPattern() {}
 

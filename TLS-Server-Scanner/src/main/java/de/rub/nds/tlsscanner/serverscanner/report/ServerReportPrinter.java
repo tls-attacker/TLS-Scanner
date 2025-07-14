@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.protocol.crypto.key.DsaPublicKey;
@@ -45,7 +45,6 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingKeyParameters;
 import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
-import de.rub.nds.tlsattacker.core.http.header.HttpHeader;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.quic.QuicTransportParameterEntry;
 import de.rub.nds.tlsattacker.core.quic.constants.QuicVersion;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -61,6 +60,7 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
+import de.rub.nds.tlsscanner.core.util.VersionInformation;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -110,12 +110,21 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final String hsClientFormat = "%-28s";
-    private final String hsVersionFormat = "%-14s";
-    private final String hsCipherSuiteFormat = "%-52s";
-    private final String hsForwardSecrecyFormat = "%-19s";
-    private final String hsKeyLengthFormat = "%-17s";
+    private static final String hsClientFormat = "%-28s";
+    private static final String hsVersionFormat = "%-14s";
+    private static final String hsCipherSuiteFormat = "%-52s";
+    private static final String hsForwardSecrecyFormat = "%-19s";
+    private static final String hsKeyLengthFormat = "%-17s";
 
+    /**
+     * Constructs a new ServerReportPrinter for generating human-readable reports from server scan
+     * results.
+     *
+     * @param report The ServerReport containing the scan results to be printed
+     * @param detail The level of detail to include in the report output
+     * @param scheme The printing scheme that determines how properties are formatted
+     * @param printColorful Whether to include ANSI color codes in the output for better readability
+     */
     public ServerReportPrinter(
             ServerReport report,
             ScannerDetail detail,
@@ -124,10 +133,20 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         super(detail, scheme, printColorful, report);
     }
 
+    /**
+     * Generates a complete human-readable report of the server scan results. The report includes
+     * all sections based on the configured detail level and available scan data.
+     *
+     * @return A formatted string containing the full server scan report
+     */
     @Override
     public String getFullReport() {
         StringBuilder builder = new StringBuilder();
-        builder.append("Report for ");
+        builder.append("TLS-Scanner Report\n");
+        builder.append("Generated with: ")
+                .append(VersionInformation.getFullVersionInfo())
+                .append("\n");
+        builder.append("\nReport for ");
         builder.append(report.getHost() + ":" + report.getPort());
         builder.append("\n");
         if (Objects.equals(report.getServerIsAlive(), Boolean.FALSE)) {
@@ -478,7 +497,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         " "
                                 + QuicVersion.getFromVersionBytes(version)
                                 + "("
-                                + ArrayConverter.bytesToHexString(version)
+                                + DataConverter.bytesToHexString(version)
                                 + ")");
             }
         } else if (sendsTransportParameters == TestResults.FALSE) {
@@ -496,6 +515,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
     }
 
+    /**
+     * Appends the handshake simulation overview section to the report. This includes statistics
+     * about successful and failed handshakes with various simulated clients.
+     *
+     * @param builder The StringBuilder to append the handshake simulation results to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendHsNormal(StringBuilder builder) {
         prettyAppendHeading(builder, "Handshake Simulation - Overview");
         prettyAppend(
@@ -762,6 +788,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Appends the RFC compliance section to the report that checks if servers are doing mandatory
+     * cryptographic checks.
+     *
+     * @param builder The StringBuilder to append the RFC compliance information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendRfc(StringBuilder builder) {
         prettyAppendHeading(builder, "RFC (Experimental)");
         prettyAppend(
@@ -799,6 +832,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Appends the certificate chain analysis section to the report. This includes detailed
+     * information about each certificate in the server's certificate chain, including validity,
+     * trust issues, and certificate properties.
+     *
+     * @param builder The StringBuilder to append the certificate information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendCertificates(StringBuilder builder) {
         int certCtr = 1;
         if (report.getCertificateChainList() != null
@@ -1036,7 +1077,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 prettyAppendHexString(
                         builder,
                         "Fingerprint (SHA256)",
-                        ArrayConverter.bytesToHexString(
+                        DataConverter.bytesToHexString(
                                 certReport.getSHA256Fingerprint(), false, false));
             }
         }
@@ -1082,6 +1123,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder.toString();
     }
 
+    /**
+     * Appends the session and resumption capabilities section to the report. This includes
+     * information about session IDs, session tickets, and resumption support.
+     *
+     * @param builder The StringBuilder to append the session information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendSession(StringBuilder builder) {
         prettyAppendHeading(builder, "Session");
         prettyAppend(
@@ -1468,8 +1516,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder,
                                 "Found Key",
-                                ArrayConverter.bytesToHexString(
-                                        foundDefaultStek.key, false, false));
+                                DataConverter.bytesToHexString(foundDefaultStek.key, false, false));
                         prettyAppend(
                                 builder, "Found Secret", foundDefaultStek.secret.toReportString());
                     }
@@ -1500,7 +1547,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                         prettyAppend(
                                 builder,
                                 "Found Key",
-                                ArrayConverter.bytesToHexString(
+                                DataConverter.bytesToHexString(
                                         foundDefaultHmacKey.key, false, false));
                     }
                 }
@@ -1551,6 +1598,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Supports Record Fragmentation",
                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        prettyAppend(builder, "Mininum Record Length", "" + report.getMinRecordLength());
         return builder;
     }
 
@@ -1633,6 +1681,14 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Appends the attack vulnerabilities section to the report. This includes information about the
+     * server's vulnerability to various known attacks such as Padding Oracle, Bleichenbacher,
+     * CRIME, BREACH, and others.
+     *
+     * @param builder The StringBuilder to append the vulnerability information to
+     * @return The same StringBuilder for method chaining
+     */
     public StringBuilder appendAttackVulnerabilities(StringBuilder builder) {
         prettyAppendHeading(builder, "Attack Vulnerabilities");
         if (report.getKnownPaddingOracleVulnerability() == null) {
@@ -1667,7 +1723,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder, "Extra Clear DROWN", TlsAnalyzedProperty.VULNERABLE_TO_EXTRA_CLEAR_DROWN);
         prettyAppend(builder, "Heartbleed", TlsAnalyzedProperty.VULNERABLE_TO_HEARTBLEED);
         prettyAppend(builder, "EarlyCcs", TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
-        prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "ALPACA", TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
         prettyAppend(builder, "Renegotiation Attack (ext)");
         prettyAppend(
                 builder,
@@ -1812,15 +1868,15 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             AnsiColor.GREEN);
                 }
 
-                if ((detail == ScannerDetail.DETAILED
-                                && Objects.equals(
-                                        testResult.isSignificantDistinctAnswers(), Boolean.TRUE))
-                        || detail == ScannerDetail.ALL) {
-                    if (testResult.getEqualityError() != EqualityError.NONE
-                            || detail == ScannerDetail.ALL) {
-                        prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
-                        appendInformationLeakTestResult(builder, testResult);
-                    }
+                if (((detail == ScannerDetail.DETAILED
+                                        && Objects.equals(
+                                                testResult.isSignificantDistinctAnswers(),
+                                                Boolean.TRUE))
+                                || detail == ScannerDetail.ALL)
+                        && (testResult.getEqualityError() != EqualityError.NONE
+                                || detail == ScannerDetail.ALL)) {
+                    prettyAppend(builder, "Response Map", AnsiColor.YELLOW);
+                    appendInformationLeakTestResult(builder, testResult);
                 }
             }
         }
@@ -2072,6 +2128,12 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         return builder;
     }
 
+    /**
+     * Converts a ProtocolVersion enum value to a human-readable string representation.
+     *
+     * @param version The ProtocolVersion to convert
+     * @return A human-readable string representation of the protocol version (e.g., "TLS 1.2")
+     */
     public String toHumanReadable(ProtocolVersion version) {
         switch (version) {
             case DTLS10:
@@ -2420,12 +2482,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     prettyAppend(builder, "Not supported");
                 }
                 prettyAppendHeading(builder, "HTTPS Response Header");
-                for (HttpHeader header : report.getHttpHeader()) {
-                    prettyAppend(
-                            builder,
-                            header.getHeaderName().getValue()
-                                    + ":"
-                                    + header.getHeaderValue().getValue());
+                for (String header : report.getHttpHeader()) {
+                    prettyAppend(builder, header);
                 }
                 prettyAppendHeading(builder, "HTTP False Start");
                 prettyAppend(
@@ -2493,7 +2551,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Alpaca Details");
         prettyAppend(builder, "Strict ALPN", TlsAnalyzedProperty.STRICT_ALPN);
         prettyAppend(builder, "Strict SNI", TlsAnalyzedProperty.STRICT_SNI);
-        prettyAppend(builder, "ALPACA Mitigation", TlsAnalyzedProperty.ALPACA_MITIGATED);
+        prettyAppend(builder, "Vulnerable ALPACA", TlsAnalyzedProperty.VULNERABLE_TO_ALPACA);
         return builder;
     }
 

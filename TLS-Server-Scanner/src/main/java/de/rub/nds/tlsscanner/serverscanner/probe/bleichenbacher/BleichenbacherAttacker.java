@@ -117,15 +117,11 @@ public class BleichenbacherAttacker {
     private List<VectorResponse> createVectorResponseList() {
         prepareConfig();
         PublicKeyContainer publicKey = getServerPublicKey();
-        if (publicKey.getAlgorithmType() != AsymmetricAlgorithmType.RSA) {
+        if (publicKey == null || publicKey.getAlgorithmType() != AsymmetricAlgorithmType.RSA) {
             throw new RuntimeException(
                     "Could not retrieve RSA public key from Server. Broken server config?");
         }
         RsaPublicKey rsaPublicKey = (RsaPublicKey) publicKey;
-        if (publicKey == null) {
-            LOGGER.fatal("Could not retrieve PublicKey from Server - is the Server running?");
-            throw new OracleUnstableException("Fatal Extraction error");
-        }
         List<TlsTask> taskList = new LinkedList<>();
         List<FingerprintTaskVectorPair> stateVectorPairList = new LinkedList<>();
         for (Pkcs1Vector vector :
@@ -153,7 +149,7 @@ public class BleichenbacherAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                LOGGER.warn("Could not extract fingerprint for " + pair.toString());
+                LOGGER.warn("Could not extract fingerprint for {}", pair);
             } else {
                 testedSuite =
                         pair.getFingerPrintTask()

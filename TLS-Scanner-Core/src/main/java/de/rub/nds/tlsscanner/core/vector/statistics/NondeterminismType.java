@@ -8,8 +8,12 @@
  */
 package de.rub.nds.tlsscanner.core.vector.statistics;
 
+/** Categorizes different types of nondeterministic behavior observed in system responses. */
 public enum NondeterminismType {
+    /** Nondeterminism that occurs at the connection level */
     CONNECTION,
+    /** Nondeterminism that shows heterogeneous response patterns */
     HETEROGENEOUS,
+    /** Nondeterminism that exhibits mixed characteristics */
     MIXED
 }

@@ -772,14 +772,14 @@ public class PaddingOracleAttributor {
         LOGGER.trace("Trying to attribute PaddingOracle to a Known Vulnerability");
         for (KnownPaddingOracleVulnerability vulnerability : knownVulnerabilityList) {
             if (!checkCipherSuitesPlausible(vulnerability, informationLeakTestList)) {
-                LOGGER.trace("Cipher suites are not plausible for " + vulnerability.getCve());
+                LOGGER.trace("Cipher suites are not plausible for {}", vulnerability.getCve());
                 continue;
             }
             if (!checkTestVectorResponseListPlausible(vulnerability, informationLeakTestList)) {
-                LOGGER.trace("Responses are not plausible for " + vulnerability.getCve());
+                LOGGER.trace("Responses are not plausible for {}", vulnerability.getCve());
                 continue;
             }
-            LOGGER.trace("Vulnerability identified as " + vulnerability.getCve());
+            LOGGER.trace("Vulnerability identified as {}", vulnerability.getCve());
             return vulnerability;
         }
         LOGGER.trace("Vulnerability not found in Database");

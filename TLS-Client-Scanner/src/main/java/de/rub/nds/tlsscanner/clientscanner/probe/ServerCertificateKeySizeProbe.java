@@ -19,7 +19,6 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ServerCertificateKeySizeProbe extends TlsClientProbe {
@@ -36,9 +35,6 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
             dssCipherSuites,
             dhCipherSuites;
     private int minimumRSAKeySize, minimumRSASigKeySize, minimumDSSKeySize, minimumDHKeySize;
-
-    private List<CipherSuite> clientAdvertisedCipherSuites;
-
     private int ourLargestRSAKeySize, ourLargestDSSKeySize, ourLargestDHKeySize;
     private int ourSmallestRSAKeySize = Integer.MAX_VALUE;
     private int ourSmallestDSSKeySize = Integer.MAX_VALUE;
@@ -107,7 +103,6 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
         dhCipherSuites =
                 report.getSupportedCipherSuitesWithKeyExchange(
                         KeyExchangeAlgorithm.DH_DSS, KeyExchangeAlgorithm.DH_RSA);
-        clientAdvertisedCipherSuites = new LinkedList<>(report.getClientAdvertisedCipherSuites());
     }
 
     @Override

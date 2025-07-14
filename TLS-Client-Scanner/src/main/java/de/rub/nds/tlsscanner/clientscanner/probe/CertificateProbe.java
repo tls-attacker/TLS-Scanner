@@ -12,7 +12,6 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ClientCertificateType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -93,8 +92,7 @@ public class CertificateProbe extends TlsClientProbe {
 
     private boolean isCipherSuiteSuitableForCertType(
             CipherSuite cipherSuite, ClientCertificateType clientCertType) {
-        KeyExchangeAlgorithm keyExchangeAlgorithm =
-                AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite);
+        KeyExchangeAlgorithm keyExchangeAlgorithm = cipherSuite.getKeyExchangeAlgorithm();
         switch (clientCertType) {
             case RSA_SIGN:
                 return keyExchangeAlgorithm == KeyExchangeAlgorithm.RSA

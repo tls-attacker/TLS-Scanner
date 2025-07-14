@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.guideline.Guideline;
 import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineIO;
@@ -21,7 +22,6 @@ import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuid
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class GuidelineIOIT {
     @Tag(TestCategories.INTEGRATION_TEST)
     public void testDeSerializationSimple(@TempDir File tempDir)
             throws IOException, JAXBException, XMLStreamException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        SilentByteArrayOutputStream stream = new SilentByteArrayOutputStream();
         guidelineIO.write(stream, this.original);
         this.result =
                 (Guideline<ServerReport>)

@@ -19,6 +19,13 @@ public class RecommendedHashAlgorithmsGuidelineCheckResult extends GuidelineChec
 
     private final Set<HashAlgorithm> notRecommendedAlgorithms;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private RecommendedHashAlgorithmsGuidelineCheckResult() {
+        super(null, null);
+        this.notRecommendedAlgorithms = null;
+    }
+
     public RecommendedHashAlgorithmsGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,

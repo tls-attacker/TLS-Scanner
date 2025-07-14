@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.core.probe.padding;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -138,7 +137,7 @@ public class PaddingOracleAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                LOGGER.warn("Could not extract fingerprint for " + pair.toString());
+                LOGGER.warn("Could not extract fingerprint for {}", pair);
             } else {
                 testedSuite =
                         pair.getFingerPrintTask()
@@ -178,9 +177,9 @@ public class PaddingOracleAttacker {
                         FingerprintChecker.checkEquality(
                                 responseOne.getFingerprint(), responseTwo.getFingerprint());
                 if (error != EqualityError.NONE) {
-                    LOGGER.debug("Found an EqualityError: " + error);
-                    LOGGER.debug("Fingerprint1: " + responseOne.getFingerprint().toString());
-                    LOGGER.debug("Fingerprint2: " + responseTwo.getFingerprint().toString());
+                    LOGGER.debug("Found an EqualityError: {}", error);
+                    LOGGER.debug("Fingerprint1: {}", responseOne.getFingerprint());
+                    LOGGER.debug("Fingerprint2: {}", responseTwo.getFingerprint());
                     return error;
                 }
             }
@@ -191,8 +190,7 @@ public class PaddingOracleAttacker {
     private void prepareConfig() {
         tlsConfig.setHighestProtocolVersion(testedVersion);
         tlsConfig.setDefaultClientSupportedCipherSuites(testedSuite);
-        KeyExchangeAlgorithm keyExchangeAlgorithm =
-                AlgorithmResolver.getKeyExchangeAlgorithm(testedSuite);
+        KeyExchangeAlgorithm keyExchangeAlgorithm = testedSuite.getKeyExchangeAlgorithm();
         if (keyExchangeAlgorithm != null
                 && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
             tlsConfig.setAddEllipticCurveExtension(true);

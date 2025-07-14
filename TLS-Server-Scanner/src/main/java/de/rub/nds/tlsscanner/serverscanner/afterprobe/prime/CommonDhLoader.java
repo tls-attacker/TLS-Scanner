@@ -24,6 +24,15 @@ public class CommonDhLoader {
 
     private CommonDhLoader() {}
 
+    /**
+     * Loads a list of common Diffie-Hellman parameter values from a JSON resource file.
+     *
+     * <p>The method reads the "common/common.json" resource file from the classpath and parses it
+     * to create a list of CommonDhValues objects containing various well-known DH parameters.
+     *
+     * @return a list of CommonDhValues objects loaded from the JSON resource
+     * @throws RuntimeException if the resource file cannot be found or parsed
+     */
     public static List<CommonDhValues> loadCommonDhValues() {
         try {
             List<CommonDhValues> commonValuesList = new LinkedList<>();

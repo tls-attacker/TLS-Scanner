@@ -16,8 +16,16 @@ import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsattacker.transport.tcp.TcpTransportHandler;
 import java.util.List;
 
+/** Utility class for extracting response fingerprints from TLS-Attacker states and actions. */
 public class ResponseExtractor {
 
+    /**
+     * Extracts a response fingerprint from the given state and receiving action.
+     *
+     * @param state The TLS-Attacker state
+     * @param action The receiving action containing the response
+     * @return A ResponseFingerprint containing the messages, records, and socket state
+     */
     public static ResponseFingerprint getFingerprint(State state, ReceivingAction action) {
         List<ProtocolMessage> messageList = action.getReceivedMessages();
         List<Record> recordList = action.getReceivedRecords();
@@ -25,6 +33,12 @@ public class ResponseExtractor {
         return new ResponseFingerprint(messageList, recordList, socketState);
     }
 
+    /**
+     * Extracts a response fingerprint from the last receiving action in the given state.
+     *
+     * @param state The TLS-Attacker state containing the workflow trace
+     * @return A ResponseFingerprint from the last receiving action
+     */
     public static ResponseFingerprint getFingerprint(State state) {
         ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
         return getFingerprint(state, action);

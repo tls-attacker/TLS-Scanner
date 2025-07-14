@@ -26,6 +26,15 @@ public class PaddingOracleTestInfo extends TestInfo {
 
     private final PaddingRecordGeneratorType recordGeneratorType;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private PaddingOracleTestInfo() {
+        this.version = null;
+        this.cipherSuite = null;
+        this.vectorGeneratorType = null;
+        this.recordGeneratorType = null;
+    }
+
     public PaddingOracleTestInfo(
             ProtocolVersion version,
             CipherSuite suite,

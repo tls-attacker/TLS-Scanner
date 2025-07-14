@@ -31,6 +31,9 @@ public class RecordFragmentationProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return verifyProperty(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, TestResults.TRUE);
+        boolean supportsFragmentation =
+                verifyProperty(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, TestResults.TRUE);
+        int recordLength = report.getMinRecordLength();
+        return supportsFragmentation && recordLength == 1;
     }
 }

@@ -18,6 +18,14 @@ public class ExtensionGuidelineCheckResult extends GuidelineCheckResult {
     private final List<ExtensionType> supportedExtensions;
     private final List<ExtensionType> extensionsInQuestion;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private ExtensionGuidelineCheckResult() {
+        super(null, null);
+        this.supported = false;
+        this.requiredExtension = null;
+    }
+
     public ExtensionGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,

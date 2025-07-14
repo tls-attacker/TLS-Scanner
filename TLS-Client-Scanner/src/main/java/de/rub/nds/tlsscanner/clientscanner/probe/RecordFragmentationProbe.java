@@ -28,20 +28,37 @@ import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeFalseRequirement;
+import java.util.List;
 
 public class RecordFragmentationProbe extends TlsClientProbe {
-    private TestResult result = TestResults.COULD_NOT_TEST;
+
+    private TestResult supportsFragmentation = TestResults.COULD_NOT_TEST;
+    private int minRecordLength = 16384;
 
     public RecordFragmentationProbe(
             ParallelExecutor parallelExecutor, ClientScannerConfig scannerConfig) {
         super(parallelExecutor, TlsProbeType.RECORD_FRAGMENTATION, scannerConfig);
         register(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        register(TlsAnalyzedProperty.MIN_RECORD_LENGTH);
     }
 
     @Override
     protected void executeTest() {
+        List<Integer> toTest = List.of(16384, 111, 50, 1);
+        for (Integer length : toTest) {
+            if (supportsFragmentation(length)) {
+                minRecordLength = length;
+            } else {
+                break;
+            }
+        }
+
+        supportsFragmentation = minRecordLength < 16384 ? TestResults.TRUE : TestResults.FALSE;
+    }
+
+    public boolean supportsFragmentation(int recordLength) {
         Config config = scannerConfig.createConfig();
-        config.setDefaultMaxRecordData(50);
+        config.setDefaultMaxRecordData(recordLength);
 
         WorkflowConfigurationFactory factory = new WorkflowConfigurationFactory(config);
         WorkflowTrace workflowTrace =
@@ -51,11 +68,8 @@ public class RecordFragmentationProbe extends TlsClientProbe {
         State state = new State(config, workflowTrace);
         executeState(state);
 
-        result =
-                WorkflowTraceResultUtil.didReceiveMessage(
-                                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)
-                        ? TestResults.TRUE
-                        : TestResults.FALSE;
+        return WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED);
     }
 
     @Override
@@ -68,6 +82,7 @@ public class RecordFragmentationProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
-        put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, result);
+        put(TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION, supportsFragmentation);
+        put(TlsAnalyzedProperty.MIN_RECORD_LENGTH, minRecordLength);
     }
 }

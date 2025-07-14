@@ -26,6 +26,16 @@ public class BleichenbacherWorkflowGenerator {
 
     private BleichenbacherWorkflowGenerator() {}
 
+    /**
+     * Generates a workflow trace for Bleichenbacher attack testing with the specified configuration
+     * and encrypted premaster secret.
+     *
+     * @param tlsConfig The TLS configuration to use for the workflow
+     * @param type The type of Bleichenbacher workflow to generate (CKE, CKE_CCS, CKE_CCS_FIN, or
+     *     CKE_FIN)
+     * @param encryptedPMS The encrypted premaster secret to use in the RSA client key exchange
+     * @return A WorkflowTrace configured for the specified Bleichenbacher attack test scenario
+     */
     public static WorkflowTrace generateWorkflow(
             Config tlsConfig, BleichenbacherWorkflowType type, byte[] encryptedPMS) {
         WorkflowTrace trace =

@@ -251,6 +251,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** does it handle a http false start */
     SUPPORTS_HTTP_FALSE_START(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
+    MIN_RECORD_LENGTH(TlsAnalyzedPropertyCategory.QUIRKS),
     /** does it have a grease value intolerance? */
     HAS_GREASE_CIPHER_SUITE_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_NAMED_GROUP_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
@@ -284,7 +285,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(TlsAnalyzedPropertyCategory.ATTACKS),
-    ALPACA_MITIGATED(TlsAnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_ALPACA(TlsAnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
