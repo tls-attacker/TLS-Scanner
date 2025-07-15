@@ -262,7 +262,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The server shall be able to process and respond to the Server Name Indication extension.",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
@@ -296,7 +296,7 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Certificate Status Request extension shall be supported.",
@@ -325,8 +325,8 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
                         TestResults.TRUE));
         checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422. Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.",
+                new RequiredExtensionGuidelineCheck(
+                        "Servers that support either ephemeral ECDH cipher suites or TLS 1.3 shall support this extension.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
                                 Arrays.asList(
@@ -336,6 +336,17 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
+                        ExtensionType.ELLIPTIC_CURVES));
+        checks.add(
+                new RequiredNamedGroupsGuidelineCheck(
+                        "When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422.",
+                        RequirementLevel.MUST,
+                        List.of(NamedGroup.SECP256R1, NamedGroup.SECP384R1),
+                        true));
+        checks.add(
+                new RecommendedNamedGroupsGuidelineCheck(
+                        "Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.",
+                        RequirementLevel.MUST,
                         Arrays.asList(
                                 NamedGroup.SECP224R1,
                                 NamedGroup.SECP256R1,
@@ -353,19 +364,16 @@ public class NistGuidelineSerializationIT {
                                 NamedGroup.FFDHE3072,
                                 NamedGroup.FFDHE4096,
                                 NamedGroup.FFDHE6144,
-                                NamedGroup.FFDHE8192),
-                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.SECP384R1),
-                        false,
-                        2));
+                                NamedGroup.FFDHE8192)));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.KEY_SHARE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The EC Point Format extension shall be supported if the server supports EC cipher suites.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.and(
@@ -461,14 +469,14 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The Supported Versions extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SUPPORTED_VERSIONS));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Servers that support TLS 1.3 may support the Cookie extension.", // Earlier
                         // in the document it is stated that the "Cookie extension **shall** be
                         // supported if the server supports TLS 1.3".

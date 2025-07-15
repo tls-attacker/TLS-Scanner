@@ -16,34 +16,34 @@ import java.util.List;
 
 public class RecommendedCipherSuiteGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final List<CipherSuite> notRecommendedSuites;
+    private final List<CipherSuite> supportedButNotRecommendedSuites;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private RecommendedCipherSuiteGuidelineCheckResult() {
         super(null, null);
-        this.notRecommendedSuites = null;
+        this.supportedButNotRecommendedSuites = null;
     }
 
     public RecommendedCipherSuiteGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            List<CipherSuite> notRecommendedSuites) {
+            List<CipherSuite> supportedButNotRecommendedSuites) {
         super(checkName, adherence);
-        this.notRecommendedSuites = notRecommendedSuites;
+        this.supportedButNotRecommendedSuites = supportedButNotRecommendedSuites;
     }
 
     @Override
     public String toString() {
-        if (notRecommendedSuites.isEmpty()) {
+        if (supportedButNotRecommendedSuites.isEmpty()) {
             return "Only listed Cipher Suites are supported.";
         } else {
-            return "The following Cipher Suites were supported contrary to the guideline:\n"
-                    + Joiner.on('\n').join(notRecommendedSuites);
+            return "The following Cipher Suites were supported but are not explicitly recommended by the guideline:\n"
+                    + Joiner.on('\n').join(supportedButNotRecommendedSuites);
         }
     }
 
-    public List<CipherSuite> getNotRecommendedSuites() {
-        return notRecommendedSuites;
+    public List<CipherSuite> getSupportedButNotRecommendedSuites() {
+        return supportedButNotRecommendedSuites;
     }
 }

@@ -87,7 +87,21 @@ public class ExtensionProbe extends TlsServerProbe {
                 allSupportedExtensions.addAll(commonExtensions);
             }
         }
+        if (!allSupportedExtensions.contains(ExtensionType.SERVER_NAME_INDICATION)
+                && supportsSni()) {
+            allSupportedExtensions.add(ExtensionType.SERVER_NAME_INDICATION);
+        }
         return new ArrayList<>(allSupportedExtensions);
+    }
+
+    private boolean supportsSni() {
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddServerNameIndicationExtension(true);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        State state = new State(config);
+        executeState(state);
+        return WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO);
     }
 
     private List<ExtensionType> getCommonExtension(

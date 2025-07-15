@@ -49,7 +49,8 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                         ExtensionType.RENEGOTIATION_INFO,
                         ExtensionType.ELLIPTIC_CURVES,
                         ExtensionType.KEY_SHARE,
-                        ExtensionType.ENCRYPT_THEN_MAC);
+                        ExtensionType.ENCRYPT_THEN_MAC,
+                        ExtensionType.SERVER_NAME_INDICATION);
         List<ExtensionType> supportedExtensions = report.getSupportedExtensions();
         return expectedExtensions.size() == supportedExtensions.size()
                 && expectedExtensions.containsAll(

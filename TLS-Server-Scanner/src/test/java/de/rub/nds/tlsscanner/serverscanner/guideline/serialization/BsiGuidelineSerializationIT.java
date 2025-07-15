@@ -25,11 +25,10 @@ import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedExtensionGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedCipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedExtensionGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedNamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
@@ -40,7 +39,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -146,7 +144,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_256_GCM_SHA384)));
         checks.add(
-                new NamedGroupsGuidelineCheck(
+                new RecommendedNamedGroupsGuidelineCheck(
                         "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
@@ -157,10 +155,7 @@ public class BsiGuidelineSerializationIT {
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
                                 NamedGroup.FFDHE3072,
-                                NamedGroup.FFDHE4096),
-                        Collections.emptyList(),
-                        false,
-                        2));
+                                NamedGroup.FFDHE4096)));
         checks.add(
                 new SignatureAlgorithmsGuidelineCheck(
                         "Die folgenden Signaturverfahren werden empfohlen.",
@@ -228,7 +223,7 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new NotRecommendedExtensionGuidelineCheck(
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -258,22 +253,6 @@ public class BsiGuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                         TestResults.FALSE));
-        checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
-                        RequirementLevel.SHOULD,
-                        Arrays.asList(
-                                NamedGroup.SECP256R1,
-                                NamedGroup.SECP384R1,
-                                NamedGroup.SECP521R1,
-                                NamedGroup.BRAINPOOLP256R1,
-                                NamedGroup.BRAINPOOLP384R1,
-                                NamedGroup.BRAINPOOLP512R1,
-                                NamedGroup.FFDHE3072,
-                                NamedGroup.FFDHE4096),
-                        Collections.emptyList(),
-                        true,
-                        2));
         checks.add(
                 new SignatureAndHashAlgorithmsGuidelineCheck(
                         "Die folgenden Signaturverfahren werden für die \"signature_algorithms\" Erweiterung empfohlen.",

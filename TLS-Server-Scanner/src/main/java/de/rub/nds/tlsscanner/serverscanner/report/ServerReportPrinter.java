@@ -1203,7 +1203,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Tickets resumable in different version",
                 TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
-        prettyAppend(builder, " "); // Workaround for single newline.
+        builder.append("\n");
 
         prettyAppendSubheading(builder, "Details");
         // TODO use tables

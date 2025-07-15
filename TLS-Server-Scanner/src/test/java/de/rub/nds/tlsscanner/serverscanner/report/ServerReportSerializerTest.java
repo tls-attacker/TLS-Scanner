@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.junit.jupiter.api.Test;
 
 public class ServerReportSerializerTest {
@@ -87,11 +86,9 @@ public class ServerReportSerializerTest {
         certReport.setNamedCurve(X509NamedCurve.BRAINPOOLP160R1);
         certReport.setNotAfter(new DateTime(12345));
         certReport.setNotBefore(new DateTime(DateTime.now().getMillis() - 1000));
-        certReport.setOriginalFullDuration(Duration.standardDays(4));
         certReport.setOcspMustStaple(true);
         certReport.setOcspSupported(false);
         certReport.setPublicKey(new RsaPublicKey(BigInteger.ONE, BigInteger.TEN));
-        certReport.setRemainingDuration(Duration.millis(100));
         certReport.setRevoked(false);
         certReport.setRocaVulnerable(false);
         certReport.setSelfSigned(true);

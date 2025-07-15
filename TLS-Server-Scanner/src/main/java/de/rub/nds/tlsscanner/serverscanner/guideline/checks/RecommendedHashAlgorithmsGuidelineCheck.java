@@ -29,7 +29,7 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private List<HashAlgorithm> algorithmsInQuestion;
+    private List<HashAlgorithm> recommendedAlgorithms;
 
     private RecommendedHashAlgorithmsGuidelineCheck() {
         super(null, null);
@@ -38,18 +38,18 @@ public class RecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<Serv
     public RecommendedHashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
-            List<HashAlgorithm> algorithmsInQuestion) {
+            List<HashAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel);
-        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     public RecommendedHashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            List<HashAlgorithm> algorithmsInQuestion) {
+            List<HashAlgorithm> recommendedAlgorithms) {
         super(name, requirementLevel, condition);
-        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
     @Override
@@ -57,16 +57,16 @@ public class RecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<Serv
         List<SignatureAndHashAlgorithm> supportedAlgorithms =
                 report.getSupportedSignatureAndHashAlgorithms();
         if (supportedAlgorithms != null) {
-            Set<HashAlgorithm> nonRecommendedAlgorithms = new HashSet<>();
+            Set<HashAlgorithm> notRecommendedButSupportedAlgorithms = new HashSet<>();
             for (SignatureAndHashAlgorithm alg : supportedAlgorithms) {
-                if (!this.algorithmsInQuestion.contains(alg.getHashAlgorithm())) {
-                    nonRecommendedAlgorithms.add(alg.getHashAlgorithm());
+                if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
+                    notRecommendedButSupportedAlgorithms.add(alg.getHashAlgorithm());
                 }
             }
             return new RecommendedHashAlgorithmsGuidelineCheckResult(
                     getName(),
-                    GuidelineAdherence.of(nonRecommendedAlgorithms.isEmpty()),
-                    nonRecommendedAlgorithms);
+                    GuidelineAdherence.of(notRecommendedButSupportedAlgorithms.isEmpty()),
+                    notRecommendedButSupportedAlgorithms);
         } else {
             return new RecommendedHashAlgorithmsGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
@@ -75,10 +75,10 @@ public class RecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<Serv
 
     @Override
     public String toString() {
-        return "HashAlgorithms_" + getRequirementLevel() + "_" + algorithmsInQuestion;
+        return "RecommendedHashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
     }
 
-    public List<HashAlgorithm> getAlgorithmsInQuestion() {
-        return algorithmsInQuestion;
+    public List<HashAlgorithm> getRecommendedAlgorithms() {
+        return recommendedAlgorithms;
     }
 }

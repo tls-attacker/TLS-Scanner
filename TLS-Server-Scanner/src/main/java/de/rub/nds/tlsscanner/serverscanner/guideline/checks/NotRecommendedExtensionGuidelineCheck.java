@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsscanner.serverscanner.guideline.results.ExtensionGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.NotRecommendedExtensionGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -28,47 +28,49 @@ import java.util.stream.Collectors;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NotRecommendedExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private List<ExtensionType> extensionsInQuestion;
+    private List<ExtensionType> notRecommendedExtensions;
 
     private NotRecommendedExtensionGuidelineCheck() {
         super(null, null);
     }
 
     public NotRecommendedExtensionGuidelineCheck(
-            String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
+            String name,
+            RequirementLevel requirementLevel,
+            ExtensionType... notRecommendedExtensions) {
         super(name, requirementLevel);
-        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
+        this.notRecommendedExtensions = Arrays.asList(notRecommendedExtensions);
     }
 
     public NotRecommendedExtensionGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            ExtensionType... extensionsInQuestion) {
+            ExtensionType... notRecommendedExtensions) {
         super(name, requirementLevel, condition);
-        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
+        this.notRecommendedExtensions = Arrays.asList(notRecommendedExtensions);
     }
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         GuidelineAdherence adherence;
-        List<ExtensionType> supportedExtensions =
-                extensionsInQuestion.stream()
+        List<ExtensionType> notRecommendedButSupportedExtensions =
+                notRecommendedExtensions.stream()
                         .filter(report.getSupportedExtensions()::contains)
                         .collect(Collectors.toList());
 
-        adherence = GuidelineAdherence.of(supportedExtensions.isEmpty());
+        adherence = GuidelineAdherence.of(notRecommendedButSupportedExtensions.isEmpty());
 
-        return new ExtensionGuidelineCheckResult(
-                getName(), adherence, supportedExtensions, extensionsInQuestion);
+        return new NotRecommendedExtensionGuidelineCheckResult(
+                getName(), adherence, notRecommendedButSupportedExtensions);
     }
 
     @Override
     public String toString() {
-        return "Extension_" + getRequirementLevel() + "_" + extensionsInQuestion;
+        return "NotRecommendedExtension_" + getRequirementLevel() + "_" + notRecommendedExtensions;
     }
 
-    public List<ExtensionType> getExtensionsInQuestion() {
-        return Collections.unmodifiableList(extensionsInQuestion);
+    public List<ExtensionType> getNotRecommendedExtensions() {
+        return Collections.unmodifiableList(notRecommendedExtensions);
     }
 }

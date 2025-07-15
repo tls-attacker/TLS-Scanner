@@ -17,14 +17,21 @@ import java.util.Set;
 
 public class NotRecommendedHashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final Set<HashAlgorithm> notRecommendedAlgorithms;
+    private final Set<HashAlgorithm> notRecommendedButSupportedAlgorithms;
+
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private NotRecommendedHashAlgorithmsGuidelineCheckResult() {
+        super(null, null);
+        this.notRecommendedButSupportedAlgorithms = null;
+    }
 
     public NotRecommendedHashAlgorithmsGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            Set<HashAlgorithm> notRecommendedAlgorithms) {
+            Set<HashAlgorithm> notRecommendedButSupportedAlgorithms) {
         super(checkName, adherence);
-        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.notRecommendedButSupportedAlgorithms = notRecommendedButSupportedAlgorithms;
     }
 
     @Override
@@ -32,15 +39,15 @@ public class NotRecommendedHashAlgorithmsGuidelineCheckResult extends GuidelineC
         if (Objects.equals(GuidelineAdherence.CHECK_FAILED, getAdherence())) {
             return "Missing Information";
         }
-        if (notRecommendedAlgorithms.isEmpty()) {
+        if (notRecommendedButSupportedAlgorithms.isEmpty()) {
             return "None of the listed Hash Algorithms is supported.";
         } else {
             return "The following Hash Algorithms were supported contrary to the guideline:\n"
-                    + Joiner.on('\n').join(notRecommendedAlgorithms);
+                    + Joiner.on('\n').join(notRecommendedButSupportedAlgorithms);
         }
     }
 
-    public Set<HashAlgorithm> getNotRecommendedAlgorithms() {
-        return notRecommendedAlgorithms;
+    public Set<HashAlgorithm> getNotRecommendedButSupportedAlgorithms() {
+        return notRecommendedButSupportedAlgorithms;
     }
 }

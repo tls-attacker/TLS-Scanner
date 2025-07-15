@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsscanner.serverscanner.guideline.results.ExtensionGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.RequiredExtensionGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -22,54 +22,52 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class RecommendedExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
+public class RequiredExtensionGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private List<ExtensionType> extensionsInQuestion;
+    private List<ExtensionType> requiredExtensions;
 
-    private RecommendedExtensionGuidelineCheck() {
+    private RequiredExtensionGuidelineCheck() {
         super(null, null);
     }
 
-    public RecommendedExtensionGuidelineCheck(
-            String name, RequirementLevel requirementLevel, ExtensionType... extensionsInQuestion) {
+    public RequiredExtensionGuidelineCheck(
+            String name, RequirementLevel requirementLevel, ExtensionType... requiredExtensions) {
         super(name, requirementLevel);
-        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
+        this.requiredExtensions = Arrays.asList(requiredExtensions);
     }
 
-    public RecommendedExtensionGuidelineCheck(
+    public RequiredExtensionGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            ExtensionType... extensionsInQuestion) {
+            ExtensionType... requiredExtensions) {
         super(name, requirementLevel, condition);
-        this.extensionsInQuestion = Arrays.asList(extensionsInQuestion);
+        this.requiredExtensions = Arrays.asList(requiredExtensions);
     }
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         GuidelineAdherence adherence;
-        List<ExtensionType> supportedExtensions =
-                extensionsInQuestion.stream()
-                        .filter(report.getSupportedExtensions()::contains)
-                        .collect(Collectors.toList());
+        List<ExtensionType> requiredButNotSupported =
+                requiredExtensions.stream()
+                        .filter(ext -> !report.getSupportedExtensions().contains(ext))
+                        .toList();
 
-        adherence =
-                GuidelineAdherence.of(supportedExtensions.size() == extensionsInQuestion.size());
+        adherence = GuidelineAdherence.of(requiredButNotSupported.isEmpty());
 
-        return new ExtensionGuidelineCheckResult(
-                getName(), adherence, supportedExtensions, extensionsInQuestion);
+        return new RequiredExtensionGuidelineCheckResult(
+                getName(), adherence, requiredButNotSupported);
     }
 
     @Override
     public String toString() {
-        return "Extension_" + getRequirementLevel() + "_" + extensionsInQuestion;
+        return "RequiredExtension_" + getRequirementLevel() + "_" + requiredExtensions;
     }
 
-    public List<ExtensionType> getExtensionsInQuestion() {
-        return Collections.unmodifiableList(extensionsInQuestion);
+    public List<ExtensionType> getRequiredExtensions() {
+        return Collections.unmodifiableList(requiredExtensions);
     }
 }

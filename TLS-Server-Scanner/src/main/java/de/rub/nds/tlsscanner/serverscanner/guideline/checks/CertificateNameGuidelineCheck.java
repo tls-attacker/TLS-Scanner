@@ -88,7 +88,7 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
                     return new CertificateNameGuidelineCheckResult(
                             getName(),
                             GuidelineAdherence.VIOLATED,
-                            rdn.toString(),
+                            rdn.getIdentifier(),
                             "More than one value in the RDN.");
                 }
                 if (isPrintableString(
@@ -96,7 +96,7 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
                     return new CertificateNameGuidelineCheckResult(
                             getName(),
                             GuidelineAdherence.VIOLATED,
-                            rdn.toString(),
+                            rdn.getIdentifier(),
                             "Value is not a PrintableString.");
                 }
             }
@@ -128,7 +128,7 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
                 return new CertificateNameGuidelineCheckResult(
                         getName(),
                         GuidelineAdherence.VIOLATED,
-                        cnRdn.toString(),
+                        cnRdn.get().getIdentifier(),
                         "Common Name should be hostname or IP address.");
             }
         }

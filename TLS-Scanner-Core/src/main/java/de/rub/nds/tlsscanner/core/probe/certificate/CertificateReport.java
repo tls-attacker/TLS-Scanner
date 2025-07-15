@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 
 public class CertificateReport {
 
@@ -43,8 +42,6 @@ public class CertificateReport {
     private List<String> alternativeNames;
     private DateTime notBefore;
     private DateTime notAfter;
-    private Duration remainingDuration;
-    private Duration originalFullDuration;
     private PublicKeyContainer publicKey;
     private Boolean weakDebianKey;
     private String issuer;
@@ -147,42 +144,6 @@ public class CertificateReport {
      */
     public void setX509SignatureAlgorithm(X509SignatureAlgorithm x509SignatureAlgorithm) {
         this.x509SignatureAlgorithm = x509SignatureAlgorithm;
-    }
-
-    /**
-     * Gets the remaining duration until the certificate expires.
-     *
-     * @return the remaining duration
-     */
-    public Duration getRemainingDuration() {
-        return remainingDuration;
-    }
-
-    /**
-     * Sets the remaining duration until the certificate expires.
-     *
-     * @param remainingDuration the remaining duration to set
-     */
-    public void setRemainingDuration(Duration remainingDuration) {
-        this.remainingDuration = remainingDuration;
-    }
-
-    /**
-     * Gets the original full duration of the certificate validity period.
-     *
-     * @return the original full duration
-     */
-    public Duration getOriginalFullDuration() {
-        return originalFullDuration;
-    }
-
-    /**
-     * Sets the original full duration of the certificate validity period.
-     *
-     * @param originalFullDuration the original full duration to set
-     */
-    public void setOriginalFullDuration(Duration originalFullDuration) {
-        this.originalFullDuration = originalFullDuration;
     }
 
     /**

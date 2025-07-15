@@ -34,12 +34,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
-import de.rub.nds.tlsattacker.core.workflow.action.MessageAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
-import de.rub.nds.tlsattacker.core.workflow.action.ResetConnectionAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
-import de.rub.nds.tlsattacker.core.workflow.action.SendDynamicClientKeyExchangeAction;
-import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
+import de.rub.nds.tlsattacker.core.workflow.action.*;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -47,12 +42,9 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ResumptionProbe extends TlsServerProbe {
 
@@ -266,6 +258,44 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
+    private Config buildBaseTls13PskConfig(
+            List<PskKeyExchangeMode> modes, WorkflowTraceType traceType, boolean includeAppData) {
+        Config config = configSelector.getTls13BaseConfig();
+        config.setPSKKeyExchangeModes(modes);
+        config.setAddPSKKeyExchangeModesExtension(true);
+        config.setAddPreSharedKeyExtension(true);
+        config.setWorkflowTraceType(traceType);
+        config.setStopTraceAfterUnexpected(false);
+
+        if (includeAppData) {
+            StackConfiguration stackConfiguration =
+                    configSelector
+                            .getScannerConfig()
+                            .getApplicationProtocol()
+                            .getExpectedStackConfiguration();
+            if (stackConfiguration != null) {
+                config.setDefaultLayerConfiguration(stackConfiguration);
+            }
+        }
+
+        return config;
+    }
+
+    private void injectDummyApplicationData(State state, Config config) {
+        WorkflowTrace trace = state.getWorkflowTrace();
+        int resetIndex =
+                trace.getTlsActions().indexOf(trace.getFirstAction(ResetConnectionAction.class));
+        List<TlsAction> actionsToAdd =
+                configSelector
+                        .getScannerConfig()
+                        .getApplicationProtocol()
+                        .createDummyActions(config);
+
+        for (int i = 0; i < actionsToAdd.size(); i++) {
+            trace.addTlsAction(resetIndex - 1 + i, actionsToAdd.get(i));
+        }
+    }
+
     private TestResult isKeyShareExtensionNegotiated(State state) {
         List<HandshakeMessage> handshakes =
                 WorkflowTraceResultUtil.getAllReceivedHandshakeMessages(state.getWorkflowTrace());
@@ -273,7 +303,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 handshakes.stream()
                         .filter(message -> message instanceof ServerHelloMessage)
                         .map(message -> (ServerHelloMessage) message)
-                        .collect(Collectors.toList());
+                        .toList();
         if (hellos.size() < 2) {
             return TestResults.COULD_NOT_TEST;
         }
@@ -284,46 +314,22 @@ public class ResumptionProbe extends TlsServerProbe {
     }
 
     private TestResult getSupportsTls13Psk(PskKeyExchangeMode exchangeMode) {
-        // add app data if the server does not issue a ticket without them.
         boolean addApplicationData =
                 issuesTls13SessionTicketAfterHandshake == TestResults.FALSE
                         && issuesTls13SessionTicketWithApplicationData == TestResults.TRUE;
+
         try {
             if (configSelector.foundWorkingTls13Config()) {
-                Config tlsConfig = configSelector.getTls13BaseConfig();
-                List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-                pskKex.add(exchangeMode);
-                tlsConfig.setPSKKeyExchangeModes(pskKex);
-                tlsConfig.setAddPSKKeyExchangeModesExtension(true);
-                tlsConfig.setAddPreSharedKeyExtension(true);
-                tlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
-                // allow an early NewSessionTicket without aborting execution.
-                tlsConfig.setStopTraceAfterUnexpected(false);
-                if (addApplicationData) {
-                    StackConfiguration stackConfiguration =
-                            configSelector
-                                    .getScannerConfig()
-                                    .getApplicationProtocol()
-                                    .getExpectedStackConfiguration();
-                    if (stackConfiguration != null) {
-                        tlsConfig.setDefaultLayerConfiguration(stackConfiguration);
-                    }
-                }
+                Config tlsConfig =
+                        buildBaseTls13PskConfig(
+                                List.of(exchangeMode),
+                                WorkflowTraceType.FULL_TLS13_PSK,
+                                addApplicationData);
+
                 State state = new State(tlsConfig);
 
                 if (addApplicationData) {
-                    WorkflowTrace trace = state.getWorkflowTrace();
-                    int resetIndex =
-                            trace.getTlsActions()
-                                    .indexOf(trace.getFirstAction(ResetConnectionAction.class));
-                    List<TlsAction> actionsToAdd =
-                            configSelector
-                                    .getScannerConfig()
-                                    .getApplicationProtocol()
-                                    .createDummyActions(tlsConfig);
-                    for (int i = 0; i < actionsToAdd.size(); i++) {
-                        trace.addTlsAction(resetIndex - 1 + i, actionsToAdd.get(0));
-                    }
+                    injectDummyApplicationData(state, tlsConfig);
                 }
 
                 executeState(state);
@@ -354,83 +360,34 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
-    // Check if
     private TestResult getSelectsTls13PskDhe() {
         List<PskKeyExchangeMode> exchangeModes =
-                Arrays.asList(PskKeyExchangeMode.PSK_DHE_KE, PskKeyExchangeMode.PSK_KE);
-
-        // add app data if the server does not issue a ticket without them.
+                List.of(PskKeyExchangeMode.PSK_DHE_KE, PskKeyExchangeMode.PSK_KE);
         boolean addApplicationData =
                 issuesTls13SessionTicketAfterHandshake == TestResults.FALSE
                         && issuesTls13SessionTicketWithApplicationData == TestResults.TRUE;
+
         try {
             if (configSelector.foundWorkingTls13Config()) {
-                Config firstTlsConfig = configSelector.getTls13BaseConfig();
-                firstTlsConfig.setPSKKeyExchangeModes(exchangeModes);
-                firstTlsConfig.setAddPSKKeyExchangeModesExtension(true);
-                firstTlsConfig.setAddPreSharedKeyExtension(true);
-                firstTlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
-                // allow an early NewSessionTicket without aborting execution.
-                firstTlsConfig.setStopTraceAfterUnexpected(false);
+                Config firstConfig =
+                        buildBaseTls13PskConfig(
+                                exchangeModes,
+                                WorkflowTraceType.FULL_TLS13_PSK,
+                                addApplicationData);
+                Config secondConfig =
+                        buildBaseTls13PskConfig(
+                                List.of(PskKeyExchangeMode.PSK_KE, PskKeyExchangeMode.PSK_DHE_KE),
+                                WorkflowTraceType.FULL_TLS13_PSK,
+                                addApplicationData);
 
-                Config secondTlsConfig = configSelector.getTls13BaseConfig();
-                // Reverse order of exchange modes for second handshake.
-                secondTlsConfig.setPSKKeyExchangeModes(exchangeModes.reversed());
-                secondTlsConfig.setAddPSKKeyExchangeModesExtension(true);
-                secondTlsConfig.setAddPreSharedKeyExtension(true);
-                secondTlsConfig.setWorkflowTraceType(WorkflowTraceType.FULL_TLS13_PSK);
-                // allow an early NewSessionTicket without aborting execution.
-                secondTlsConfig.setStopTraceAfterUnexpected(false);
+                State firstState = new State(firstConfig);
+                State secondState = new State(secondConfig);
 
                 if (addApplicationData) {
-                    StackConfiguration stackConfiguration =
-                            configSelector
-                                    .getScannerConfig()
-                                    .getApplicationProtocol()
-                                    .getExpectedStackConfiguration();
-                    if (stackConfiguration != null) {
-                        firstTlsConfig.setDefaultLayerConfiguration(stackConfiguration);
-                        secondTlsConfig.setDefaultLayerConfiguration(stackConfiguration);
-                    }
+                    injectDummyApplicationData(firstState, firstConfig);
+                    injectDummyApplicationData(secondState, secondConfig);
                 }
 
-                State firstState = new State(firstTlsConfig);
-                State secondState = new State(secondTlsConfig);
-
-                if (addApplicationData) {
-                    WorkflowTrace firstTrace = firstState.getWorkflowTrace();
-                    int resetIndex =
-                            firstTrace
-                                    .getTlsActions()
-                                    .indexOf(
-                                            firstTrace.getFirstAction(ResetConnectionAction.class));
-                    List<TlsAction> firstActionsToAdd =
-                            configSelector
-                                    .getScannerConfig()
-                                    .getApplicationProtocol()
-                                    .createDummyActions(firstTlsConfig);
-                    for (int i = 0; i < firstActionsToAdd.size(); i++) {
-                        firstTrace.addTlsAction(resetIndex - 1 + i, firstActionsToAdd.get(0));
-                    }
-
-                    WorkflowTrace secondTrace = secondState.getWorkflowTrace();
-                    resetIndex =
-                            secondTrace
-                                    .getTlsActions()
-                                    .indexOf(
-                                            secondTrace.getFirstAction(
-                                                    ResetConnectionAction.class));
-                    List<TlsAction> secondActionsToAdd =
-                            configSelector
-                                    .getScannerConfig()
-                                    .getApplicationProtocol()
-                                    .createDummyActions(secondTlsConfig);
-                    for (int i = 0; i < secondActionsToAdd.size(); i++) {
-                        secondTrace.addTlsAction(resetIndex - 1 + i, secondActionsToAdd.get(0));
-                    }
-                }
-
-                // Execute first handshake with order of exchange modes as provided.
                 executeState(firstState);
 
                 MessageAction lastRcv =
@@ -452,8 +409,7 @@ public class ResumptionProbe extends TlsServerProbe {
                                         secondState.getWorkflowTrace().getLastReceivingAction();
                         if (lastRcv.executedAsPlanned()) {
                             // Check if the key_share extension is negotiated. This determines which
-                            // key
-                            // extension mode the server selected.
+                            // key extension mode the server selected.
                             keyShareExtensionNegotiated =
                                     isKeyShareExtensionNegotiated(secondState);
                             // If the key_share extension was negotiated it means PSK_DHE_KE was
@@ -473,7 +429,7 @@ public class ResumptionProbe extends TlsServerProbe {
             } else {
                 LOGGER.error(
                         "Could not test if the server selects PSK_DHE_KE as the TLS 1.3 PSK key exchange mode (provided: "
-                                + exchangeModes.toString()
+                                + exchangeModes
                                 + "): ",
                         e);
             }
@@ -514,24 +470,15 @@ public class ResumptionProbe extends TlsServerProbe {
     private TestResult getIssuesTls13SessionTicket(boolean includeApplicationData) {
         try {
             if (configSelector.foundWorkingTls13Config()) {
-                Config tlsConfig = configSelector.getTls13BaseConfig();
-                List<PskKeyExchangeMode> pskKex = new LinkedList<>();
-                pskKex.add(PskKeyExchangeMode.PSK_DHE_KE);
-                pskKex.add(PskKeyExchangeMode.PSK_KE);
-                tlsConfig.setPSKKeyExchangeModes(pskKex);
-                tlsConfig.setAddPSKKeyExchangeModesExtension(true);
-                tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HANDSHAKE);
-                if (includeApplicationData) {
-                    StackConfiguration stackConfiguration =
-                            configSelector
-                                    .getScannerConfig()
-                                    .getApplicationProtocol()
-                                    .getExpectedStackConfiguration();
-                    if (stackConfiguration != null) {
-                        tlsConfig.setDefaultLayerConfiguration(stackConfiguration);
-                    }
-                }
+                Config tlsConfig =
+                        buildBaseTls13PskConfig(
+                                List.of(PskKeyExchangeMode.PSK_DHE_KE, PskKeyExchangeMode.PSK_KE),
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                includeApplicationData);
+                tlsConfig.setAddPreSharedKeyExtension(false);
+
                 State state = new State(tlsConfig);
+
                 if (includeApplicationData) {
                     state.getWorkflowTrace()
                             .addTlsActions(
@@ -546,6 +493,7 @@ public class ResumptionProbe extends TlsServerProbe {
                                 new ReceiveAction(
                                         tlsConfig.getDefaultClientConnection().getAlias(),
                                         new NewSessionTicketMessage()));
+
                 executeState(state);
 
                 if (WorkflowTraceResultUtil.didReceiveMessage(
@@ -553,6 +501,7 @@ public class ResumptionProbe extends TlsServerProbe {
                     return TestResults.TRUE;
                 }
             }
+
             return TestResults.FALSE;
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {

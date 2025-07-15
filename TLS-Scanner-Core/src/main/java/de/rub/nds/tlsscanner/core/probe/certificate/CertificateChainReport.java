@@ -81,6 +81,9 @@ public class CertificateChainReport {
         for (X509Certificate cert : certificateChain.getCertificateList()) {
             CertificateReport certificateReport = CertificateReportGenerator.generateReport(cert);
             certificateReportList.add(certificateReport);
+            if (cert.isLeaf()) {
+                leafReport = certificateReport;
+            }
         }
         LOGGER.debug("Certificate Reports:" + certificateReportList.size());
         // Check if trust anchor or custom trust anchor is contained
