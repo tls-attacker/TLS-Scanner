@@ -55,26 +55,26 @@ public class NistGuidelineSerializationIT {
                         TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Support of TLS 1.1 is discouraged.",
+                        "The use of TLS versions 1.1 and 1.0 is generally discouraged.",
                         RequirementLevel.MAY,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_1,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Support of TLS 1.0 is discouraged.",
+                        "The use of TLS versions 1.1 and 1.0 is generally discouraged.",
                         RequirementLevel.MAY,
                         TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Servers shall not support SSL 3.0.",
-                        RequirementLevel.MUST,
+                        "These servers shall not allow the use of SSL 2.0 or SSL 3.0.",
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_3,
                         TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
-                        "Servers shall not support SSL 2.0.",
-                        RequirementLevel.MUST,
+                        "These servers shall not allow the use of SSL 2.0 or SSL 3.0.",
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_SSL_2,
                         TestResults.FALSE));
         checks.add(
@@ -95,12 +95,15 @@ public class NistGuidelineSerializationIT {
                         "For ECDSA: Curve P-256 or curve P-384 should be used in the public key.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(X509NamedCurve.SECP256R1, X509NamedCurve.SECP384R1)));
-        checks.add(
-                new AnalyzedPropertyGuidelineCheck(
-                        "Certificates shall be issued by a CA that publishes revocation information in OCSP responses.",
-                        RequirementLevel.MUST,
-                        TlsAnalyzedProperty.SUPPORTS_OCSP,
-                        TestResults.TRUE));
+        // TODO: Implement serverscanner probe that sets TlsAnalyzedProperty.SUPPORTS_OCSP (see
+        // issue #199).
+        //        checks.add(
+        //                new AnalyzedPropertyGuidelineCheck(
+        //                        "Certificates shall be issued by a CA that publishes revocation
+        // information in OCSP responses.",
+        //                        RequirementLevel.MUST,
+        //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
+        //                        TestResults.TRUE));
         checks.add(
                 new CertificateVersionGuidelineCheck(
                         "Server certificate shall be an X.509 version 3 certificate.",
@@ -146,24 +149,18 @@ public class NistGuidelineSerializationIT {
                         "Servers should be configured to allow use of the Extended Key Usage extension with a key purpose specifically for server authentication.",
                         RequirementLevel.SHOULD));
         checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "Only listed cipher suites shall be used.",
+                new RecommendedCipherSuiteGuidelineCheck( // Appendix C contains a conditional
+                        // SHOULD for PSK
+                        // cipher suites. Appendix D only contains a
+                        // conditional MAY for RSA cipher suites. Thus, these
+                        // cipher suites are omitted here.
+                        "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used. Section 3.3.1:",
                         RequirementLevel.MUST,
                         Arrays.asList(
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
                                 ProtocolVersion.TLS12),
                         Arrays.asList(
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CCM,
@@ -221,10 +218,10 @@ public class NistGuidelineSerializationIT {
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,
                                 CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA)));
         checks.add(
-                new CipherSuiteGuidelineCheck(
-                        "Only listed cipher suites shall be used for TLS 1.3.",
+                new RecommendedCipherSuiteGuidelineCheck(
+                        "Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.",
                         RequirementLevel.MUST,
-                        Arrays.asList(ProtocolVersion.TLS13),
+                        List.of(ProtocolVersion.TLS13),
                         Arrays.asList(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
@@ -233,7 +230,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers shall not be vulnerable to padding oracle.",
-                        RequirementLevel.MUST,
+                        RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.VULNERABLE_TO_PADDING_ORACLE,
                         TestResults.FALSE));
         checks.add(
@@ -265,7 +262,7 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The server shall be able to process and respond to the Server Name Indication extension.",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
@@ -299,7 +296,7 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.IGNORES_OFFERED_SIG_HASH_ALGOS,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Certificate Status Request extension shall be supported.",
@@ -328,8 +325,8 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV,
                         TestResults.TRUE));
         checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422. Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.",
+                new RequiredExtensionGuidelineCheck(
+                        "Servers that support either ephemeral ECDH cipher suites or TLS 1.3 shall support this extension.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
                                 Arrays.asList(
@@ -339,6 +336,17 @@ public class NistGuidelineSerializationIT {
                                         new GuidelineCheckCondition(
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
                                                 TestResults.TRUE))),
+                        ExtensionType.ELLIPTIC_CURVES));
+        checks.add(
+                new RequiredNamedGroupsGuidelineCheck(
+                        "When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422.",
+                        RequirementLevel.MUST,
+                        List.of(NamedGroup.SECP256R1, NamedGroup.SECP384R1),
+                        true));
+        checks.add(
+                new RecommendedNamedGroupsGuidelineCheck(
+                        "Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.",
+                        RequirementLevel.MUST,
                         Arrays.asList(
                                 NamedGroup.SECP224R1,
                                 NamedGroup.SECP256R1,
@@ -356,19 +364,16 @@ public class NistGuidelineSerializationIT {
                                 NamedGroup.FFDHE3072,
                                 NamedGroup.FFDHE4096,
                                 NamedGroup.FFDHE6144,
-                                NamedGroup.FFDHE8192),
-                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.SECP384R1),
-                        false,
-                        2));
+                                NamedGroup.FFDHE8192)));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The Key Share extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.KEY_SHARE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The EC Point Format extension shall be supported if the server supports EC cipher suites.",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.and(
@@ -464,14 +469,14 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
                         TestResults.TRUE));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "The Supported Versions extension shall be supported if the server supports TLS 1.3.",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         ExtensionType.SUPPORTED_VERSIONS));
         checks.add(
-                new ExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Servers that support TLS 1.3 may support the Cookie extension.", // Earlier
                         // in the document it is stated that the "Cookie extension **shall** be
                         // supported if the server supports TLS 1.3".
@@ -491,7 +496,7 @@ public class NistGuidelineSerializationIT {
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers should not process early data received in the ClientHello message.",
-                        RequirementLevel.SHOULD,
+                        RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
@@ -512,7 +517,7 @@ public class NistGuidelineSerializationIT {
                                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
                                                 TestResults.TRUE))),
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "If the server does allow 0-RTT data, then the server should use the single-use ticket mechanism.",
@@ -526,7 +531,7 @@ public class NistGuidelineSerializationIT {
                         "The Raw Public Key extension shall not be supported.",
                         RequirementLevel.MUST_NOT,
                         TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES,
-                        TestResults.TRUE));
+                        TestResults.FALSE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "The null compression method shall be enabled, and all other compression methods shall be disabled.",

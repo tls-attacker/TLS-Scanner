@@ -12,24 +12,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedNamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class ExtensionGuidelineCheckTest {
+public class RecommendedNamedGroupsGuidelineCheckTest {
 
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
-                Collections.singletonList(ExtensionType.COOKIE));
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
 
-        ExtensionGuidelineCheck check =
-                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        RecommendedNamedGroupsGuidelineCheck check =
+                new RecommendedNamedGroupsGuidelineCheck(
+                        null, null, Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
@@ -37,11 +39,18 @@ public class ExtensionGuidelineCheckTest {
     @Test
     public void testNegative() {
         ServerReport report = new ServerReport("test", 443);
-        report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Collections.emptyList());
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
+                Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1, NamedGroup.SECP256R1));
 
-        ExtensionGuidelineCheck check =
-                new ExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        RecommendedNamedGroupsGuidelineCheck check =
+                new RecommendedNamedGroupsGuidelineCheck(
+                        null, null, Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
         GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
+
+        check = new RecommendedNamedGroupsGuidelineCheck(null, null, List.of(NamedGroup.SECP160K1));
+        result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
 }

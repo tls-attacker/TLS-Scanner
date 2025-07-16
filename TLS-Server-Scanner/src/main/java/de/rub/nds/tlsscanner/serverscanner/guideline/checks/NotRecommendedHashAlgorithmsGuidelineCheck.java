@@ -15,7 +15,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
-import de.rub.nds.tlsscanner.serverscanner.guideline.results.HashAlgorithmsGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.NotRecommendedHashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -27,56 +27,61 @@ import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class HashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
+public class NotRecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private List<HashAlgorithm> recommendedAlgorithms;
+    private List<HashAlgorithm> notRecommendedAlgorithms;
 
-    private HashAlgorithmsGuidelineCheck() {
+    private NotRecommendedHashAlgorithmsGuidelineCheck() {
         super(null, null);
     }
 
-    public HashAlgorithmsGuidelineCheck(
+    public NotRecommendedHashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
-            List<HashAlgorithm> recommendedAlgorithms) {
+            List<HashAlgorithm> notRecommendedAlgorithms) {
         super(name, requirementLevel);
-        this.recommendedAlgorithms = recommendedAlgorithms;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
-    public HashAlgorithmsGuidelineCheck(
+    public NotRecommendedHashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            List<HashAlgorithm> recommendedAlgorithms) {
+            List<HashAlgorithm> notRecommendedAlgorithms) {
         super(name, requirementLevel, condition);
-        this.recommendedAlgorithms = recommendedAlgorithms;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<SignatureAndHashAlgorithm> algorithms =
+        List<SignatureAndHashAlgorithm> supportedAlgorithms =
                 report.getSupportedSignatureAndHashAlgorithms();
-        if (algorithms != null) {
-            Set<HashAlgorithm> nonRecommended = new HashSet<>();
-            for (SignatureAndHashAlgorithm alg : algorithms) {
-                if (!this.recommendedAlgorithms.contains(alg.getHashAlgorithm())) {
-                    nonRecommended.add(alg.getHashAlgorithm());
+        if (supportedAlgorithms != null) {
+            Set<HashAlgorithm> nonRecommendedAndSupportedAlgorithms = new HashSet<>();
+            for (SignatureAndHashAlgorithm alg : supportedAlgorithms) {
+                if (this.notRecommendedAlgorithms.contains(alg.getHashAlgorithm())) {
+                    nonRecommendedAndSupportedAlgorithms.add(alg.getHashAlgorithm());
                 }
             }
-            return new HashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+            return new NotRecommendedHashAlgorithmsGuidelineCheckResult(
+                    getName(),
+                    GuidelineAdherence.of(nonRecommendedAndSupportedAlgorithms.isEmpty()),
+                    nonRecommendedAndSupportedAlgorithms);
         } else {
-            return new HashAlgorithmsGuidelineCheckResult(
+            return new NotRecommendedHashAlgorithmsGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
         }
     }
 
     @Override
     public String toString() {
-        return "HashAlgorithms_" + getRequirementLevel() + "_" + recommendedAlgorithms;
+        return "NotRecommendedHashAlgorithms_"
+                + getRequirementLevel()
+                + "_"
+                + notRecommendedAlgorithms;
     }
 
-    public List<HashAlgorithm> getRecommendedAlgorithms() {
-        return recommendedAlgorithms;
+    public List<HashAlgorithm> getNotRecommendedAlgorithms() {
+        return notRecommendedAlgorithms;
     }
 }

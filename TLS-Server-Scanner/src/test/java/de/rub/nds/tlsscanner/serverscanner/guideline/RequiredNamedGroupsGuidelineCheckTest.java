@@ -14,30 +14,37 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RequiredNamedGroupsGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class NamedGroupsGuidelineCheckTest {
+public class RequiredNamedGroupsGuidelineCheckTest {
 
     @Test
     public void testPositive() {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
-                Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
+                Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP256K1, NamedGroup.SECP160R2));
 
-        NamedGroupsGuidelineCheck check =
-                new NamedGroupsGuidelineCheck(
+        RequiredNamedGroupsGuidelineCheck check =
+                new RequiredNamedGroupsGuidelineCheck(
                         null,
                         null,
                         Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1),
-                        Collections.singletonList(NamedGroup.SECP160K1),
-                        false,
-                        1);
+                        true);
         GuidelineCheckResult result = check.evaluate(report);
+        assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
+
+        check =
+                new RequiredNamedGroupsGuidelineCheck(
+                        null,
+                        null,
+                        Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP256K1),
+                        false);
+        result = check.evaluate(report);
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
 
@@ -48,25 +55,15 @@ public class NamedGroupsGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
                 Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1));
 
-        NamedGroupsGuidelineCheck check =
-                new NamedGroupsGuidelineCheck(
-                        null,
-                        null,
-                        Arrays.asList(NamedGroup.SECP160K1, NamedGroup.SECP160R1),
-                        Collections.singletonList(NamedGroup.SECP256R1),
-                        false,
-                        1);
+        RequiredNamedGroupsGuidelineCheck check =
+                new RequiredNamedGroupsGuidelineCheck(
+                        null, null, List.of(NamedGroup.SECP256R1), true);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
 
         check =
-                new NamedGroupsGuidelineCheck(
-                        null,
-                        null,
-                        Collections.singletonList(NamedGroup.SECP160R1),
-                        Collections.singletonList(NamedGroup.SECP160K1),
-                        false,
-                        1);
+                new RequiredNamedGroupsGuidelineCheck(
+                        null, null, List.of(NamedGroup.SECP160K1, NamedGroup.SECP256R1), false);
         result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }

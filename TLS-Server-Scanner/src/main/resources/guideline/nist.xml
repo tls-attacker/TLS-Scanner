@@ -14,26 +14,26 @@
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Support of TLS 1.1 is discouraged.</name>
+        <name>The use of TLS versions 1.1 and 1.0 is generally discouraged.</name>
         <requirementLevel>MAY</requirementLevel>
         <property>SUPPORTS_TLS_1_1</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Support of TLS 1.0 is discouraged.</name>
+        <name>The use of TLS versions 1.1 and 1.0 is generally discouraged.</name>
         <requirementLevel>MAY</requirementLevel>
         <property>SUPPORTS_TLS_1_0</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Servers shall not support SSL 3.0.</name>
-        <requirementLevel>MUST</requirementLevel>
+        <name>These servers shall not allow the use of SSL 2.0 or SSL 3.0.</name>
+        <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_SSL_3</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
-        <name>Servers shall not support SSL 2.0.</name>
-        <requirementLevel>MUST</requirementLevel>
+        <name>These servers shall not allow the use of SSL 2.0 or SSL 3.0.</name>
+        <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_SSL_2</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
@@ -56,12 +56,6 @@
         <recommendedNamedParameters>SECP256R1</recommendedNamedParameters>
         <recommendedNamedParameters>SECP384R1</recommendedNamedParameters>
     </certificateCurveGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>Certificates shall be issued by a CA that publishes revocation information in OCSP responses.</name>
-        <requirementLevel>MUST</requirementLevel>
-        <property>SUPPORTS_OCSP</property>
-        <result>TRUE</result>
-    </analyzedPropertyGuidelineCheck>
     <certificateVersionGuidelineCheck>
         <name>Server certificate shall be an X.509 version 3 certificate.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -115,22 +109,12 @@
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
     </extendedKeyUsageCertificateCheck>
-    <cipherSuiteGuidelineCheck>
-        <name>Only listed cipher suites shall be used.</name>
+    <recommendedCipherSuiteGuidelineCheck>
+        <name>Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used. Section 3.3.1:</name>
         <requirementLevel>MUST</requirementLevel>
         <versions>TLS10</versions>
         <versions>TLS11</versions>
         <versions>TLS12</versions>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CCM</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CCM_8</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CCM_8</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_CBC_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
-        <recommendedCipherSuites>TLS_RSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDHE_ECDSA_WITH_AES_128_CCM</recommendedCipherSuites>
@@ -187,19 +171,19 @@
         <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_128_CBC_SHA</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_ECDH_RSA_WITH_AES_256_CBC_SHA</recommendedCipherSuites>
-    </cipherSuiteGuidelineCheck>
-    <cipherSuiteGuidelineCheck>
-        <name>Only listed cipher suites shall be used for TLS 1.3.</name>
+    </recommendedCipherSuiteGuidelineCheck>
+    <recommendedCipherSuiteGuidelineCheck>
+        <name>Cipher suites that do not appear in this section [3.3.1], Appendix C, or Appendix D shall not be used.</name>
         <requirementLevel>MUST</requirementLevel>
         <versions>TLS13</versions>
         <recommendedCipherSuites>TLS_AES_128_GCM_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_128_CCM_SHA256</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_128_CCM_8_SHA256</recommendedCipherSuites>
-    </cipherSuiteGuidelineCheck>
+    </recommendedCipherSuiteGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Servers shall not be vulnerable to padding oracle.</name>
-        <requirementLevel>MUST</requirementLevel>
+        <requirementLevel>MUST_NOT</requirementLevel>
         <property>VULNERABLE_TO_PADDING_ORACLE</property>
         <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
@@ -237,11 +221,11 @@
         <property>SUPPORTS_SECURE_RENEGOTIATION_EXTENSION</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <requiredExtensionGuidelineCheck>
         <name>The server shall be able to process and respond to the Server Name Indication extension.</name>
         <requirementLevel>MUST</requirementLevel>
-        <requiredExtension>SERVER_NAME_INDICATION</requiredExtension>
-    </extensionGuidelineCheck>
+        <requiredExtensions>SERVER_NAME_INDICATION</requiredExtensions>
+    </requiredExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Extended Master Secret extension shall be supported.</name>
         <requirementLevel>MUST</requirementLevel>
@@ -280,7 +264,7 @@
             </or>
         </condition>
         <property>IGNORES_OFFERED_SIG_HASH_ALGOS</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Certificate Status Request extension shall be supported.</name>
@@ -314,8 +298,8 @@
         <property>SUPPORTS_TLS_FALLBACK_SCSV</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <namedGroupsGuidelineCheck>
-        <name>When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422. Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.</name>
+    <requiredExtensionGuidelineCheck>
+        <name>Servers that support either ephemeral ECDH cipher suites or TLS 1.3 shall support this extension.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <or>
@@ -329,6 +313,18 @@
                 </condition>
             </or>
         </condition>
+        <requiredExtensions>ELLIPTIC_CURVES</requiredExtensions>
+    </requiredExtensionGuidelineCheck>
+    <requiredNamedGroupsGuidelineCheck>
+        <name>When elliptic curve cipher suites are configured, at least one of the NIST-approved curves, P-256 (secp256r1) and P-384 (secp384r1), shall be supported as described in RFC 8422.</name>
+        <requirementLevel>MUST</requirementLevel>
+        <requiredGroups>SECP256R1</requiredGroups>
+        <requiredGroups>SECP384R1</requiredGroups>
+        <onlyOneIsRequired>true</onlyOneIsRequired>
+    </requiredNamedGroupsGuidelineCheck>
+    <recommendedNamedGroupsGuidelineCheck>
+        <name>Additional NIST-recommended elliptic curves are listed in SP 800-56A, Appendix D. Finite field groups that are approved for TLS in SP 800-56A, Appendix D may be supported.</name>
+        <requirementLevel>MUST</requirementLevel>
         <recommendedGroups>SECP224R1</recommendedGroups>
         <recommendedGroups>SECP256R1</recommendedGroups>
         <recommendedGroups>SECP384R1</recommendedGroups>
@@ -346,21 +342,17 @@
         <recommendedGroups>FFDHE4096</recommendedGroups>
         <recommendedGroups>FFDHE6144</recommendedGroups>
         <recommendedGroups>FFDHE8192</recommendedGroups>
-        <requiredGroups>SECP256R1</requiredGroups>
-        <requiredGroups>SECP384R1</requiredGroups>
-        <tls13>false</tls13>
-        <minGroupCount>2</minGroupCount>
-    </namedGroupsGuidelineCheck>
-    <extensionGuidelineCheck>
+    </recommendedNamedGroupsGuidelineCheck>
+    <requiredExtensionGuidelineCheck>
         <name>The Key Share extension shall be supported if the server supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>KEY_SHARE</requiredExtension>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+        <requiredExtensions>KEY_SHARE</requiredExtensions>
+    </requiredExtensionGuidelineCheck>
+    <requiredExtensionGuidelineCheck>
         <name>The EC Point Format extension shall be supported if the server supports EC cipher suites.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
@@ -387,8 +379,8 @@
                 </condition>
             </and>
         </condition>
-        <requiredExtension>EC_POINT_FORMATS</requiredExtension>
-    </extensionGuidelineCheck>
+        <requiredExtensions>EC_POINT_FORMATS</requiredExtensions>
+    </requiredExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The Multiple Certificate Status extension should be supported if status information for the server's certificate is available via OCSP and the extension is supported by the server implementation.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -475,24 +467,24 @@
         <property>SUPPORTS_TLS13_PSK_EXCHANGE_MODES</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <extensionGuidelineCheck>
+    <requiredExtensionGuidelineCheck>
         <name>The Supported Versions extension shall be supported if the server supports TLS 1.3.</name>
         <requirementLevel>MUST</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>SUPPORTED_VERSIONS</requiredExtension>
-    </extensionGuidelineCheck>
-    <extensionGuidelineCheck>
+        <requiredExtensions>SUPPORTED_VERSIONS</requiredExtensions>
+    </requiredExtensionGuidelineCheck>
+    <requiredExtensionGuidelineCheck>
         <name>Servers that support TLS 1.3 may support the Cookie extension.</name>
         <requirementLevel>MAY</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
         </condition>
-        <requiredExtension>COOKIE</requiredExtension>
-    </extensionGuidelineCheck>
+        <requiredExtensions>COOKIE</requiredExtensions>
+    </requiredExtensionGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The Signed Certificate Timestamps extension should be supported if the server's certificate was issued by a publicly trusted CA and the certificate does not include a Signed Certificate Timestamps List extension.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -505,7 +497,7 @@
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Servers should not process early data received in the ClientHello message.</name>
-        <requirementLevel>SHOULD</requirementLevel>
+        <requirementLevel>SHOULD_NOT</requirementLevel>
         <condition>
             <property>SUPPORTS_TLS_1_3</property>
             <result>TRUE</result>
@@ -533,7 +525,7 @@
             </or>
         </condition>
         <property>SUPPORTS_CLIENT_CERTIFICATE_URL</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>If the server does allow 0-RTT data, then the server should use the single-use ticket mechanism.</name>
@@ -549,7 +541,7 @@
         <name>The Raw Public Key extension shall not be supported.</name>
         <requirementLevel>MUST_NOT</requirementLevel>
         <property>SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES</property>
-        <result>TRUE</result>
+        <result>FALSE</result>
     </analyzedPropertyGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>The null compression method shall be enabled, and all other compression methods shall be disabled.</name>

@@ -61,10 +61,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -336,26 +334,14 @@ public final class TlsServerScanner
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
-        GuidelineIO guidelineIO;
+        GuidelineIO<ServerReport> guidelineIO;
         try {
-            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
+            guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
         }
-        List<Guideline<ServerReport>> guidelines = new ArrayList<>();
-        for (String guidelineName : guidelineFiles) {
-            try {
-                InputStream guideLineStream =
-                        TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
-            } catch (JAXBException | XMLStreamException ex) {
-                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
-                return null;
-            }
-        }
-        return guidelines;
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "guideline");
     }
 
     /**

@@ -418,6 +418,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 
         influencers.add(
                 new RatingInfluencer(
@@ -1055,6 +1060,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 50)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =

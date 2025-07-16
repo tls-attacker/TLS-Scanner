@@ -15,23 +15,23 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 import java.util.Set;
 
-public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
+public class RecommendedHashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
 
-    private final Set<HashAlgorithm> notRecommendedAlgorithms;
+    private final Set<HashAlgorithm> supportedButNotRecommendedAlgorithms;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    private HashAlgorithmsGuidelineCheckResult() {
+    private RecommendedHashAlgorithmsGuidelineCheckResult() {
         super(null, null);
-        this.notRecommendedAlgorithms = null;
+        this.supportedButNotRecommendedAlgorithms = null;
     }
 
-    public HashAlgorithmsGuidelineCheckResult(
+    public RecommendedHashAlgorithmsGuidelineCheckResult(
             String checkName,
             GuidelineAdherence adherence,
-            Set<HashAlgorithm> notRecommendedAlgorithms) {
+            Set<HashAlgorithm> supportedButNotRecommendedAlgorithms) {
         super(checkName, adherence);
-        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
+        this.supportedButNotRecommendedAlgorithms = supportedButNotRecommendedAlgorithms;
     }
 
     @Override
@@ -39,15 +39,15 @@ public class HashAlgorithmsGuidelineCheckResult extends GuidelineCheckResult {
         if (Objects.equals(GuidelineAdherence.CHECK_FAILED, getAdherence())) {
             return "Missing Information";
         }
-        if (notRecommendedAlgorithms.isEmpty()) {
+        if (supportedButNotRecommendedAlgorithms.isEmpty()) {
             return "Only listed Hash Algorithms are supported.";
         } else {
-            return "The following Hash Algorithms were supported but not recommended:\n"
-                    + Joiner.on('\n').join(notRecommendedAlgorithms);
+            return "The following Hash Algorithms were supported but are not explicitly recommended by the guideline:\n"
+                    + Joiner.on('\n').join(supportedButNotRecommendedAlgorithms);
         }
     }
 
-    public Set<HashAlgorithm> getNotRecommendedAlgorithms() {
-        return notRecommendedAlgorithms;
+    public Set<HashAlgorithm> getSupportedButNotRecommendedAlgorithms() {
+        return supportedButNotRecommendedAlgorithms;
     }
 }

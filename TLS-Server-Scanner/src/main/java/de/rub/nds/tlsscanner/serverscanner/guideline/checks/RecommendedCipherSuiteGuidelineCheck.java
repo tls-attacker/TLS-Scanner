@@ -16,7 +16,7 @@ import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
-import de.rub.nds.tlsscanner.serverscanner.guideline.results.CipherSuiteGuidelineCheckResult;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.RecommendedCipherSuiteGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -28,18 +28,18 @@ import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
+public class RecommendedCipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
 
     /** The protocol versions this check applies to. */
     private List<ProtocolVersion> versions;
 
     private List<CipherSuite> recommendedCipherSuites;
 
-    private CipherSuiteGuidelineCheck() {
+    private RecommendedCipherSuiteGuidelineCheck() {
         super(null, null);
     }
 
-    public CipherSuiteGuidelineCheck(
+    public RecommendedCipherSuiteGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             List<ProtocolVersion> versions,
@@ -49,7 +49,7 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
         this.recommendedCipherSuites = recommendedCipherSuites;
     }
 
-    public CipherSuiteGuidelineCheck(
+    public RecommendedCipherSuiteGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
@@ -61,32 +61,38 @@ public class CipherSuiteGuidelineCheck extends GuidelineCheck<ServerReport> {
     }
 
     @Override
+    public boolean passesCondition(ServerReport report) {
+        return this.versions.stream().anyMatch(report.getSupportedProtocolVersions()::contains)
+                && super.passesCondition(report);
+    }
+
+    @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
-        List<CipherSuite> nonRecommended = this.nonRecommendedSuites(report);
-        return new CipherSuiteGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+        Set<CipherSuite> supportedCipherSuites = new HashSet<>();
+        List<CipherSuite> notRecommendedCipherSuites = null;
+        for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
+            if (versions.contains(pair.getVersion())) {
+                supportedCipherSuites.addAll(pair.getCipherSuiteList());
+            }
+        }
+        notRecommendedCipherSuites =
+                supportedCipherSuites.stream()
+                        .filter(suite -> !recommendedCipherSuites.contains(suite))
+                        .collect(Collectors.toList());
+        return new RecommendedCipherSuiteGuidelineCheckResult(
+                getName(),
+                GuidelineAdherence.of(notRecommendedCipherSuites.isEmpty()),
+                notRecommendedCipherSuites);
     }
 
     @Override
     public String toString() {
-        return "CipherSuite_"
+        return "RecommendedCipherSuite_"
                 + getRequirementLevel()
                 + "_"
                 + versions
                 + "_"
                 + recommendedCipherSuites;
-    }
-
-    private List<CipherSuite> nonRecommendedSuites(ServerReport report) {
-        Set<CipherSuite> supported = new HashSet<>();
-        for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
-            if (versions.contains(pair.getVersion())) {
-                supported.addAll(pair.getCipherSuiteList());
-            }
-        }
-        return supported.stream()
-                .filter(suite -> !recommendedCipherSuites.contains(suite))
-                .collect(Collectors.toList());
     }
 
     public List<ProtocolVersion> getVersions() {

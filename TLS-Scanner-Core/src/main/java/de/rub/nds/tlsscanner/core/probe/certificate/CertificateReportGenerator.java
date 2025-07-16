@@ -73,6 +73,7 @@ public class CertificateReportGenerator {
         setSha256Hash(report, cert);
         setExtendedKeyUsage(report, cert);
         setVulnerableRoca(report, cert);
+        setVersion(report, cert);
 
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
         if (anchorManger.isInitialized()) {
@@ -87,6 +88,10 @@ public class CertificateReportGenerator {
             report.setSelfSigned(false);
         }
         return report;
+    }
+
+    private static void setVersion(CertificateReport report, X509Certificate cert) {
+        report.setVersion(cert.getX509Version());
     }
 
     private static void setPublicKeyType(CertificateReport report, X509Certificate cert) {

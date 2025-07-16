@@ -15,15 +15,15 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import org.junit.jupiter.api.Tag;
 
 @Tag(TestCategories.INTEGRATION_TEST)
-public class CipherSuiteOrderProbeIT extends AbstractProbeIT {
+public class RawPublicKeyProbeIT extends AbstractProbeIT {
 
-    public CipherSuiteOrderProbeIT() {
-        super(TlsImplementationType.OPENSSL, "1.1.1f", "-serverpref");
+    public RawPublicKeyProbeIT() {
+        super(TlsImplementationType.OPENSSL, "1.1.1f", "");
     }
 
     @Override
     protected TlsServerProbe getProbe() {
-        return new CipherSuiteOrderProbe(configSelector, parallelExecutor);
+        return new ExtensionProbe(configSelector, parallelExecutor);
     }
 
     @Override
@@ -31,8 +31,8 @@ public class CipherSuiteOrderProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return verifyProperty(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, TestResults.TRUE)
-                && verifyProperty(
-                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325, TestResults.TRUE);
+        return verifyProperty(
+                TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES,
+                TestResults.NOT_TESTED_YET);
     }
 }

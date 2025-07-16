@@ -49,7 +49,8 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                         ExtensionType.RENEGOTIATION_INFO,
                         ExtensionType.ELLIPTIC_CURVES,
                         ExtensionType.KEY_SHARE,
-                        ExtensionType.ENCRYPT_THEN_MAC);
+                        ExtensionType.ENCRYPT_THEN_MAC,
+                        ExtensionType.SERVER_NAME_INDICATION);
         List<ExtensionType> supportedExtensions = report.getSupportedExtensions();
         return expectedExtensions.size() == supportedExtensions.size()
                 && expectedExtensions.containsAll(
@@ -66,6 +67,8 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, TestResults.FALSE)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
-                        TestResults.FALSE);
+                        TestResults.FALSE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL, TestResults.FALSE);
     }
 }
