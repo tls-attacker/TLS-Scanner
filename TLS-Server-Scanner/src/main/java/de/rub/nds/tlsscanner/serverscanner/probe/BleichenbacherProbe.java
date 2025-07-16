@@ -14,7 +14,6 @@ import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -75,8 +74,7 @@ public class BleichenbacherProbe extends TlsServerProbe {
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                     for (CipherSuite suite : pair.getCipherSuiteList()) {
-                        if (AlgorithmResolver.getKeyExchangeAlgorithm(suite)
-                                        == KeyExchangeAlgorithm.RSA
+                        if (suite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.RSA
                                 && CipherSuite.getImplemented().contains(suite)) {
                             BleichenbacherScanType recordGeneratorType =
                                     scanDetail.isGreaterEqualTo(ScannerDetail.ALL)

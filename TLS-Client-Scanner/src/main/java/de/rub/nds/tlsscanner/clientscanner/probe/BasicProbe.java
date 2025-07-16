@@ -61,6 +61,7 @@ public class BasicProbe extends TlsClientProbe {
 
     @Override
     protected void executeTest() {
+        LOGGER.info("Waiting for client to connect...");
         Config config = scannerConfig.createConfig();
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
@@ -68,6 +69,7 @@ public class BasicProbe extends TlsClientProbe {
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         State state = new State(config, trace);
         executeState(state);
+        LOGGER.info("Client connected");
         if (state.getWorkflowTrace().executedAsPlanned()) {
             TlsContext traceContext = state.getTlsContext();
             clientAdvertisedCipherSuites = traceContext.getClientSupportedCipherSuites();

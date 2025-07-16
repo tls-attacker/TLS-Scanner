@@ -44,7 +44,7 @@ public class DhValueAfterProbeTest {
         publicKeyContainer.put(PUBLIC_KEY_1);
         probe.analyze(report);
         assertEquals(
-                TestResults.COULD_NOT_TEST,
+                TestResults.CANNOT_BE_TESTED,
                 report.getResult(TlsAnalyzedProperty.REUSES_DH_PUBLICKEY));
     }
 

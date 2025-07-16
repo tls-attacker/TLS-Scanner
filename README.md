@@ -50,14 +50,14 @@ In order to see more details about the Guidelines, use "-reportDetail ALL".
 We provide prebuilt docker images for easy use of the TLS-Server-Scanner.
 
 ```bash
-$ docker run --network host ghcr.io/tls-attacker/tlsscanner -connect localhost:4433
+$ docker run -it --network host ghcr.io/tls-attacker/tlsscanner -connect localhost:4433
 ```
 
 The image is made to be used for server-scanning but also contains the other jar files.
 They can be accessed by altering the entrypoint.
 
 ```bash
-$ docker run --network host --entrypoint "java" ghcr.io/tls-attacker/tlsscanner -jar TLS-Client-Scanner.jar
+$ docker run -it --network host --entrypoint java ghcr.io/tls-attacker/tlsscanner -jar TLS-Client-Scanner.jar
 ```
 
 We also provide you with a Dockerfile, to build the container yourself:

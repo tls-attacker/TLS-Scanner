@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.core.passive;
 
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.StatExtractor;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -30,15 +30,11 @@ public class CbcIvExtractor extends StatExtractor<State, ComparableByteArray> {
             WorkflowTrace trace = state.getWorkflowTrace();
             List<Record> allReceivedRecords = WorkflowTraceResultUtil.getAllReceivedRecords(trace);
             for (Record receivedRecord : allReceivedRecords) {
-                if (receivedRecord instanceof Record) {
-                    if (((Record) receivedRecord).getComputations() != null) {
-                        ModifiableByteArray cbcInitialisationVector =
-                                ((Record) receivedRecord)
-                                        .getComputations()
-                                        .getCbcInitialisationVector();
-                        if (cbcInitialisationVector != null) {
-                            put(new ComparableByteArray(cbcInitialisationVector.getValue()));
-                        }
+                if (receivedRecord.getComputations() != null) {
+                    ModifiableByteArray cbcInitialisationVector =
+                            receivedRecord.getComputations().getCbcInitialisationVector();
+                    if (cbcInitialisationVector != null) {
+                        put(new ComparableByteArray(cbcInitialisationVector.getValue()));
                     }
                 }
             }

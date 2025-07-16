@@ -8,11 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
-import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
@@ -33,7 +29,7 @@ public class NotRecommendedCipherSuiteGuidelineCheck extends GuidelineCheck<Serv
     /** The protocol versions this check applies to. */
     private List<ProtocolVersion> versions;
 
-    private List<CipherSuite> cipherSuitesInQuestion;
+    private List<CipherSuite> notRecommendedCipherSuites;
 
     private NotRecommendedCipherSuiteGuidelineCheck() {
         super(null, null);
@@ -43,10 +39,10 @@ public class NotRecommendedCipherSuiteGuidelineCheck extends GuidelineCheck<Serv
             String name,
             RequirementLevel requirementLevel,
             List<ProtocolVersion> versions,
-            List<CipherSuite> cipherSuitesInQuestion) {
+            List<CipherSuite> notRecommendedCipherSuites) {
         super(name, requirementLevel);
         this.versions = versions;
-        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
+        this.notRecommendedCipherSuites = notRecommendedCipherSuites;
     }
 
     public NotRecommendedCipherSuiteGuidelineCheck(
@@ -54,10 +50,10 @@ public class NotRecommendedCipherSuiteGuidelineCheck extends GuidelineCheck<Serv
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
             List<ProtocolVersion> versions,
-            List<CipherSuite> cipherSuitesInQuestion) {
+            List<CipherSuite> notRecommendedCipherSuites) {
         super(name, requirementLevel, condition);
         this.versions = versions;
-        this.cipherSuitesInQuestion = cipherSuitesInQuestion;
+        this.notRecommendedCipherSuites = notRecommendedCipherSuites;
     }
 
     @Override
@@ -69,50 +65,38 @@ public class NotRecommendedCipherSuiteGuidelineCheck extends GuidelineCheck<Serv
     @Override
     public GuidelineCheckResult evaluate(ServerReport report) {
         Set<CipherSuite> supportedCipherSuites = new HashSet<>();
-        List<CipherSuite> notRecommendedCipherSuites = null;
+        List<CipherSuite> notRecommendedButSupportedCipherSuites = null;
         for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
             if (versions.contains(pair.getVersion())) {
                 supportedCipherSuites.addAll(pair.getCipherSuiteList());
             }
         }
 
-        notRecommendedCipherSuites =
+        notRecommendedButSupportedCipherSuites =
                 supportedCipherSuites.stream()
-                        .filter(suite -> cipherSuitesInQuestion.contains(suite))
+                        .filter(suite -> this.notRecommendedCipherSuites.contains(suite))
                         .collect(Collectors.toList());
         return new NotRecommendedCipherSuiteGuidelineCheckResult(
                 getName(),
-                GuidelineAdherence.of(notRecommendedCipherSuites.isEmpty()),
-                notRecommendedCipherSuites);
+                GuidelineAdherence.of(notRecommendedButSupportedCipherSuites.isEmpty()),
+                notRecommendedButSupportedCipherSuites);
     }
 
     @Override
     public String toString() {
-        return "CipherSuite_"
+        return "NotRecommendedCipherSuite_"
                 + getRequirementLevel()
                 + "_"
                 + versions
                 + "_"
-                + cipherSuitesInQuestion;
-    }
-
-    private List<CipherSuite> nonRecommendedSuites(ServerReport report) {
-        Set<CipherSuite> supported = new HashSet<>();
-        for (VersionSuiteListPair pair : report.getVersionSuitePairs()) {
-            if (versions.contains(pair.getVersion())) {
-                supported.addAll(pair.getCipherSuiteList());
-            }
-        }
-        return supported.stream()
-                .filter(suite -> !cipherSuitesInQuestion.contains(suite))
-                .collect(Collectors.toList());
+                + notRecommendedCipherSuites;
     }
 
     public List<ProtocolVersion> getVersions() {
         return versions;
     }
 
-    public List<CipherSuite> getCipherSuitesInQuestion() {
-        return cipherSuitesInQuestion;
+    public List<CipherSuite> getNotRecommendedCipherSuites() {
+        return notRecommendedCipherSuites;
     }
 }

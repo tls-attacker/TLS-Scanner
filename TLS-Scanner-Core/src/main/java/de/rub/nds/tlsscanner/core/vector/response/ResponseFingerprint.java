@@ -8,42 +8,76 @@
  */
 package de.rub.nds.tlsscanner.core.vector.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.*;
+import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.transport.socket.SocketState;
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlElements;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ResponseFingerprint {
-    @XmlElementWrapper @XmlElementRef private List<ProtocolMessage> messageList;
+    @XmlElementWrapper @XmlElementRef @JsonIgnore private List<ProtocolMessage> messageList;
 
     @XmlElementWrapper
     @XmlElements(value = {@XmlElement(type = Record.class, name = "Record")})
+    @JsonIgnore
     private List<Record> recordList;
+
+    private String stringRepresentation;
 
     private SocketState socketState;
 
+    /** Default constructor for ResponseFingerprint. */
     public ResponseFingerprint() {}
 
+    /**
+     * Constructs a ResponseFingerprint with the specified parameters.
+     *
+     * @param messageList List of protocol messages in the response
+     * @param recordList List of records in the response
+     * @param socketState The state of the socket after the response
+     */
     public ResponseFingerprint(
             List<ProtocolMessage> messageList, List<Record> recordList, SocketState socketState) {
         this.messageList = messageList;
         this.recordList = recordList;
         this.socketState = socketState;
+        this.stringRepresentation = toHumanReadable();
     }
 
+    /**
+     * Gets the socket state of this response fingerprint.
+     *
+     * @return The socket state
+     */
     public SocketState getSocketState() {
         return socketState;
     }
 
+    /**
+     * Gets the list of records in this response fingerprint.
+     *
+     * @return The list of records
+     */
     public List<Record> getRecordList() {
         return recordList;
     }
 
+    /**
+     * Gets the list of protocol messages in this response fingerprint.
+     *
+     * @return The list of protocol messages
+     */
     public List<ProtocolMessage> getMessageList() {
         return messageList;
     }
@@ -69,6 +103,11 @@ public class ResponseFingerprint {
                 + ']';
     }
 
+    /**
+     * Generates a short string representation of this response fingerprint.
+     *
+     * @return A short string representation
+     */
     public String toShortString() {
         StringBuilder messages = new StringBuilder();
         for (ProtocolMessage someMessage : this.messageList) {
@@ -77,15 +116,15 @@ public class ResponseFingerprint {
         return messages.append("|").append(socketState).toString();
     }
 
+    /**
+     * Generates a human-readable string representation of this response fingerprint.
+     *
+     * @return A human-readable string representation
+     */
     public String toHumanReadable() {
         StringBuilder resultString = new StringBuilder();
         for (ProtocolMessage msg : messageList) {
-            if (!(msg instanceof ProtocolMessage)) {
-                resultString.append("{").append(msg.getClass().getName()).append("} ");
-                continue;
-            }
-
-            ProtocolMessage message = (ProtocolMessage) msg;
+            ProtocolMessage message = msg;
 
             switch (message.getProtocolMessageType()) {
                 case ALERT:
@@ -137,11 +176,7 @@ public class ResponseFingerprint {
         if (recordList != null && recordList.size() > 0) {
             resultString.append(" [");
             for (Record record : recordList) {
-                if (record instanceof Record) {
-                    resultString.append("R(" + ((Record) record).getLength().getValue() + "),");
-                } else {
-                    resultString.append("B(" + ((Record) record).getLength().getValue() + "),");
-                }
+                resultString.append("R(" + record.getLength().getValue() + "),");
             }
             // remove last commas
             resultString.deleteCharAt(resultString.length() - 1);
@@ -203,10 +238,11 @@ public class ResponseFingerprint {
     }
 
     /**
-     * //TODO, this does not check record layer compatibility
+     * Checks if this response fingerprint is compatible with another fingerprint. TODO: This does
+     * not check record layer compatibility.
      *
-     * @param fingerprint
-     * @return
+     * @param fingerprint The fingerprint to compare with
+     * @return true if the fingerprints are compatible, false otherwise
      */
     public boolean areCompatible(ResponseFingerprint fingerprint) {
         if (socketState != SocketState.TIMEOUT
@@ -245,5 +281,14 @@ public class ResponseFingerprint {
         }
         // nothing more to check?
         return true;
+    }
+
+    /**
+     * Gets the string representation of this response fingerprint.
+     *
+     * @return The string representation
+     */
+    public String getStringRepresentation() {
+        return stringRepresentation;
     }
 }

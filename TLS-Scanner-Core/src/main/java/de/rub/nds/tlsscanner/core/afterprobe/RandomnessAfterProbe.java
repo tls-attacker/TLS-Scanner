@@ -8,19 +8,16 @@
  */
 package de.rub.nds.tlsscanner.core.afterprobe;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
+import de.rub.nds.modifiablevariable.util.DataConverter;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -29,6 +26,13 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Abstract AfterProbe implementation that analyzes the randomness quality of various TLS random
+ * values including server randoms, session IDs, cookies, and CBC IVs. Performs statistical tests to
+ * assess entropy and detects patterns like Unix timestamp usage.
+ *
+ * @param <ReportT> the type of TLS scan report this probe operates on
+ */
 public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
         extends AfterProbe<ReportT> {
 
@@ -36,34 +40,35 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
 
     // TLS 1.3 specific message requesting to send a new ClientHello
     private static final byte[] HELLO_RETRY_REQUEST_CONST =
-            ArrayConverter.hexStringToByteArray(
+            DataConverter.hexStringToByteArray(
                     "CF21AD74E59A6111BE1D8C021E65B891C2A211167ABB8C5E079E09E2C8A8339C");
 
     // TLS 1.3 to TLS 1.2 Downgrade prevention
     private static final byte[] TLS_1_3_TO_TLS_1_2_DOWNGRADE_CONST =
-            ArrayConverter.hexStringToByteArray("444F574E47524401");
+            DataConverter.hexStringToByteArray("444F574E47524401");
 
     // TLS 1.3 to TLS 1.1 or lower Downgrade prevention
     private static final byte[] TLS_1_3_TO_TLS_1_1_DOWNGRADE_CONST =
-            ArrayConverter.hexStringToByteArray("444F574E47524400");
+            DataConverter.hexStringToByteArray("444F574E47524400");
 
     // Standard value for cryptographic applications (see NIST SP 800-22
     // Document)
-    private final double MINIMUM_P_VALUE = 0.01;
-    private final int MONOBIT_TEST_BLOCK_SIZE = 1;
-    private final int FREQUENCY_TEST_BLOCK_SIZE = 128;
-    private final int LONGEST_RUN_BLOCK_SIZE = 8;
-    private final int TEMPLATE_TEST_BLOCK_SIZE = 9;
-    private final int ENTROPY_TEST_BLOCK_SIZE = 10;
+    private static final double MINIMUM_P_VALUE = 0.01;
+    private static final int MONOBIT_TEST_BLOCK_SIZE = 1;
+    private static final int FREQUENCY_TEST_BLOCK_SIZE = 128;
+    private static final int LONGEST_RUN_BLOCK_SIZE = 8;
+    private static final int TEMPLATE_TEST_BLOCK_SIZE = 9;
+    private static final int ENTROPY_TEST_BLOCK_SIZE = 10;
 
     // How much the time is allowed to deviate between two handshakes when
     // viewed using UNIX time prefix
-    private final int UNIX_TIME_ALLOWED_DEVIATION = 31556926; // One year
+    private static final int UNIX_TIME_ALLOWED_DEVIATION = 31556926; // One year
 
     /**
      * Checks if the Host utilities Unix time or similar counters for Randoms.
      *
-     * @return TRUE if the all timestamps are within one year of now
+     * @param randomContainer the container with extracted random values to check
+     * @return TRUE if all timestamps are within one year of now, FALSE otherwise
      */
     public boolean checkForUnixTime(ExtractedValueContainer<ComparableByteArray> randomContainer) {
         Integer serverUnixTime = null;
@@ -72,7 +77,7 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
             if (serverRandom != null) {
                 byte[] unixTimeStamp = new byte[4];
                 System.arraycopy(serverRandom, 0, unixTimeStamp, 0, HandshakeByteLength.UNIX_TIME);
-                serverUnixTime = ArrayConverter.bytesToInt(unixTimeStamp);
+                serverUnixTime = DataConverter.bytesToInt(unixTimeStamp);
                 if (serverUnixTime > System.currentTimeMillis() / 1000 + UNIX_TIME_ALLOWED_DEVIATION
                         || serverUnixTime
                                 < System.currentTimeMillis() / 1000 - UNIX_TIME_ALLOWED_DEVIATION) {
@@ -83,41 +88,25 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
         return true;
     }
 
+    /**
+     * Analyzes various random values extracted from TLS handshakes. Subclasses should implement
+     * this method to analyze the specific types of random values relevant to their context (client
+     * or server).
+     *
+     * @param report the TLS scan report containing extracted random value data
+     */
     @Override
-    public void analyze(ReportT report) {
+    public abstract void analyze(ReportT report);
 
-        ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.COOKIE, ComparableByteArray.class);
-        ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.RANDOM, ComparableByteArray.class);
-        ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.SESSION_ID, ComparableByteArray.class);
-        ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.CBC_IV, ComparableByteArray.class);
-        boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
-
-        List<ComparableByteArray> extractedCookieList =
-                cookieExtractedValueContainer.getExtractedValueList();
-        List<ComparableByteArray> extractedRandomList =
-                filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
-        List<ComparableByteArray> extractedIvList =
-                cbcIvExtractedValueContainer.getExtractedValueList();
-        List<ComparableByteArray> extractedSessionIdList =
-                sessionIdExtractedValueContainer.getExtractedValueList();
-
-        List<EntropyReport> entropyReport = new LinkedList<>();
-        entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
-        entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
-        entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
-        entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
-        report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
-    }
-
+    /**
+     * Creates an entropy report for a given list of random byte arrays by performing various
+     * statistical tests including frequency tests, runs tests, discrete Fourier tests, and
+     * approximate entropy tests.
+     *
+     * @param byteArrayList the list of random byte arrays to analyze
+     * @param type the type of random value being analyzed (RANDOM, SESSION_ID, COOKIE, or CBC_IV)
+     * @return an EntropyReport containing the results of all statistical tests
+     */
     public EntropyReport createEntropyReport(
             List<ComparableByteArray> byteArrayList, RandomType type) {
         byte[] bytesToAnalyze = convertToSingleByteArray(byteArrayList);
@@ -160,17 +149,22 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
     }
 
     private byte[] convertToSingleByteArray(List<ComparableByteArray> byteArrayList) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        SilentByteArrayOutputStream outputStream = new SilentByteArrayOutputStream();
         for (ComparableByteArray byteArray : byteArrayList) {
-            try {
-                outputStream.write(byteArray.getArray());
-            } catch (IOException ex) {
-                LOGGER.error("Could not write byteArray to outputStream");
-            }
+            outputStream.write(byteArray.getArray());
         }
         return outputStream.toByteArray();
     }
 
+    /**
+     * Filters random values by removing special values like HELLO_RETRY_REQUEST constants and TLS
+     * downgrade prevention strings. Also removes Unix timestamps from the beginning of randoms if
+     * they are detected to be in use.
+     *
+     * @param extractedValueList the list of extracted random values to filter
+     * @param usesUnixTime whether Unix timestamps are used in the random values
+     * @return a filtered list of random values with special values and timestamps removed
+     */
     public List<ComparableByteArray> filterRandoms(
             List<ComparableByteArray> extractedValueList, boolean usesUnixTime) {
         // Filter unix Time

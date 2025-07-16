@@ -34,6 +34,11 @@ public enum ApplicationProtocol {
     UNKNOWN,
     OTHER;
 
+    /**
+     * Returns the expected stack configuration for this application protocol.
+     *
+     * @return The stack configuration for this protocol, or null if not applicable
+     */
     public StackConfiguration getExpectedStackConfiguration() {
         // TODO do something smarter than this...
         // This does not distinguish between TLS and DTLS
@@ -49,7 +54,9 @@ public enum ApplicationProtocol {
     /**
      * Creates dummy actions which send and receive some application data.
      *
-     * @return Actions which send and receive some application data.
+     * @param config The configuration to use for creating the actions
+     * @return Actions which send and receive some application data
+     * @throws UnsupportedOperationException If the protocol is not supported
      */
     public List<TlsAction> createDummyActions(Config config) {
         // TODO move elsewhere in a more OOP fashion, also keep STARTTLS (ProtocolType) in mind :S

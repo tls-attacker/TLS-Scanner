@@ -9,11 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
-import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.NotRecommendedHashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
@@ -29,7 +25,7 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NotRecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<ServerReport> {
 
-    private List<HashAlgorithm> algorithmsInQuestion;
+    private List<HashAlgorithm> notRecommendedAlgorithms;
 
     private NotRecommendedHashAlgorithmsGuidelineCheck() {
         super(null, null);
@@ -38,18 +34,18 @@ public class NotRecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<S
     public NotRecommendedHashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
-            List<HashAlgorithm> algorithmsInQuestion) {
+            List<HashAlgorithm> notRecommendedAlgorithms) {
         super(name, requirementLevel);
-        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     public NotRecommendedHashAlgorithmsGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
-            List<HashAlgorithm> algorithmsInQuestion) {
+            List<HashAlgorithm> notRecommendedAlgorithms) {
         super(name, requirementLevel, condition);
-        this.algorithmsInQuestion = algorithmsInQuestion;
+        this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 
     @Override
@@ -57,16 +53,16 @@ public class NotRecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<S
         List<SignatureAndHashAlgorithm> supportedAlgorithms =
                 report.getSupportedSignatureAndHashAlgorithms();
         if (supportedAlgorithms != null) {
-            Set<HashAlgorithm> nonRecommendedAlgorithms = new HashSet<>();
+            Set<HashAlgorithm> nonRecommendedAndSupportedAlgorithms = new HashSet<>();
             for (SignatureAndHashAlgorithm alg : supportedAlgorithms) {
-                if (this.algorithmsInQuestion.contains(alg.getHashAlgorithm())) {
-                    nonRecommendedAlgorithms.add(alg.getHashAlgorithm());
+                if (this.notRecommendedAlgorithms.contains(alg.getHashAlgorithm())) {
+                    nonRecommendedAndSupportedAlgorithms.add(alg.getHashAlgorithm());
                 }
             }
             return new NotRecommendedHashAlgorithmsGuidelineCheckResult(
                     getName(),
-                    GuidelineAdherence.of(nonRecommendedAlgorithms.isEmpty()),
-                    nonRecommendedAlgorithms);
+                    GuidelineAdherence.of(nonRecommendedAndSupportedAlgorithms.isEmpty()),
+                    nonRecommendedAndSupportedAlgorithms);
         } else {
             return new NotRecommendedHashAlgorithmsGuidelineCheckResult(
                     getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
@@ -75,10 +71,13 @@ public class NotRecommendedHashAlgorithmsGuidelineCheck extends GuidelineCheck<S
 
     @Override
     public String toString() {
-        return "HashAlgorithms_" + getRequirementLevel() + "_" + algorithmsInQuestion;
+        return "NotRecommendedHashAlgorithms_"
+                + getRequirementLevel()
+                + "_"
+                + notRecommendedAlgorithms;
     }
 
-    public List<HashAlgorithm> getAlgorithmsInQuestion() {
-        return algorithmsInQuestion;
+    public List<HashAlgorithm> getNotRecommendedAlgorithms() {
+        return notRecommendedAlgorithms;
     }
 }

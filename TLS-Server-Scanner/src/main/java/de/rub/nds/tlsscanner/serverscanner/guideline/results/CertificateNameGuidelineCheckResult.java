@@ -16,6 +16,14 @@ public class CertificateNameGuidelineCheckResult extends GuidelineCheckResult {
     String rdn;
     String reason;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private CertificateNameGuidelineCheckResult() {
+        super(null, null);
+        this.rdn = null;
+        this.reason = null;
+    }
+
     public CertificateNameGuidelineCheckResult(
             String checkName, GuidelineAdherence adherence, String rdn, String reason) {
         super(checkName, adherence);

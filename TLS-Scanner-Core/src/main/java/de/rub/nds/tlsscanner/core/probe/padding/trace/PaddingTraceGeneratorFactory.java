@@ -15,6 +15,17 @@ public class PaddingTraceGeneratorFactory {
 
     private PaddingTraceGeneratorFactory() {}
 
+    /**
+     * Creates and returns an appropriate PaddingTraceGenerator instance based on the specified
+     * vector generator type and record generator type.
+     *
+     * @param vectorGeneratorType The type of padding vector generator to use (e.g., CLASSIC,
+     *     FINISHED, HEARTBEAT)
+     * @param recordGeneratorType The type of padding record generator to use (e.g., SHORT, MEDIUM,
+     *     LONG)
+     * @return A configured PaddingTraceGenerator instance
+     * @throws IllegalArgumentException if the vectorGeneratorType is unknown
+     */
     public static PaddingTraceGenerator getPaddingTraceGenerator(
             PaddingVectorGeneratorType vectorGeneratorType,
             PaddingRecordGeneratorType recordGeneratorType) {

@@ -8,13 +8,23 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 
 public class VersionDependentTestResults extends VersionDependentSummarizableResult<TestResults> {
+
+    @JsonProperty("explicitSummary")
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.CLASS,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "@class")
     protected final TestResults explicitSummary;
 
-    public VersionDependentTestResults(TestResults explicitSummary) {
+    public VersionDependentTestResults(
+            @JsonProperty("explicitSummary") TestResults explicitSummary) {
         this.explicitSummary = explicitSummary;
     }
 
@@ -39,6 +49,7 @@ public class VersionDependentTestResults extends VersionDependentSummarizableRes
     }
 
     @Override
+    @JsonIgnore
     public boolean isExplicitSummary() {
         return explicitSummary != null;
     }

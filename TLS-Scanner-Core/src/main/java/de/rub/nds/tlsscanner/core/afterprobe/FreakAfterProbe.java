@@ -15,8 +15,22 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
+/**
+ * AfterProbe implementation that checks for vulnerability to the FREAK (Factoring RSA Export Keys)
+ * attack by detecting support for RSA_EXPORT cipher suites.
+ *
+ * @param <ReportT> the type of TLS scan report this probe operates on
+ */
 public class FreakAfterProbe<ReportT extends TlsScanReport> extends AfterProbe<ReportT> {
 
+    /**
+     * Analyzes the supported cipher suites to determine if the server is vulnerable to the FREAK
+     * attack. A server is vulnerable if it supports any RSA_EXPORT cipher suites. Sets the result
+     * to TRUE if vulnerable, FALSE if not vulnerable, UNCERTAIN if cipher suites cannot be
+     * determined, or ERROR_DURING_TEST if an exception occurs.
+     *
+     * @param report the TLS scan report containing supported cipher suite information
+     */
     @Override
     public void analyze(ReportT report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;

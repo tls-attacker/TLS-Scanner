@@ -20,6 +20,11 @@ public enum BleichenbacherWorkflowType {
         this.description = description;
     }
 
+    /**
+     * Returns the description of this Bleichenbacher workflow type.
+     *
+     * @return A string describing the TLS protocol flow characteristics
+     */
     public String getDescription() {
         return description;
     }

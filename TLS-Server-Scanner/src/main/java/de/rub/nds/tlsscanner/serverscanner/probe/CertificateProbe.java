@@ -12,7 +12,6 @@ import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
@@ -151,8 +150,7 @@ public class CertificateProbe extends TlsServerProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.RSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -163,8 +161,7 @@ public class CertificateProbe extends TlsServerProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.DH_RSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.DH_RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -175,9 +172,8 @@ public class CertificateProbe extends TlsServerProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                    && (AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                                    == KeyExchangeAlgorithm.DHE_RSA
-                            || AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
+                    && (cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.DHE_RSA
+                            || cipherSuite.getKeyExchangeAlgorithm()
                                     == KeyExchangeAlgorithm.ECDHE_RSA)) {
                 cipherSuitesToTest.add(cipherSuite);
             }
@@ -190,8 +186,7 @@ public class CertificateProbe extends TlsServerProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.ECDH_RSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDH_RSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -212,8 +207,7 @@ public class CertificateProbe extends TlsServerProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.ECDH_ECDSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDH_ECDSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -232,8 +226,7 @@ public class CertificateProbe extends TlsServerProbe {
         LinkedList<CipherSuite> cipherSuitesToTest = new LinkedList<>();
         for (CipherSuite cipherSuite : CipherSuite.values()) {
             if (cipherSuite.isRealCipherSuite()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                            == KeyExchangeAlgorithm.ECDHE_ECDSA) {
+                    && cipherSuite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.ECDHE_ECDSA) {
                 cipherSuitesToTest.add(cipherSuite);
             }
         }
@@ -364,7 +357,7 @@ public class CertificateProbe extends TlsServerProbe {
     private List<NamedGroup> getTls13Curves() {
         LinkedList<NamedGroup> curves = new LinkedList<>();
         for (NamedGroup group : NamedGroup.values()) {
-            if (group.isCurve() && group.isTls13()) {
+            if (group.isEcGroup() && group.isTls13()) {
                 curves.add(group);
             }
         }

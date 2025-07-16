@@ -14,6 +14,12 @@ public class CipherSuiteRater {
 
     private CipherSuiteRater() {}
 
+    /**
+     * Evaluates the security grade of a given cipher suite.
+     *
+     * @param suite The cipher suite to evaluate
+     * @return The security grade of the cipher suite (LOW, MEDIUM, GOOD, or NONE)
+     */
     public static CipherSuiteGrade getGrade(CipherSuite suite) {
         if (suite.name().contains("anon")) {
             return CipherSuiteGrade.LOW;

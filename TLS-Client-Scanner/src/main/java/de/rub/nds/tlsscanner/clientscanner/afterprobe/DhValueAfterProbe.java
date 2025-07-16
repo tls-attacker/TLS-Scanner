@@ -31,7 +31,7 @@ public class DhValueAfterProbe extends AfterProbe<ClientReport> {
                     reuse = TestResults.FALSE;
                 }
             } else {
-                reuse = TestResults.COULD_NOT_TEST;
+                reuse = TestResults.CANNOT_BE_TESTED;
             }
         } catch (Exception e) {
             reuse = TestResults.ERROR_DURING_TEST;

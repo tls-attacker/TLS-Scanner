@@ -19,7 +19,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-public class NotRecommendedExtensionGuidelineCheckTest {
+public class NotRequiredExtensionGuidelineCheckTest {
 
     @Test
     public void testPositive() {

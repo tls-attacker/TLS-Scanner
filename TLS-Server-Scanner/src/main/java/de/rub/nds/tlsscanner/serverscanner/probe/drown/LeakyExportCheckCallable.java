@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Callable to brute-force the 5 random bytes when checking whether a server is vulnerable to the
@@ -19,18 +20,18 @@ class LeakyExportCheckCallable implements Callable<Boolean> {
 
     private int firstByteFrom;
     private int firstByteTo;
-    private volatile int processedSecondBytes;
+    private AtomicInteger processedSecondBytes;
     private LeakyExportCheckData data;
 
     public LeakyExportCheckCallable(int firstByteFrom, int firstByteTo, LeakyExportCheckData data) {
         this.firstByteFrom = firstByteFrom;
         this.firstByteTo = firstByteTo;
-        this.processedSecondBytes = 0;
+        this.processedSecondBytes = new AtomicInteger(0);
         this.data = data;
     }
 
     public int getProcessedSecondBytes() {
-        return processedSecondBytes;
+        return processedSecondBytes.get();
     }
 
     @Override
@@ -83,7 +84,7 @@ class LeakyExportCheckCallable implements Callable<Boolean> {
                         }
                     }
                 }
-                processedSecondBytes++;
+                processedSecondBytes.incrementAndGet();
             }
         }
         return false;

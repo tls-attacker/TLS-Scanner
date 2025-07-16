@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.EllipticCurveType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -247,8 +246,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         for (CipherSuite cipherSuite : supportedCipherSuites) {
             if (cipherSuite.isRealCipherSuite()
                     && !cipherSuite.isTls13()
-                    && algorithmList.contains(
-                            AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite))) {
+                    && algorithmList.contains(cipherSuite.getKeyExchangeAlgorithm())) {
                 chosenCipherSuites.add(cipherSuite);
             }
         }
@@ -260,7 +258,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         for (CipherSuite suite : supportedCipherSuites) {
             if (suite.isRealCipherSuite()
                     && !suite.isTls13()
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeEcdh()) {
+                    && suite.getKeyExchangeAlgorithm().isKeyExchangeEcdh()) {
                 suiteList.add(suite);
             }
         }
@@ -392,30 +390,26 @@ public class NamedGroupsProbe extends TlsServerProbe {
         Set<CipherSuite> joinedCurveCipherSuites = new HashSet<>();
         Set<CipherSuite> joinedFfdheCipherSuites = new HashSet<>();
         overallSupported
-                .keySet()
+                .entrySet()
                 .forEach(
-                        group -> {
-                            if (group.isEcGroup()) {
-                                joinedCurveCipherSuites.addAll(
-                                        overallSupported.get(group).getCipherSuites());
+                        entry -> {
+                            if (entry.getKey().isEcGroup()) {
+                                joinedCurveCipherSuites.addAll(entry.getValue().getCipherSuites());
                             } else {
-                                joinedFfdheCipherSuites.addAll(
-                                        overallSupported.get(group).getCipherSuites());
+                                joinedFfdheCipherSuites.addAll(entry.getValue().getCipherSuites());
                             }
                         });
 
         boolean foundMismatch =
-                overallSupported.keySet().stream()
+                overallSupported.entrySet().stream()
                         .anyMatch(
-                                group -> {
-                                    return (group.isEcGroup()
-                                                    && !overallSupported
-                                                            .get(group)
+                                entry -> {
+                                    return (entry.getKey().isEcGroup()
+                                                    && !entry.getValue()
                                                             .getCipherSuites()
                                                             .containsAll(joinedCurveCipherSuites))
-                                            || (!group.isEcGroup()
-                                                    && !overallSupported
-                                                            .get(group)
+                                            || (!entry.getKey().isEcGroup()
+                                                    && !entry.getValue()
                                                             .getCipherSuites()
                                                             .containsAll(joinedFfdheCipherSuites));
                                 });

@@ -14,13 +14,13 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedExtensionGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RequiredExtensionGuidelineCheck;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-public class RecommendedExtensionGuidelineCheckTest {
+public class RequiredExtensionGuidelineCheckTest {
 
     @Test
     public void testPositive() {
@@ -29,8 +29,8 @@ public class RecommendedExtensionGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
                 Collections.singletonList(ExtensionType.COOKIE));
 
-        RecommendedExtensionGuidelineCheck check =
-                new RecommendedExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        RequiredExtensionGuidelineCheck check =
+                new RequiredExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
     }
@@ -40,8 +40,8 @@ public class RecommendedExtensionGuidelineCheckTest {
         ServerReport report = new ServerReport("test", 443);
         report.putResult(TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Collections.emptyList());
 
-        RecommendedExtensionGuidelineCheck check =
-                new RecommendedExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
+        RequiredExtensionGuidelineCheck check =
+                new RequiredExtensionGuidelineCheck(null, null, ExtensionType.COOKIE);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());
     }
@@ -53,8 +53,8 @@ public class RecommendedExtensionGuidelineCheckTest {
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS,
                 Arrays.asList(ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO));
 
-        RecommendedExtensionGuidelineCheck check =
-                new RecommendedExtensionGuidelineCheck(
+        RequiredExtensionGuidelineCheck check =
+                new RequiredExtensionGuidelineCheck(
                         null, null, ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.ADHERED, result.getAdherence());
@@ -66,8 +66,8 @@ public class RecommendedExtensionGuidelineCheckTest {
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS, Arrays.asList(ExtensionType.COOKIE));
 
-        RecommendedExtensionGuidelineCheck check =
-                new RecommendedExtensionGuidelineCheck(
+        RequiredExtensionGuidelineCheck check =
+                new RequiredExtensionGuidelineCheck(
                         null, null, ExtensionType.COOKIE, ExtensionType.RENEGOTIATION_INFO);
         GuidelineCheckResult result = check.evaluate(report);
         assertEquals(GuidelineAdherence.VIOLATED, result.getAdherence());

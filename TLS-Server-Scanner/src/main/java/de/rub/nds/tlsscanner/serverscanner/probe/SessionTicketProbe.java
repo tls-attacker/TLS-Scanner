@@ -108,7 +108,7 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
     private void checkVersionChange(ProtocolVersion fromVersion) {
         if (!issuesTickets(fromVersion)) {
             allowsVersionChange.putResult(
-                    fromVersion, new VersionDependentTestResults(TestResults.COULD_NOT_TEST));
+                    fromVersion, new VersionDependentTestResults(TestResults.CANNOT_BE_TESTED));
             return;
         }
         VersionDependentTestResults result = new VersionDependentTestResults();
@@ -176,7 +176,7 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
 
     private void checkAllowsCiphersuiteChange(ProtocolVersion version) {
         if (!issuesTickets(version)) {
-            allowsCipherSuiteChange.putResult(version, TestResults.COULD_NOT_TEST);
+            allowsCipherSuiteChange.putResult(version, TestResults.CANNOT_BE_TESTED);
             return;
         }
 
@@ -221,7 +221,7 @@ public class SessionTicketProbe extends SessionTicketBaseProbe {
 
     private void checkReusableTicket(ProtocolVersion version) {
         if (!resumesTickets(version)) {
-            allowsReplayingTickets.putResult(version, TestResults.COULD_NOT_TEST);
+            allowsReplayingTickets.putResult(version, TestResults.CANNOT_BE_TESTED);
             return;
         }
 

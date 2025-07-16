@@ -14,6 +14,13 @@ import java.util.Set;
 
 public class CollectionUtils {
 
+    /**
+     * Merges multiple collections into a single set, removing duplicates.
+     *
+     * @param <E> the type of elements in the collections
+     * @param collections the collections to merge (null collections are ignored)
+     * @return a set containing all unique elements from the input collections
+     */
     public static <E> Set<E> mergeCollectionsIntoSet(Collection<E>... collections) {
         Set<E> mergeResult = new HashSet<>();
         for (Collection<E> currentCollection : collections) {

@@ -1172,12 +1172,12 @@
         </propertyRecommendations>
     </recommendation>
     <recommendation>
-        <property>ALPACA_MITIGATED</property>
-        <shortName>ALPACA Mitigation</shortName>
+        <property>VULNERABLE_TO_ALPACA</property>
+        <shortName>Vulnerable to Alpaca</shortName>
         <shortDescription>Evaluated whether the server is vulnerable to ALPACA</shortDescription>
         <links/>
         <propertyRecommendations>
-            <result>FALSE</result>
+            <result>TRUE</result>
             <shortDescription>The server does not reject invalid SNI names</shortDescription>
             <handlingRecommendation>If possible configure your server to use strict SNI and strict ALPN verification</handlingRecommendation>
         </propertyRecommendations>

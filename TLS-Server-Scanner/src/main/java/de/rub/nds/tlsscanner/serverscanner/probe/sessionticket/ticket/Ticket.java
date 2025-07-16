@@ -8,12 +8,14 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.ticket;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.sessionticket.FoundSecret;
 import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.SessionSecret;
 import java.util.List;
 import java.util.Optional;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public interface Ticket {
     /**
      * Apply ticket to the passed config. When executing a handshake with this config, the ticket
@@ -62,7 +64,11 @@ public interface Ticket {
         if (haystack == null || haystack.length == 0) {
             return null;
         }
-        for (SessionSecret sessionSecret : getSessionSecrets()) {
+        List<SessionSecret> sessionSecrets = getSessionSecrets();
+        if (sessionSecrets == null) {
+            return null;
+        }
+        for (SessionSecret sessionSecret : sessionSecrets) {
             Optional<Integer> offset = sessionSecret.findIn(haystack);
             if (offset.isPresent()) {
                 return new FoundSecret(sessionSecret, offset.get());

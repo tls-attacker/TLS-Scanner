@@ -28,6 +28,13 @@ public class SessionSecret implements Serializable {
     public final Secret secretType;
     public final byte[] value;
 
+    @SuppressWarnings("unused")
+    // This constructor is used for deserialization
+    public SessionSecret() {
+        this.secretType = null;
+        this.value = null;
+    }
+
     public SessionSecret(Secret secret, byte[] value) {
         this.secretType = secret;
         this.value = value;

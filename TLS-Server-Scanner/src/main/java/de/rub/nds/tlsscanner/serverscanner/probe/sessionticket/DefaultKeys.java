@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.sessionticket;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.MacAlgorithm;
 import de.rub.nds.scanner.core.config.ScannerDetail;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,7 +32,7 @@ public class DefaultKeys {
             new ConcurrentHashMap<>();
 
     private static ComparableByteArray fixedKey(int length, String values) {
-        return fixedKey(length, ArrayConverter.hexStringToByteArray(values));
+        return fixedKey(length, DataConverter.hexStringToByteArray(values));
     }
 
     private static ComparableByteArray fixedKey(int length, byte[] value) {
@@ -50,7 +50,7 @@ public class DefaultKeys {
     }
 
     private static ComparableByteArray computeRepetitiveKey(int length, String values) {
-        return computeRepetitiveKey(length, ArrayConverter.hexStringToByteArray(values));
+        return computeRepetitiveKey(length, DataConverter.hexStringToByteArray(values));
     }
 
     private static ComparableByteArray computeRepetitiveKey(int length, byte[] values) {

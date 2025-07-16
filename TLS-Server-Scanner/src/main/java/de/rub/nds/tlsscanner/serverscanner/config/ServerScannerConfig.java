@@ -54,6 +54,13 @@ public class ServerScannerConfig extends TlsScannerConfig {
                     "Pause between config tests to ensure the server finished processing the previously rejected messages")
     private boolean configSearchCooldown = false;
 
+    @Parameter(
+            names = "-doNotSendSNIExtension",
+            description =
+                    "Usually the hostname for the SNI extension is inferred automatically. "
+                            + "This option can overwrite the default behaviour.")
+    private boolean doNotSendSNIExtension = false;
+
     public ServerScannerConfig(GeneralDelegate delegate) {
         super(delegate);
 
@@ -120,5 +127,13 @@ public class ServerScannerConfig extends TlsScannerConfig {
 
     public void setConfigSearchCooldown(boolean configSearchCooldown) {
         this.configSearchCooldown = configSearchCooldown;
+    }
+
+    public boolean isDoNotSendSNIExtension() {
+        return doNotSendSNIExtension;
+    }
+
+    public void setDoNotSendSNIExtension(boolean doNotSendSNIExtension) {
+        this.doNotSendSNIExtension = doNotSendSNIExtension;
     }
 }

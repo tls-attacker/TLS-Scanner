@@ -9,28 +9,12 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
-import de.rub.nds.scanner.core.guideline.Guideline;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineIO;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.CertificateCurveGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedCipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedCipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import jakarta.xml.bind.JAXBException;
@@ -38,7 +22,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -115,17 +98,20 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
                         TestResults.FALSE));
-        //        checks.add(
-        //                new AnalyzedPropertyGuidelineCheck(
-        //                        "In order to gain forward secrecy, this document recommends that
-        // server implementations SHOULD **select the \"psk_dhe_ke\" PSK key exchange mode** and
-        // respond with a \"key_share\" to complete an Ephemeral Elliptic Curve Diffie-Hellman
-        // (ECDHE) exchange on each session resumption.",
-        //                        RequirementLevel.SHOULD,
-        //                        new GuidelineCheckCondition(
-        //                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
-        //                        TlsAnalyzedProperty.PREFERS_TLS13_PSK_DHE,
-        //                        TestResults.TRUE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "In order to gain forward secrecy, this document recommends that server implementations SHOULD **select the \"psk_dhe_ke\" PSK key exchange mode** and respond with a \"key_share\" to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.",
+                        RequirementLevel.SHOULD,
+                        GuidelineCheckCondition.and(
+                                Arrays.asList(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE,
+                                                TestResults.TRUE))),
+                        TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
+                        TestResults.TRUE));
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "In order to gain forward secrecy, this document recommends that server implementations SHOULD select the \"psk_dhe_ke\" PSK key exchange mode and **respond with a \"key_share\"** to complete an Ephemeral Elliptic Curve Diffie-Hellman (ECDHE) exchange on each session resumption.",
@@ -135,7 +121,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_EXCHANGE_MODES,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "TLS 1.2 clients and servers MUST implement the renegotiation_info extension, as defined in [RFC5746].",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
@@ -150,7 +136,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
@@ -161,7 +147,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.STRICT_SNI,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
                         RequirementLevel.MUST,
                         ExtensionType.ALPN));
@@ -177,264 +163,42 @@ public class Rfc9325GuidelineSerializationIT {
                         "Implementations MUST NOT negotiate the cipher suites with NULL encryption. Implementations MUST NOT negotiate RC4 cipher suites. Implementations MUST NOT negotiate cipher suites offering less than 112 bits of security, including so-called \"export-level\" encryption (which provides 40 or 56 bits of security).",
                         RequirementLevel.MUST_NOT,
                         List.of(ProtocolVersion.TLS12),
-                        Arrays.asList(
-                                CipherSuite.TLS_DHE_PSK_WITH_NULL_SHA,
-                                CipherSuite.TLS_DHE_PSK_WITH_NULL_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_NULL_SHA384,
-                                CipherSuite.TLS_ECDH_anon_WITH_NULL_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_NULL_SHA,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_NULL_SHA,
-                                CipherSuite.TLS_ECDHE_PSK_WITH_NULL_SHA,
-                                CipherSuite.TLS_ECDHE_PSK_WITH_NULL_SHA256,
-                                CipherSuite.TLS_ECDHE_PSK_WITH_NULL_SHA384,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_NULL_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_NULL_SHA,
-                                CipherSuite.TLS_NULL_WITH_NULL_NULL,
-                                CipherSuite.TLS_PSK_WITH_NULL_SHA,
-                                CipherSuite.TLS_PSK_WITH_NULL_SHA256,
-                                CipherSuite.TLS_PSK_WITH_NULL_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_NULL_SHA,
-                                CipherSuite.TLS_RSA_PSK_WITH_NULL_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_NULL_SHA384,
-                                CipherSuite.TLS_RSA_WITH_NULL_MD5,
-                                CipherSuite.TLS_RSA_WITH_NULL_SHA,
-                                CipherSuite.TLS_RSA_WITH_NULL_SHA256,
-                                CipherSuite.TLS_DH_anon_EXPORT_WITH_RC4_40_MD5,
-                                CipherSuite.TLS_DH_anon_WITH_RC4_128_MD5,
-                                CipherSuite.TLS_DHE_PSK_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_ECDH_anon_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_ECDHE_PSK_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_KRB5_EXPORT_WITH_RC4_40_MD5,
-                                CipherSuite.TLS_KRB5_EXPORT_WITH_RC4_40_SHA,
-                                CipherSuite.TLS_KRB5_WITH_RC4_128_MD5,
-                                CipherSuite.TLS_KRB5_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_PSK_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_RSA_EXPORT_WITH_RC4_40_MD5,
-                                CipherSuite.TLS_RSA_PSK_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_RSA_WITH_RC4_128_MD5,
-                                CipherSuite.TLS_RSA_WITH_RC4_128_SHA,
-                                CipherSuite.TLS_DH_anon_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_KRB5_EXPORT_WITH_DES_CBC_40_MD5,
-                                CipherSuite.TLS_KRB5_EXPORT_WITH_DES_CBC_40_SHA,
-                                CipherSuite.TLS_KRB5_EXPORT_WITH_RC2_CBC_40_MD5,
-                                CipherSuite.TLS_KRB5_EXPORT_WITH_RC2_CBC_40_SHA,
-                                CipherSuite.TLS_RSA_EXPORT_WITH_DES40_CBC_SHA,
-                                CipherSuite.TLS_RSA_EXPORT_WITH_RC2_CBC_40_MD5)));
+                        CipherSuite.getAllCipherSuites().stream()
+                                .filter(
+                                        cs ->
+                                                cs.isNull()
+                                                        || cs.getCipherAlgorithm() != null
+                                                                && (cs.getCipherAlgorithm()
+                                                                                .name()
+                                                                                .contains("RC4")
+                                                                        || cs.getCipherAlgorithm()
+                                                                                        .getKeySize()
+                                                                                < 14))
+                                .toList()));
         checks.add(
                 new NotRecommendedCipherSuiteGuidelineCheck(
                         "Implementations SHOULD NOT negotiate cipher suites that use algorithms offering less than 128 bits of security. Implementations SHOULD NOT negotiate cipher suites based on RSA key transport, a.k.a. \"static RSA\". Implementations SHOULD NOT negotiate cipher suites based on non-ephemeral (static) finite-field Diffie-Hellman (DH) key agreement. Similarly, implementations SHOULD NOT negotiate non-ephemeral Elliptic Curve DH key agreement. TLS 1.2 implementations SHOULD NOT negotiate cipher suites based on ephemeral finite-field Diffie-Hellman key agreement (i.e., \"TLS_DHE_*\" suites).",
                         RequirementLevel.SHOULD_NOT,
                         List.of(ProtocolVersion.TLS12),
-                        Arrays.asList( // All cipher suites that MUST NOT be used removed from
-                                // this list.
-                                CipherSuite.TLS_DH_anon_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_KRB5_WITH_3DES_EDE_CBC_MD5,
-                                CipherSuite.TLS_KRB5_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_PSK_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA,
-                                CipherSuite.TLS_RSA_PSK_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_PSK_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_PSK_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_PSK_WITH_CAMELLIA_256_CBC_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_RSA_PSK_WITH_CHACHA20_POLY1305_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_RSA_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_RSA_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_RSA_WITH_CAMELLIA_128_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256,
-                                CipherSuite.TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_RSA_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_IDEA_CBC_SHA,
-                                CipherSuite.TLS_RSA_WITH_SEED_CBC_SHA,
-                                CipherSuite.TLS_DH_anon_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DH_anon_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DH_anon_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_anon_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DH_anon_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA,
-                                CipherSuite.TLS_DH_anon_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA,
-                                CipherSuite.TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_anon_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_anon_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_DH_anon_WITH_SEED_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_DSS_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DH_DSS_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_DSS_WITH_CAMELLIA_128_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_CAMELLIA_256_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_CAMELLIA_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_DSS_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_DSS_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_DH_DSS_WITH_SEED_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_RSA_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DH_RSA_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_RSA_WITH_CAMELLIA_128_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_CAMELLIA_256_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_CAMELLIA_256_CBC_SHA256,
-                                CipherSuite.TLS_DH_RSA_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DH_RSA_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_DH_RSA_WITH_SEED_CBC_SHA,
-                                CipherSuite.TLS_ECDH_anon_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDH_anon_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384,
-                                CipherSuite.TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_DSS_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_CAMELLIA_256_CBC_SHA256,
-                                CipherSuite.TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_DSS_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_DHE_DSS_WITH_SEED_CBC_SHA,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_CCM,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA384,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_CCM,
-                                CipherSuite.TLS_DHE_PSK_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_PSK_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DHE_PSK_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_PSK_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_PSK_WITH_CAMELLIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DHE_PSK_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_PSK_WITH_CHACHA20_POLY1305_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CCM,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_CCM_8,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CCM,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_CCM_8,
-                                CipherSuite.TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_ARIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_ARIA_256_CBC_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384,
-                                CipherSuite.TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
-                                CipherSuite.TLS_DHE_RSA_WITH_DES_CBC_SHA,
-                                CipherSuite.TLS_DHE_RSA_WITH_SEED_CBC_SHA)));
+                        CipherSuite.getAllCipherSuites().stream()
+                                .filter(
+                                        cs ->
+                                                cs.getCipherAlgorithm() != null
+                                                                && (cs.getCipherAlgorithm()
+                                                                                .getKeySize()
+                                                                        < 16)
+                                                        || cs.getCipherAlgorithm()
+                                                                == CipherAlgorithm.DES_EDE_CBC
+                                                        || cs.getKeyExchangeAlgorithm() != null
+                                                                && (cs.getKeyExchangeAlgorithm()
+                                                                                .isKeyExchangeRsa()
+                                                                        || cs.getKeyExchangeAlgorithm()
+                                                                                .isKeyExchangeStaticDh()
+                                                                        || cs.getKeyExchangeAlgorithm()
+                                                                                .isKeyExchangeStaticEcdh()
+                                                                        || cs.getKeyExchangeAlgorithm()
+                                                                                .isKeyExchangeDhe()))
+                                .toList()));
         checks.add(
                 new RecommendedCipherSuiteGuidelineCheck(
                         "Given the foregoing considerations, implementation and deployment of the following cipher suites is RECOMMENDED.",
@@ -470,14 +234,12 @@ public class Rfc9325GuidelineSerializationIT {
                         "When using ECDSA signatures for authentication of TLS peers, it is RECOMMENDED that implementations use the NIST curve P-256.",
                         RequirementLevel.SHOULD,
                         List.of(X509NamedCurve.SECP256R1)));
-        //        checks.add(
-        //                new AnalyzedPropertyGuidelineCheck(
-        //                        "Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as
-        // the first proposal to any server. Servers MUST prefer this cipher suite over weaker
-        // cipher suites whenever it is proposed, even if it is not the first proposal.",
-        //                        RequirementLevel.MUST,
-        //                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325,
-        //                        TestResults.TRUE));
+        checks.add(
+                new AnalyzedPropertyGuidelineCheck(
+                        "Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server. Servers MUST prefer this cipher suite over weaker cipher suites whenever it is proposed, even if it is not the first proposal.",
+                        RequirementLevel.MUST,
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325,
+                        TestResults.TRUE));
         checks.add(
                 new NotRecommendedCipherSuiteGuidelineCheck(
                         "The previous version of the TLS recommendations [RFC7525] implicitly allowed [...] TLS_RSA_WITH_AES_128_CBC_SHA. [...] As with other cipher suites that do not provide forward secrecy, implementations SHOULD NOT support this cipher suite.",
@@ -487,26 +249,16 @@ public class Rfc9325GuidelineSerializationIT {
                         List.of(ProtocolVersion.TLS12),
                         List.of(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA)));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Both clients and servers SHOULD include the \"Supported Elliptic Curves Extension\" [RFC8422].",
                         RequirementLevel.SHOULD,
                         ExtensionType.ELLIPTIC_CURVES));
         checks.add(
-                new NamedGroupsGuidelineCheck(
+                new RequiredNamedGroupsGuidelineCheck(
                         "Clients and servers SHOULD support the NIST P‑256 (secp256r1) [RFC8422] and X25519 (x25519) [RFC7748] curves.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519),
-                        Collections.emptyList(),
-                        false,
-                        2));
-        checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "Clients and servers SHOULD support the NIST P‑256 (secp256r1) [RFC8422] and X25519 (x25519) [RFC7748] curves.",
-                        RequirementLevel.SHOULD,
-                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519),
-                        Collections.emptyList(),
-                        true,
-                        2));
+                        false));
         checks.add(
                 new KeySizeCertGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to 0
                         "4.5. Public Key Length", RequirementLevel.MUST, 0, 2048, 224, 2048));
@@ -554,7 +306,7 @@ public class Rfc9325GuidelineSerializationIT {
                         "IETF RFC 9325: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)",
                         "https://datatracker.ietf.org/doc/rfc9325/",
                         checks);
-        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
+        GuidelineIO<ServerReport> guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
         guidelineIO.write(
                 Paths.get("src/main/resources/guideline/rfc9325.xml").toFile(), guideline);
     }

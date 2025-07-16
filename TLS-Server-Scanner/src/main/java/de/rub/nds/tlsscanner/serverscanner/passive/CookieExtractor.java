@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.passive;
 
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.scanner.core.passive.StatExtractor;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
@@ -21,10 +21,19 @@ import java.util.List;
 
 public class CookieExtractor extends StatExtractor<State, ComparableByteArray> {
 
+    /**
+     * Constructs a new CookieExtractor for extracting DTLS cookies from HelloVerifyRequest
+     * messages.
+     */
     public CookieExtractor() {
         super(TrackableValueType.COOKIE);
     }
 
+    /**
+     * Extracts cookies from HelloVerifyRequest messages in the given DTLS state's workflow trace.
+     *
+     * @param state the state to extract cookies from
+     */
     @Override
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();

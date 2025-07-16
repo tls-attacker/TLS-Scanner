@@ -75,7 +75,7 @@ public class HelloRetryProbe extends TlsServerProbe {
                                 WorkflowTraceResultUtil.getFirstReceivedMessage(
                                         state.getWorkflowTrace(),
                                         HandshakeMessageType.SERVER_HELLO))
-                        .hasTls13HelloRetryRequestRandom()) {
+                        .isHelloRetryRequest()) {
             sendsHelloRetryRequest = TestResults.TRUE;
             serversChosenGroup = state.getTlsContext().getSelectedGroup();
             if (((ServerHelloMessage)

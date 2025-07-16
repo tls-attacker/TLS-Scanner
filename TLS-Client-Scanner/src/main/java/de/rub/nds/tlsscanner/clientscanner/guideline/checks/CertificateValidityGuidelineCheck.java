@@ -14,10 +14,11 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.CertificateValidityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import org.joda.time.Duration;
+import org.joda.time.Days;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -53,12 +54,10 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
 
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
-        Duration validityPeriod = chain.getLeafReport().getOriginalFullDuration();
+        CertificateReport report = chain.getLeafReport();
+        int validDays = Days.daysBetween(report.getNotBefore(), report.getNotAfter()).getDays();
         return new CertificateValidityGuidelineCheckResult(
-                getName(),
-                GuidelineAdherence.of(validityPeriod.toStandardDays().getDays() <= this.days),
-                days,
-                validityPeriod.toStandardDays().getDays());
+                getName(), GuidelineAdherence.of(validDays <= this.days), days, validDays);
     }
 
     @Override

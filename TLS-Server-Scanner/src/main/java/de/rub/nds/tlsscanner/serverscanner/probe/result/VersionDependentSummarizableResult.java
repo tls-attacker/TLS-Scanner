@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.rub.nds.scanner.core.probe.result.SummarizableTestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import java.util.Collection;
@@ -17,6 +18,7 @@ public class VersionDependentSummarizableResult<T extends SummarizableTestResult
         extends VersionDependentResult<T> implements SummarizableTestResult {
 
     @Override
+    @JsonIgnore
     public boolean isExplicitSummary() {
         return false;
     }

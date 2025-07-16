@@ -174,6 +174,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK_EXCHANGE_MODES(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SELECTS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_0_RTT(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_ID_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -211,6 +212,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     PREFERS_PFS(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
+    AVOIDS_WEAKER_CIPHER_SUITES_RFC9325(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_NAMED_GROUP_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(TlsAnalyzedPropertyCategory.SNI),
@@ -252,6 +254,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** does it handle a http false start */
     SUPPORTS_HTTP_FALSE_START(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
+    MIN_RECORD_LENGTH(TlsAnalyzedPropertyCategory.QUIRKS),
     /** does it have a grease value intolerance? */
     HAS_GREASE_CIPHER_SUITE_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_NAMED_GROUP_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
@@ -285,7 +288,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V1(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RENEGOTIATION_ATTACK_CIPHERSUITE_V2(TlsAnalyzedPropertyCategory.ATTACKS),
     VULNERABLE_TO_RACCOON_ATTACK(TlsAnalyzedPropertyCategory.ATTACKS),
-    ALPACA_MITIGATED(TlsAnalyzedPropertyCategory.ATTACKS),
+    VULNERABLE_TO_ALPACA(TlsAnalyzedPropertyCategory.ATTACKS),
     MISSES_MAC_APPDATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_MAC_FINISHED_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),
     MISSES_VERIFY_DATA_CHECKS(TlsAnalyzedPropertyCategory.COMPARISON_FAILURE),

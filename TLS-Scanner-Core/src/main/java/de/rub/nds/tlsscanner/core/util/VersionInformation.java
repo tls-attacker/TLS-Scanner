@@ -49,18 +49,38 @@ public class VersionInformation {
         return defaultValue;
     }
 
+    /**
+     * Gets the TLS-Scanner version.
+     *
+     * @return the TLS-Scanner version string
+     */
     public static String getTlsScannerVersion() {
         return TLS_SCANNER_VERSION;
     }
 
+    /**
+     * Gets the TLS-Attacker version.
+     *
+     * @return the TLS-Attacker version string
+     */
     public static String getTlsAttackerVersion() {
         return TLS_ATTACKER_VERSION;
     }
 
+    /**
+     * Gets the Java version and vendor information.
+     *
+     * @return the Java version string including vendor information
+     */
     public static String getJavaVersion() {
         return JAVA_VERSION;
     }
 
+    /**
+     * Gets the full version information including TLS-Scanner, TLS-Attacker, and Java versions.
+     *
+     * @return a formatted string containing all version information
+     */
     public static String getFullVersionInfo() {
         return String.format(
                 "TLS-Scanner %s (TLS-Attacker %s, Java %s)",

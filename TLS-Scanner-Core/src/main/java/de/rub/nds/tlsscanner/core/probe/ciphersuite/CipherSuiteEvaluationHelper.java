@@ -205,12 +205,12 @@ public class CipherSuiteEvaluationHelper {
             writeToReport(probe);
         } else {
             probe.put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
-            probe.setPropertiesToCouldNotTest();
+            probe.setPropertiesToCannotBeTested();
         }
     }
 
     public void adjustCipherType(CipherSuite suite) {
-        CipherType cipherType = AlgorithmResolver.getCipherType(suite);
+        CipherType cipherType = suite.getCipherType();
         switch (cipherType) {
             case AEAD:
                 supportsAeadCiphers = TestResults.TRUE;
@@ -300,7 +300,7 @@ public class CipherSuiteEvaluationHelper {
     }
 
     public void adjustBulk(CipherSuite suite) {
-        BulkCipherAlgorithm bulkCipherAlgorithm = AlgorithmResolver.getBulkCipherAlgorithm(suite);
+        BulkCipherAlgorithm bulkCipherAlgorithm = BulkCipherAlgorithm.getBulkCipherAlgorithm(suite);
         switch (bulkCipherAlgorithm) {
             case AES:
                 supportsAes = TestResults.TRUE;

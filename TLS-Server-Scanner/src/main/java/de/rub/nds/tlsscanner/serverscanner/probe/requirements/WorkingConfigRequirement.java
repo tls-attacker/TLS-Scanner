@@ -18,12 +18,21 @@ public class WorkingConfigRequirement extends Requirement<ServerReport> {
     private final ConfigSelector configSelector;
 
     /**
-     * @param configSelector the ConfigSelector.
+     * Constructs a new WorkingConfigRequirement with the specified ConfigSelector.
+     *
+     * @param configSelector the ConfigSelector to use for evaluating the requirement
      */
     public WorkingConfigRequirement(ConfigSelector configSelector) {
         this.configSelector = configSelector;
     }
 
+    /**
+     * Evaluates whether a working configuration has been found by the ConfigSelector.
+     *
+     * @param report the ServerReport to evaluate (not used in this implementation)
+     * @return true if the ConfigSelector is not null and has found a working configuration, false
+     *     otherwise
+     */
     @Override
     public boolean evaluate(ServerReport report) {
         if (configSelector == null) {
@@ -32,6 +41,11 @@ public class WorkingConfigRequirement extends Requirement<ServerReport> {
         return configSelector.foundWorkingConfig();
     }
 
+    /**
+     * Returns a string representation of this requirement.
+     *
+     * @return the string "WorkingConfigRequirement"
+     */
     @Override
     public String toString() {
         return "WorkingConfigRequirement";

@@ -10,9 +10,9 @@ package de.rub.nds.tlsscanner.serverscanner;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import de.rub.nds.protocol.exception.ConfigurationException;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
@@ -21,6 +21,7 @@ import de.rub.nds.tlsscanner.serverscanner.report.ServerReportPrinter;
 import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class Main {
 
@@ -35,22 +36,27 @@ public class Main {
                 commander.usage();
                 return;
             }
+            System.setProperty("debugMode", String.valueOf(config.getGeneralDelegate().isDebug()));
+            Configurator.reconfigure();
             // Cmd was parsable
             try (TlsServerScanner scanner = new TlsServerScanner(config)) {
                 long time = System.currentTimeMillis();
                 LOGGER.info("Performing Scan, this may take some time...");
                 ServerReport report = scanner.scan();
-                LOGGER.info(
-                        AnsiColor.RESET.getCode()
-                                + "Scanned in: "
-                                + ((System.currentTimeMillis() - time) / 1000)
-                                + "s\n"
-                                + new ServerReportPrinter(
-                                                report,
-                                                config.getExecutorConfig().getReportDetail(),
-                                                DefaultPrintingScheme.getDefaultPrintingScheme(),
-                                                !config.getExecutorConfig().isNoColor())
-                                        .getFullReport());
+                if (report.getIsHandshaking()) {
+                    LOGGER.info(
+                            AnsiColor.RESET.getCode()
+                                    + "Scanned in: "
+                                    + ((System.currentTimeMillis() - time) / 1000)
+                                    + "s\n"
+                                    + new ServerReportPrinter(
+                                                    report,
+                                                    config.getExecutorConfig().getReportDetail(),
+                                                    DefaultPrintingScheme
+                                                            .getDefaultPrintingScheme(),
+                                                    !config.getExecutorConfig().isNoColor())
+                                            .getFullReport());
+                }
             } catch (ConfigurationException e) {
                 LOGGER.error("Encountered a ConfigurationException aborting.", e);
             }

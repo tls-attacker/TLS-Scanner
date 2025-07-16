@@ -61,10 +61,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,6 +77,12 @@ public final class TlsServerScanner
     private final ServerScannerConfig config;
     private final boolean closeAfterFinishParallel;
 
+    /**
+     * Constructs a new TlsServerScanner with the specified configuration. Creates a new
+     * ParallelExecutor for executing probes.
+     *
+     * @param config the server scanner configuration to use
+     */
     public TlsServerScanner(ServerScannerConfig config) {
         super(config.getExecutorConfig());
         this.config = config;
@@ -92,6 +96,13 @@ public final class TlsServerScanner
         setCallbacks();
     }
 
+    /**
+     * Constructs a new TlsServerScanner with the specified configuration and parallel executor. The
+     * parallel executor will not be shut down when the scanner is closed.
+     *
+     * @param config the server scanner configuration to use
+     * @param parallelExecutor the parallel executor to use for probe execution
+     */
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
         super(config.getExecutorConfig());
         this.config = config;
@@ -101,6 +112,15 @@ public final class TlsServerScanner
         setCallbacks();
     }
 
+    /**
+     * Constructs a new TlsServerScanner with custom probe and after-probe lists. The parallel
+     * executor will not be shut down when the scanner is closed.
+     *
+     * @param config the server scanner configuration to use
+     * @param parallelExecutor the parallel executor to use for probe execution
+     * @param probeList the list of probes to execute
+     * @param afterList the list of after-probes to execute
+     */
     public TlsServerScanner(
             ServerScannerConfig config,
             ParallelExecutor parallelExecutor,
@@ -264,19 +284,29 @@ public final class TlsServerScanner
 
         if (isConnectable()) {
             isConnectable = true;
-            LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+            LOGGER.debug("{} is connectable", config.getClientDelegate().getHost());
             configSelector.findWorkingConfigs();
             report.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
             report.setConfigProfileIdentifierTls13(
                     configSelector.getConfigProfileIdentifierTls13());
             if (configSelector.isSpeaksProtocol()) {
                 speaksProtocol = true;
-                LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + getProtocolType());
+                LOGGER.debug(
+                        "{} speaks {}", config.getClientDelegate().getHost(), getProtocolType());
                 if (configSelector.isIsHandshaking()) {
                     isHandshaking = true;
-                    LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
+                    LOGGER.debug("{} is handshaking", config.getClientDelegate().getHost());
+                } else {
+                    LOGGER.error("{} is not handshaking", config.getClientDelegate().getHost());
                 }
+            } else {
+                LOGGER.error(
+                        "{} does not speak {}",
+                        config.getClientDelegate().getHost(),
+                        getProtocolType());
             }
+        } else {
+            LOGGER.error("{} is not connectable", config.getClientDelegate().getHost());
         }
 
         report.setServerIsAlive(isConnectable);
@@ -304,28 +334,20 @@ public final class TlsServerScanner
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
-        GuidelineIO guidelineIO;
+        GuidelineIO<ServerReport> guidelineIO;
         try {
-            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
+            guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
         }
-        List<Guideline<ServerReport>> guidelines = new ArrayList<>();
-        for (String guidelineName : guidelineFiles) {
-            try {
-                InputStream guideLineStream =
-                        TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
-            } catch (JAXBException | XMLStreamException ex) {
-                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
-                return null;
-            }
-        }
-        return guidelines;
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "guideline");
     }
 
+    /**
+     * Closes the scanner and shuts down the parallel executor if it was created internally. If the
+     * parallel executor was provided externally, it will not be shut down.
+     */
     @Override
     public void close() {
         if (closeAfterFinishParallel) {
@@ -345,6 +367,11 @@ public final class TlsServerScanner
         }
     }
 
+    /**
+     * Tests whether a connection can be established to the target server.
+     *
+     * @return true if the server is connectable, false otherwise
+     */
     public boolean isConnectable() {
         try {
             Config tlsConfig = config.createConfig();

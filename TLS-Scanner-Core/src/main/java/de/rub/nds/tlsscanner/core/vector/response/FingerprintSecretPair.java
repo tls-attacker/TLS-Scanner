@@ -8,27 +8,44 @@
  */
 package de.rub.nds.tlsscanner.core.vector.response;
 
+/** A pair containing a response fingerprint and its associated secret value. */
 public class FingerprintSecretPair {
 
     private final ResponseFingerprint fingerprint;
     private final int appliedSecret;
 
-    /** Private no-arg constructor to please JAXB */
+    /** Default constructor for serialization. */
     @SuppressWarnings("unused")
     private FingerprintSecretPair() {
         fingerprint = null;
         appliedSecret = 0;
     }
 
+    /**
+     * Constructs a FingerprintSecretPair with the specified fingerprint and secret.
+     *
+     * @param fingerprint The response fingerprint
+     * @param appliedSecret The secret value associated with this fingerprint
+     */
     public FingerprintSecretPair(ResponseFingerprint fingerprint, int appliedSecret) {
         this.fingerprint = fingerprint;
         this.appliedSecret = appliedSecret;
     }
 
+    /**
+     * Gets the response fingerprint.
+     *
+     * @return The response fingerprint
+     */
     public ResponseFingerprint getFingerprint() {
         return fingerprint;
     }
 
+    /**
+     * Gets the applied secret value.
+     *
+     * @return The applied secret value
+     */
     public int getAppliedSecret() {
         return appliedSecret;
     }

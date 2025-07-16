@@ -10,11 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
-import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
@@ -64,11 +60,10 @@ public class CertificateAgilityGuidelineCheck extends GuidelineCheck<ServerRepor
                 return new CertificateAgilityGuidelineCheckResult(
                         getName(), GuidelineAdherence.ADHERED);
             }
-            if (firstKey != certReport.getPublicKey().length()) {
-                if (firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
-                    return new CertificateAgilityGuidelineCheckResult(
-                            getName(), GuidelineAdherence.ADHERED);
-                }
+            if (firstKey != certReport.getPublicKey().length()
+                    && firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
+                return new CertificateAgilityGuidelineCheckResult(
+                        getName(), GuidelineAdherence.ADHERED);
             }
         }
         return new CertificateAgilityGuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED);

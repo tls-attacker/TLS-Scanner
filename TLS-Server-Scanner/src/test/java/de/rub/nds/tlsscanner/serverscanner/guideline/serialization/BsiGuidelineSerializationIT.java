@@ -10,29 +10,12 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
-import de.rub.nds.scanner.core.guideline.Guideline;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineIO;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedCipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
@@ -40,7 +23,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -146,7 +128,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_256_GCM_SHA384)));
         checks.add(
-                new NamedGroupsGuidelineCheck(
+                new RecommendedNamedGroupsGuidelineCheck(
                         "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
@@ -157,10 +139,7 @@ public class BsiGuidelineSerializationIT {
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
                                 NamedGroup.FFDHE3072,
-                                NamedGroup.FFDHE4096),
-                        Collections.emptyList(),
-                        false,
-                        2));
+                                NamedGroup.FFDHE4096)));
         checks.add(
                 new SignatureAlgorithmsGuidelineCheck(
                         "Die folgenden Signaturverfahren werden empfohlen.",
@@ -228,7 +207,7 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new NotRecommendedExtensionGuidelineCheck(
                         "Es wird empfohlen, die Heartbeat-Erweiterung nicht zu verwenden.",
                         RequirementLevel.SHOULD_NOT,
                         new GuidelineCheckCondition(
@@ -258,22 +237,6 @@ public class BsiGuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                         TestResults.FALSE));
-        checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
-                        RequirementLevel.SHOULD,
-                        Arrays.asList(
-                                NamedGroup.SECP256R1,
-                                NamedGroup.SECP384R1,
-                                NamedGroup.SECP521R1,
-                                NamedGroup.BRAINPOOLP256R1,
-                                NamedGroup.BRAINPOOLP384R1,
-                                NamedGroup.BRAINPOOLP512R1,
-                                NamedGroup.FFDHE3072,
-                                NamedGroup.FFDHE4096),
-                        Collections.emptyList(),
-                        true,
-                        2));
         checks.add(
                 new SignatureAndHashAlgorithmsGuidelineCheck(
                         "Die folgenden Signaturverfahren werden für die \"signature_algorithms\" Erweiterung empfohlen.",

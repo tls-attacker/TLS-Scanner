@@ -23,10 +23,22 @@ public abstract class PaddingTraceGenerator {
 
     protected final PaddingVectorGenerator vectorGenerator;
 
+    /**
+     * Returns the padding vector generator used by this trace generator.
+     *
+     * @return The padding vector generator instance
+     */
     public PaddingVectorGenerator getVectorGenerator() {
         return vectorGenerator;
     }
 
+    /**
+     * Constructs a PaddingTraceGenerator with the specified record generator type. Initializes the
+     * appropriate padding vector generator based on the type.
+     *
+     * @param type The type of padding record generator to use
+     * @throws IllegalArgumentException if the record generator type is unknown
+     */
     public PaddingTraceGenerator(PaddingRecordGeneratorType type) {
         switch (type) {
             case LONG_RECORD:
@@ -49,6 +61,15 @@ public abstract class PaddingTraceGenerator {
         }
     }
 
+    /**
+     * Creates a workflow trace for testing padding oracle vulnerabilities. Subclasses must
+     * implement this method to define specific workflow patterns for different padding oracle test
+     * scenarios.
+     *
+     * @param config The TLS configuration to use for the workflow
+     * @param vector The padding vector to apply during the test
+     * @return A workflow trace configured for padding oracle testing
+     */
     public abstract WorkflowTrace getPaddingOracleWorkflowTrace(
             Config config, PaddingVector vector);
 }

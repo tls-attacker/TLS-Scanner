@@ -35,7 +35,7 @@ public class AlpnProbe extends TlsClientProbe {
     private static final String ALPN_FAKE_PROTOCOL = "This is not an ALPN Protocol";
 
     private List<String> clientAdvertisedAlpnList;
-    private TestResult strictAlpn = TestResults.COULD_NOT_TEST;
+    private TestResult strictAlpn = TestResults.ERROR_DURING_TEST;
 
     public AlpnProbe(ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.ALPN, scannerConfig);

@@ -9,11 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
-import de.rub.nds.protocol.crypto.key.DhPublicKey;
-import de.rub.nds.protocol.crypto.key.DsaPublicKey;
-import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
-import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
-import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.protocol.crypto.key.*;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;

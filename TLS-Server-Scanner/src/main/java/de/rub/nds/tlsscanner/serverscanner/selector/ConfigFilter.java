@@ -15,7 +15,19 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for applying configuration filters to TLS configurations. Provides functionality to
+ * filter cipher suites, named groups, and signature algorithms based on specified filter types.
+ */
 public class ConfigFilter {
+    /**
+     * Applies a filter profile to the given configuration by modifying its cipher suites, named
+     * groups, and signature algorithms according to the specified filter types.
+     *
+     * @param baseConfig the configuration to be modified
+     * @param configFilterTypes array of filter types to apply to the configuration
+     * @throws IllegalArgumentException if an undefined filter type is encountered
+     */
     public static void applyFilterProfile(Config baseConfig, ConfigFilterType[] configFilterTypes) {
         for (ConfigFilterType filterType : configFilterTypes) {
             if (filterType.isCipherSuiteFilter()) {

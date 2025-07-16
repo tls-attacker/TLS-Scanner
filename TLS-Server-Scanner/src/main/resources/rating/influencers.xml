@@ -797,6 +797,17 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>AVOIDS_WEAKER_CIPHER_SUITES_RFC9325</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>HAS_VERSION_INTOLERANCE</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
@@ -2022,13 +2033,13 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>ALPACA_MITIGATED</property>
+        <property>VULNERABLE_TO_ALPACA</property>
         <propertyRatingInfluencers>
-            <result>TRUE</result>
+            <result>FALSE</result>
             <influence>200</influence>
         </propertyRatingInfluencers>
         <propertyRatingInfluencers>
-            <result>FALSE</result>
+            <result>TRUE</result>
             <influence>-200</influence>
         </propertyRatingInfluencers>
     </ratingInfluencer>
@@ -2184,6 +2195,17 @@
         <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SELECTS_TLS13_PSK_DHE</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>-50</influence>
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
@@ -2470,6 +2492,9 @@
     </ratingInfluencer>
     <ratingInfluencer>
         <property>SUPPORTS_RECORD_FRAGMENTATION</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>MIN_RECORD_LENGTH</property>
     </ratingInfluencer>
     <ratingInfluencer>
         <property>HAS_GREASE_CIPHER_SUITE_INTOLERANCE</property>

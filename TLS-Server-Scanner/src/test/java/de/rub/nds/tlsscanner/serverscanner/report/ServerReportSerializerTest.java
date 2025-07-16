@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
@@ -25,6 +26,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
+import de.rub.nds.tlsscanner.serverscanner.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.serverscanner.probe.CertificateProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.CipherSuiteOrderProbe;
 import de.rub.nds.x509attacker.constants.KeyUsage;
@@ -33,22 +35,22 @@ import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import de.rub.nds.x509attacker.constants.X509Version;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
-import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.junit.jupiter.api.Test;
 
 public class ServerReportSerializerTest {
 
     @Test
-    void testSerializeEmpty() {
+    void testSerializeEmpty() throws Exception {
         ServerReport report = new ServerReport();
-        ServerReportSerializer.serialize(new ByteArrayOutputStream(), report);
+        ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+        SilentByteArrayOutputStream stream = new SilentByteArrayOutputStream();
+        stream.write(mapper.toJsonString(report).getBytes());
         // This should not throw an exception
     }
 
@@ -62,7 +64,9 @@ public class ServerReportSerializerTest {
                         new PropertyResultRatingInfluencer(TestResults.CANNOT_BE_TESTED, 10));
 
         List<GuidelineCheckResult> checkResultList = new LinkedList<>();
-        checkResultList.add(new GuidelineCheckResult("some checke", GuidelineAdherence.ADHERED));
+        checkResultList.add(
+                new CertificateAgilityGuidelineCheckResult(
+                        "some checke", GuidelineAdherence.ADHERED));
         GuidelineReport guidelineReport =
                 new GuidelineReport("guideline", "here is a link", checkResultList);
 
@@ -82,11 +86,9 @@ public class ServerReportSerializerTest {
         certReport.setNamedCurve(X509NamedCurve.BRAINPOOLP160R1);
         certReport.setNotAfter(new DateTime(12345));
         certReport.setNotBefore(new DateTime(DateTime.now().getMillis() - 1000));
-        certReport.setOriginalFullDuration(Duration.standardDays(4));
         certReport.setOcspMustStaple(true);
         certReport.setOcspSupported(false);
         certReport.setPublicKey(new RsaPublicKey(BigInteger.ONE, BigInteger.TEN));
-        certReport.setRemainingDuration(Duration.millis(100));
         certReport.setRevoked(false);
         certReport.setRocaVulnerable(false);
         certReport.setSelfSigned(true);
@@ -110,8 +112,8 @@ public class ServerReportSerializerTest {
 
         ServerReport report = new ServerReport();
         report.setConfigProfileIdentifier("something");
-        report.setScanEndTime(1000);
-        report.setScanStartTime(0);
+        report.setScanEndTime(1000l);
+        report.setScanStartTime(0l);
         report.setConfigProfileIdentifierTls13("some identifier");
         report.setIsHandshaking(true);
         report.setPerformedConnections(10);
@@ -131,7 +133,11 @@ public class ServerReportSerializerTest {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
                 new ListResult<>(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(certReport)));
-        ServerReportSerializer.serialize(new ByteArrayOutputStream(), report);
+        SilentByteArrayOutputStream outstream = new SilentByteArrayOutputStream();
+        ServerReportJsonMapper mapper = new ServerReportJsonMapper();
+        String jsonString = mapper.toJsonString(report);
+        outstream.write(jsonString.getBytes());
+        System.out.println(new String(outstream.toByteArray()));
         // This should not throw an exception
     }
 }

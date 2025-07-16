@@ -36,9 +36,14 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
     private final long timeout;
 
     /**
-     * Call super and assign the semaphore
+     * Creates a new ScannerThreadPoolExecutor with the specified core pool size, thread factory,
+     * semaphore, and timeout. The executor will automatically cancel tasks that exceed the timeout
+     * duration.
      *
-     * @param timeout The timeout after which tasks are cancelled in milliseconds.
+     * @param corePoolSize the number of threads to keep in the pool
+     * @param threadFactory the factory to use when creating new threads
+     * @param semaphore the semaphore to be released after each task execution
+     * @param timeout the timeout after which tasks are cancelled in milliseconds
      */
     public ScannerThreadPoolExecutor(
             int corePoolSize, ThreadFactory threadFactory, Semaphore semaphore, long timeout) {
@@ -58,9 +63,12 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
         semaphore.release();
     }
 
-    /*
-     * We override the submit method(s). Next to submitting the original task, we submit a task that will kill the
-     * original task after the amount of time specified in timeout.
+    /**
+     * Submits a Runnable task for execution and returns a Future representing that task. The task
+     * will be automatically cancelled if it does not complete within the configured timeout period.
+     *
+     * @param task the task to submit
+     * @return a Future representing pending completion of the task
      */
     @Override
     public Future<?> submit(Runnable task) {
@@ -69,12 +77,32 @@ public class ScannerThreadPoolExecutor extends ScheduledThreadPoolExecutor {
         return future;
     }
 
+    /**
+     * Submits a Runnable task for execution and returns a Future representing that task. The task
+     * will be automatically cancelled if it does not complete within the configured timeout period.
+     *
+     * @param <T> the type of the result
+     * @param task the task to submit
+     * @param result the result to return
+     * @return a Future representing pending completion of the task
+     */
+    @Override
     public <T> Future<T> submit(Runnable task, T result) {
         Future<T> future = super.submit(task, result);
         cancelFuture(future);
         return future;
     }
 
+    /**
+     * Submits a value-returning task for execution and returns a Future representing the pending
+     * results of the task. The task will be automatically cancelled if it does not complete within
+     * the configured timeout period.
+     *
+     * @param <T> the type of the task's result
+     * @param task the task to submit
+     * @return a Future representing pending completion of the task
+     */
+    @Override
     public <T> Future<T> submit(Callable<T> task) {
         Future<T> future = super.submit(task);
         cancelFuture(future);
