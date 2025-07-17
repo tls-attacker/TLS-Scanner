@@ -92,9 +92,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             rootContainer.add(createDtlsBugsContainer(report));
         }
         rootContainer.add(createProbePerformanceContainer(report));
-        if (report.getProtocolType() != ProtocolType.DTLS) {
-            rootContainer.add(createGuidelinesContainer(report));
-        }
+        rootContainer.add(createGuidelinesContainer(report));
         return rootContainer;
     }
 

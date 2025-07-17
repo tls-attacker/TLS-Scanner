@@ -14,8 +14,8 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class Rfc9325GuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -301,12 +301,12 @@ public class Rfc9325GuidelineSerializationIT {
         //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
         //                        TestResults.TRUE));
 
-        Guideline<ServerReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "IETF RFC 9325: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)",
                         "https://datatracker.ietf.org/doc/rfc9325/",
                         checks);
-        GuidelineIO<ServerReport> guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
+        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(
                 Paths.get("src/main/resources/guideline/rfc9325.xml").toFile(), guideline);
     }

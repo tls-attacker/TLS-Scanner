@@ -15,8 +15,8 @@ import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class BsiGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -319,8 +319,8 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.REUSES_EC_PUBLICKEY,
                         TestResults.FALSE));
 
-        Guideline<ServerReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "BSI TR-02102-2 (v2025-01)",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);

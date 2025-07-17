@@ -22,24 +22,14 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.NamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.NotRecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.RecommendedCipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.RecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -49,7 +39,7 @@ public class BsiGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ClientReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -145,7 +135,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_128_GCM_SHA256,
                                 CipherSuite.TLS_RSA_PSK_WITH_AES_256_GCM_SHA384)));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Die Verwendung der \"supported_groups\" Erweiterung für TLS_(EC)DHE_* Cipher-Suiten wird empfohlen.",
                         RequirementLevel.SHOULD,
                         GuidelineCheckCondition.and(
@@ -163,7 +153,7 @@ public class BsiGuidelineSerializationIT {
                                                                 TestResults.TRUE))))),
                         ExtensionType.ELLIPTIC_CURVES));
         checks.add(
-                new NamedGroupsGuidelineCheck(
+                new RecommendedNamedGroupsGuidelineCheck(
                         "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(
@@ -174,12 +164,9 @@ public class BsiGuidelineSerializationIT {
                                 NamedGroup.BRAINPOOLP384R1,
                                 NamedGroup.BRAINPOOLP512R1,
                                 NamedGroup.FFDHE3072,
-                                NamedGroup.FFDHE4096),
-                        Collections.emptyList(),
-                        false,
-                        2));
+                                NamedGroup.FFDHE4096)));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Die Verwendung der \"signature_algorithms\" Erweiterung wird empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
@@ -267,22 +254,6 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
                         TestResults.FALSE));
         checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "Die folgenden Diffie-Hellman Gruppen werden empfohlen.",
-                        RequirementLevel.SHOULD,
-                        Arrays.asList(
-                                NamedGroup.SECP256R1,
-                                NamedGroup.SECP384R1,
-                                NamedGroup.SECP521R1,
-                                NamedGroup.BRAINPOOLP256R1,
-                                NamedGroup.BRAINPOOLP384R1,
-                                NamedGroup.BRAINPOOLP512R1,
-                                NamedGroup.FFDHE3072,
-                                NamedGroup.FFDHE4096),
-                        Collections.emptyList(),
-                        true,
-                        2));
-        checks.add(
                 new SignatureAndHashAlgorithmsGuidelineCheck(
                         "Die folgenden Signaturverfahren werden für die \"signature_algorithms\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
@@ -303,7 +274,7 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512),
                         true));
         checks.add(
-                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                new ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck(
                         "Die folgenden Algorithmen werden für die \"signature_algorithms_cert\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
@@ -358,8 +329,8 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.REUSES_EC_PUBLICKEY,
                         TestResults.FALSE));
 
-        Guideline<ClientReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "BSI TR-02102-2 (v2025-01)",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);

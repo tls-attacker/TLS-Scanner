@@ -15,6 +15,8 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.ECPointFormatUncompressedOnlyCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.checks.TlsGuidelineCheck;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -37,7 +39,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ECPointFormatUncompressedOnlyCheck extends GuidelineCheck<ClientReport> {
+public class ECPointFormatUncompressedOnlyCheck extends TlsGuidelineCheck {
 
     private ECPointFormatUncompressedOnlyCheck() {
         super(null, null);
@@ -53,7 +55,13 @@ public class ECPointFormatUncompressedOnlyCheck extends GuidelineCheck<ClientRep
     }
 
     @Override
-    public GuidelineCheckResult evaluate(ClientReport clientReport) {
+    public GuidelineCheckResult evaluate(TlsScanReport tlsReport) {
+        ClientReport clientReport;
+        if (tlsReport instanceof ClientReport) {
+            clientReport = (ClientReport) tlsReport;
+        } else {
+            return null;
+        }
         // Step 1: Check if client uses ec_point_formats extension.
         if (!clientReport
                 .getClientAdvertisedExtensions()

@@ -12,8 +12,9 @@ import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.clientscanner.guideline.results.CipherSuiteFirstProposalGuidelineCheckResult;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.guideline.checks.TlsGuidelineCheck;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
+import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -24,7 +25,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CipherSuiteFirstProposalGuidelineCheck extends GuidelineCheck<ClientReport> {
+public class CipherSuiteFirstProposalGuidelineCheck extends TlsGuidelineCheck {
 
     private CipherSuiteFirstProposalGuidelineCheck() {
         super(null, null);
@@ -40,7 +41,7 @@ public class CipherSuiteFirstProposalGuidelineCheck extends GuidelineCheck<Clien
     }
 
     @Override
-    public GuidelineCheckResult evaluate(ClientReport clientReport) {
+    public GuidelineCheckResult evaluate(TlsScanReport clientReport) {
         // Abort if TLS 1.2 is not supported by the client.
         if (!clientReport.getSupportedProtocolVersions().contains(ProtocolVersion.TLS12)) {
             return new CipherSuiteFirstProposalGuidelineCheckResult(

@@ -22,7 +22,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
-import de.rub.nds.tlsattacker.transport.socket.SocketState;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -59,21 +58,10 @@ public class RenegotiationProbe extends TlsClientProbe {
                 state.getWorkflowTrace().getLastReceivedMessage(AlertMessage.class);
         if (state.getWorkflowTrace().executedAsPlanned()
                 && alertMessage != null
-                && alertMessage.getLevel().equals(AlertLevel.FATAL)) {
+                && alertMessage.getLevel().getValue().equals(AlertLevel.FATAL.getValue())) {
             return TestResults.TRUE;
         }
         return TestResults.FALSE;
-    }
-
-    public static boolean socketClosed(SocketState socketState) {
-        return (socketState == SocketState.SOCKET_EXCEPTION
-                || socketState == SocketState.CLOSED
-                || socketState == SocketState.IO_EXCEPTION);
-    }
-
-    public static boolean socketClosed(State state) {
-        SocketState socketState = state.getTcpContext().getFinalSocketState();
-        return socketClosed(socketState);
     }
 
     @Override

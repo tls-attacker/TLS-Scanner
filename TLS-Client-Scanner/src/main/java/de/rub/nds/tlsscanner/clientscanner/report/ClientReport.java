@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
-import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -131,11 +130,6 @@ public class ClientReport extends TlsScanReport {
         ListResult<String> listResult =
                 (ListResult<String>) getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_ALPNS);
         return listResult == null ? null : listResult.getList();
-    }
-
-    public synchronized Integer getWeakestDhStrength() {
-        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
-        return integerResult == null ? null : integerResult.getValue();
     }
 
     @Override

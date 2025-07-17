@@ -286,11 +286,6 @@ public class ServerReport extends TlsScanReport {
         return integerResult == null ? null : integerResult.getValue();
     }
 
-    public synchronized Integer getWeakestDhStrength() {
-        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
-        return integerResult == null ? null : integerResult.getValue();
-    }
-
     public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
         ListResult<InvalidCurveResponse> listResult =
                 getListResult(

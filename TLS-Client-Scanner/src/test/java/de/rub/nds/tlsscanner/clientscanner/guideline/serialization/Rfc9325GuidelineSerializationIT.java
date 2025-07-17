@@ -21,15 +21,14 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.clientscanner.guideline.checks.*;
-import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ public class Rfc9325GuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ClientReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -107,7 +106,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
                         TestResults.FALSE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "TLS 1.2 clients and servers MUST implement the renegotiation_info extension, as defined in [RFC5746].",
                         RequirementLevel.MUST,
                         new GuidelineCheckCondition(
@@ -130,7 +129,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "TLS implementations MUST support the Server Name Indication (SNI) extension defined in Section 3 of [RFC6066].",
                         RequirementLevel.MUST,
                         ExtensionType.SERVER_NAME_INDICATION));
@@ -141,7 +140,7 @@ public class Rfc9325GuidelineSerializationIT {
                         TlsAnalyzedProperty.STRICT_SNI,
                         TestResults.TRUE));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "TLS implementations (both client- and server-side) MUST support the Application-Layer Protocol Negotiation (ALPN) extension [RFC7301].",
                         RequirementLevel.MUST,
                         ExtensionType.ALPN));
@@ -459,26 +458,16 @@ public class Rfc9325GuidelineSerializationIT {
                         List.of(ProtocolVersion.TLS12),
                         List.of(CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA)));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Both clients and servers SHOULD include the \"Supported Elliptic Curves Extension\" [RFC8422].",
                         RequirementLevel.SHOULD,
                         ExtensionType.ELLIPTIC_CURVES));
         checks.add(
-                new NamedGroupsGuidelineCheck(
+                new RequiredNamedGroupsGuidelineCheck(
                         "Clients and servers SHOULD support the NIST P‑256 (secp256r1) [RFC8422] and X25519 (x25519) [RFC7748] curves.",
                         RequirementLevel.SHOULD,
                         Arrays.asList(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519),
-                        Collections.emptyList(),
-                        false,
-                        2));
-        checks.add(
-                new NamedGroupsGuidelineCheck(
-                        "Clients and servers SHOULD support the NIST P‑256 (secp256r1) [RFC8422] and X25519 (x25519) [RFC7748] curves.",
-                        RequirementLevel.SHOULD,
-                        Arrays.asList(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519),
-                        Collections.emptyList(),
-                        true,
-                        2));
+                        false));
         checks.add(
                 new CipherSuiteFirstProposalGuidelineCheck(
                         "Clients SHOULD include TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 as the first proposal to any server.",
@@ -509,7 +498,7 @@ public class Rfc9325GuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         Arrays.asList(HashAlgorithm.SHA1, HashAlgorithm.MD5)));
         checks.add(
-                new RecommendedExtensionGuidelineCheck(
+                new RequiredExtensionGuidelineCheck(
                         "Clients MUST indicate to servers that they request SHA-256 by using the \"Signature Algorithms\" extension defined in TLS 1.2. For TLS 1.3, the same requirement is already specified by [RFC8446].",
                         RequirementLevel.MUST,
                         GuidelineCheckCondition.or(
@@ -534,8 +523,8 @@ public class Rfc9325GuidelineSerializationIT {
         // 64-bit sequence number to populate the nonce_explicit part of the GCM nonce, as described
         // in the first two paragraphs of Section 5.3 of [RFC8446]." (7.2.1. Nonce Reuse in TLS 1.2)
 
-        Guideline<ClientReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "IETF RFC 9325: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)",
                         "https://datatracker.ietf.org/doc/rfc9325/",
                         checks);

@@ -431,4 +431,9 @@ public abstract class TlsScanReport extends ScanReport {
                     .collect(Collectors.toList());
         }
     }
+
+    public synchronized Integer getWeakestDhStrength() {
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
+        return integerResult == null ? null : integerResult.getValue();
+    }
 }

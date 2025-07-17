@@ -35,12 +35,8 @@ import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
 import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
 import jakarta.xml.bind.JAXBException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -185,13 +181,12 @@ public final class TlsClientScanner
     }
 
     @Override
-    protected List<Guideline<ClientReport>> getGuidelines() {
+    protected List<Guideline> getGuidelines() {
         if (getProtocolType() == ProtocolType.DTLS) {
             return List.of();
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml", "rfc9325.xml");
         GuidelineIO guidelineIO;
         try {
             guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
@@ -199,18 +194,7 @@ public final class TlsClientScanner
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
         }
-        List<Guideline<ClientReport>> guidelines = new ArrayList<>();
-        for (String guidelineName : guidelineFiles) {
-            try {
-                InputStream guideLineStream =
-                        TlsClientScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add((Guideline<ClientReport>) guidelineIO.read(guideLineStream));
-            } catch (JAXBException | XMLStreamException ex) {
-                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
-                return null;
-            }
-        }
-        return guidelines;
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "guideline");
     }
 
     private ProtocolType getProtocolType() {
