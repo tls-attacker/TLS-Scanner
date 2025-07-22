@@ -13,6 +13,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.clientscanner.guideline.results.ClientSigAndHashCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.guideline.checks.TlsGuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.results.SignatureAndHashAlgorithmsGuidelineCheckResult;
@@ -26,15 +27,15 @@ import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck extends TlsGuidelineCheck {
+public class ClientSigAndHashCertificateGuidelineCheck extends TlsGuidelineCheck {
 
     private List<SignatureAndHashAlgorithm> recommendedAlgorithms;
 
-    private ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck() {
+    private ClientSigAndHashCertificateGuidelineCheck() {
         super(null, null);
     }
 
-    public ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck(
+    public ClientSigAndHashCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             List<SignatureAndHashAlgorithm> recommendedAlgorithms) {
@@ -42,7 +43,7 @@ public class ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck extends T
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    public ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck(
+    public ClientSigAndHashCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
@@ -66,15 +67,15 @@ public class ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck extends T
                         : clientReport.getClientAdvertisedCertSignatureAndHashAlgorithms();
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+                    this, GuidelineAdherence.CHECK_FAILED, null);
         }
         for (SignatureAndHashAlgorithm algorithm : algorithms) {
             if (!recommendedAlgorithms.contains(algorithm)) {
                 nonRecommended.add(algorithm);
             }
         }
-        return new SignatureAndHashAlgorithmsGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+        return new ClientSigAndHashCertificateGuidelineCheckResult(
+                this, GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

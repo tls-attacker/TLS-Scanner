@@ -116,8 +116,15 @@ public class Rfc9325GuidelineSerializationIT {
                 new AnalyzedPropertyGuidelineCheck(
                         "TLS 1.2 clients MUST send renegotiation_info in the Client Hello. If the server does not acknowledge the extension, the client MUST generate a fatal handshake_failure alert prior to terminating the connection.",
                         RequirementLevel.MUST,
-                        new GuidelineCheckCondition(
-                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
+                        GuidelineCheckCondition.and(
+                                List.of(
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2,
+                                                TestResults.TRUE),
+                                        new GuidelineCheckCondition(
+                                                TlsAnalyzedProperty
+                                                        .SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
+                                                TestResults.TRUE))),
                         TlsAnalyzedProperty.ENFORCES_RENEGOTIATION_INFO_FROM_SERVER,
                         TestResults.TRUE));
         checks.add(
@@ -481,7 +488,8 @@ public class Rfc9325GuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE)));
         checks.add(
-                new KeySizeCertGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to 0
+                new ClientKeySizeGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to
+                        // 0
                         "4.5. Public Key Length", RequirementLevel.MUST, 0, 2048, 224, 2048));
         checks.add(
                 new RecommendedHashAlgorithmsGuidelineCheck(
@@ -530,6 +538,6 @@ public class Rfc9325GuidelineSerializationIT {
                         checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(
-                Paths.get("src/main/resources/guideline/rfc9325.xml").toFile(), guideline);
+                Paths.get("src/main/resources/client-guidelines/rfc9325.xml").toFile(), guideline);
     }
 }

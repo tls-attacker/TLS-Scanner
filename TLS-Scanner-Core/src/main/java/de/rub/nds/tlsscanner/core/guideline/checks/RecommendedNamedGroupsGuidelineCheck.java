@@ -62,7 +62,7 @@ public class RecommendedNamedGroupsGuidelineCheck extends TlsGuidelineCheck {
             }
         }
         return new RecommendedNamedGroupsGuidelineCheckResult(
-                getName(),
+                this,
                 GuidelineAdherence.of(notRecommendedButSupported.isEmpty()),
                 notRecommendedButSupported);
     }

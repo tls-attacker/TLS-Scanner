@@ -65,7 +65,7 @@ public class RequiredNamedGroupsGuidelineCheck extends TlsGuidelineCheck {
                 requiredGroups.stream().filter(ng -> !supportedGroups.contains(ng)).toList();
 
         return new RequiredNamedGroupsGuidelineCheckResult(
-                getName(),
+                this,
                 GuidelineAdherence.of(
                         (onlyOneIsRequired
                                         && requiredButNotSupported.size() < requiredGroups.size())

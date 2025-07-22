@@ -15,7 +15,7 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.*;
+import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ClientKeySizeGuidelineCheck;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
@@ -77,7 +77,7 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.MUST,
                         X509Version.V3));
         checks.add(
-                new KeySizeCertGuidelineCheck(
+                new ClientKeySizeGuidelineCheck(
                         "Both the public key contained in the certificate and the signature shall provide at least 112 bits of security.",
                         RequirementLevel.MUST,
                         2048,
@@ -592,6 +592,7 @@ public class NistGuidelineSerializationIT {
                 new Guideline(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
-        guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
+        guidelineIO.write(
+                Paths.get("src/main/resources/client-guidelines/nist.xml").toFile(), guideline);
     }
 }

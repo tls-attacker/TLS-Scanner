@@ -43,15 +43,14 @@
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <version>V3</version>
     </certificateVersionGuidelineCheck>
-    <keySizeCertGuidelineCheck>
+    <clientKeySizeGuidelineCheck>
         <name>Both the public key contained in the certificate and the signature shall provide at least 112 bits of security.</name>
         <requirementLevel>MUST</requirementLevel>
-        <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <minimumDsaKeyLength>2048</minimumDsaKeyLength>
         <minimumRsaKeyLength>2048</minimumRsaKeyLength>
         <minimumEcKeyLength>224</minimumEcKeyLength>
         <minimumDhKeyLength>2048</minimumDhKeyLength>
-    </keySizeCertGuidelineCheck>
+    </clientKeySizeGuidelineCheck>
     <certificateSignatureCheck>
         <name>If the client supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm that is consistent with the public key.</name>
         <requirementLevel>SHOULD</requirementLevel>

@@ -60,7 +60,7 @@ public abstract class CertificateGuidelineCheck extends TlsGuidelineCheck {
         boolean passFlag = false;
         boolean failFlag = false;
         boolean uncertainFlag = false;
-        CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult(getName());
+        CertificateGuidelineCheckResult result = new CertificateGuidelineCheckResult(this);
 
         List<CertificateChainReport> certificateChains = report.getCertificateChainList();
         for (CertificateChainReport chain : certificateChains) {
@@ -94,5 +94,14 @@ public abstract class CertificateGuidelineCheck extends TlsGuidelineCheck {
 
     public void setAtLeastOneCertificateShallPass(boolean atLeastOneCertificateShallPass) {
         this.atLeastOneCertificateShallPass = atLeastOneCertificateShallPass;
+    }
+
+    @Override
+    public boolean passesCondition(TlsScanReport report) {
+        if (report.getCertificateChainList() == null
+                || report.getCertificateChainList().isEmpty()) {
+            return false;
+        }
+        return super.passesCondition(report);
     }
 }

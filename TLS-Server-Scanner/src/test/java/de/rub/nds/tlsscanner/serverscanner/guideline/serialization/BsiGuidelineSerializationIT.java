@@ -16,7 +16,7 @@ import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.checks.*;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ServerKeySizeGuidelineCheck;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -263,7 +263,7 @@ public class BsiGuidelineSerializationIT {
                 // server here and compare its algorithms to the ones recommended by BSI. Not all
                 // recommended algorithms are currently supported by X509Attacker and thus commented
                 // out.
-                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                new SigAndHashCertificateGuidelineCheck(
                         "Die folgenden Algorithmen werden für die \"signature_algorithms_cert\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
@@ -295,7 +295,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
-                new KeySizeCertGuidelineCheck(
+                new ServerKeySizeGuidelineCheck(
                         "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.",
                         RequirementLevel.SHOULD,
                         3000,
@@ -325,6 +325,7 @@ public class BsiGuidelineSerializationIT {
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
-        guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
+        guidelineIO.write(
+                Paths.get("src/main/resources/server-guidelines/bsi.xml").toFile(), guideline);
     }
 }

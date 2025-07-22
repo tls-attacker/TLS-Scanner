@@ -9,14 +9,15 @@
 package de.rub.nds.tlsscanner.clientscanner.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 
 public class CipherSuiteFirstProposalGuidelineCheckResult extends GuidelineCheckResult {
 
     public CipherSuiteFirstProposalGuidelineCheckResult(
-            String checkName, GuidelineAdherence adherence) {
-        super(checkName, adherence);
+            GuidelineCheck check, GuidelineAdherence adherence) {
+        super(check, adherence);
     }
 
     @Override

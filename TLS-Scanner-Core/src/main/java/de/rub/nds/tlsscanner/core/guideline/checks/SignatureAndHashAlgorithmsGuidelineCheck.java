@@ -57,7 +57,17 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends TlsGuidelineCheck 
     @Override
     public GuidelineCheckResult evaluate(TlsScanReport report) {
         List<SignatureAndHashAlgorithm> algorithms;
-        if (tls13) {
+        if (report.getResultMap()
+                .containsKey(TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS)) {
+            // client
+            algorithms =
+                    report.getListResult(
+                                    TlsAnalyzedProperty
+                                            .CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                    SignatureAndHashAlgorithm.class)
+                            .getList();
+        } else if (tls13) {
+            // server
             algorithms =
                     report.getListResult(
                                     TlsAnalyzedProperty
@@ -84,7 +94,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends TlsGuidelineCheck 
         }
         if (algorithms == null || algorithms.isEmpty()) {
             return new SignatureAndHashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+                    this, GuidelineAdherence.CHECK_FAILED, null);
         }
         Set<SignatureAndHashAlgorithm> notRecommended = new HashSet<>();
         for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -93,8 +103,7 @@ public class SignatureAndHashAlgorithmsGuidelineCheck extends TlsGuidelineCheck 
             }
         }
         return new SignatureAndHashAlgorithmsGuidelineCheckResult(
-                // TODO this needs to be a new result now
-                getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
+                this, GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
     }
 
     @Override

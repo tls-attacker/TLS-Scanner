@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.core.guideline.checks;
 import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.results.AnalyzedPropertyGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -29,11 +28,6 @@ public class AnalyzedPropertyGuidelineCheck extends TlsGuidelineCheck {
 
     private AnalyzedPropertyGuidelineCheck() {
         super(null, null);
-    }
-
-    @Override
-    public <ReportT extends ScanReport> GuidelineCheckResult evaluate(ReportT report) {
-        return null;
     }
 
     public AnalyzedPropertyGuidelineCheck(
@@ -66,12 +60,12 @@ public class AnalyzedPropertyGuidelineCheck extends TlsGuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new AnalyzedPropertyGuidelineCheckResult(
-                        getName(), GuidelineAdherence.CHECK_FAILED, property, result, reportResult);
+                        this, GuidelineAdherence.CHECK_FAILED, property, result, reportResult);
             default:
                 break;
         }
         return new AnalyzedPropertyGuidelineCheckResult(
-                getName(),
+                this,
                 GuidelineAdherence.of(reportResult.equals(this.result)),
                 property,
                 result,

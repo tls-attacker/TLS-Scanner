@@ -64,6 +64,10 @@ public class ServerCertificateNameGuidelineCheck extends CertificateNameGuidelin
     public GuidelineCheckResult evaluate(TlsScanReport report) {
         if (report instanceof ServerReport) {
             serverReport = (ServerReport) report;
+        } else {
+            throw new RuntimeException(
+                    "The report has to be of type ServerReport, but was: "
+                            + report.getClass().getName());
         }
         return super.evaluate(report);
     }
@@ -98,7 +102,7 @@ public class ServerCertificateNameGuidelineCheck extends CertificateNameGuidelin
                                     .getFirst()
                                     .getStringValueOfValue())) {
                 return new CertificateNameGuidelineCheckResult(
-                        getName(),
+                        this,
                         GuidelineAdherence.VIOLATED,
                         cnRdn.get().getIdentifier(),
                         "Common Name should be hostname or IP address.");

@@ -63,22 +63,21 @@ public class CertificateCurveGuidelineCheck extends CertificateGuidelineCheck {
     @Override
     public GuidelineCheckResult evaluateChain(CertificateChainReport chainReport) {
         if (!SignatureAlgorithm.ECDSA.equals(chainReport.getLeafReport().getSignatureAlgorithm())) {
-            return new CertificateCurveGuidelineCheckResult(getName(), GuidelineAdherence.ADHERED);
+            return new CertificateCurveGuidelineCheckResult(this, GuidelineAdherence.ADHERED);
         }
         if (!(chainReport.getLeafReport().getPublicKey() instanceof EcdsaPublicKey)
                 && !(chainReport.getLeafReport().getPublicKey() instanceof EcdhPublicKey)) {
-            return new CertificateCurveGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED);
+            return new CertificateCurveGuidelineCheckResult(this, GuidelineAdherence.CHECK_FAILED);
         }
         // TODO unsafe check for ecdh
 
         X509NamedCurve namedCurve = chainReport.getLeafReport().getNamedCurve();
         if (!this.recommendedNamedParameters.contains(namedCurve)) {
             return new CertificateCurveGuidelineCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED, false, namedCurve);
+                    this, GuidelineAdherence.VIOLATED, false, namedCurve);
         }
         return new CertificateCurveGuidelineCheckResult(
-                getName(), GuidelineAdherence.ADHERED, true, namedCurve);
+                this, GuidelineAdherence.ADHERED, true, namedCurve);
     }
 
     @Override

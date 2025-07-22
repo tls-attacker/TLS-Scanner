@@ -62,7 +62,7 @@
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <version>V3</version>
     </certificateVersionGuidelineCheck>
-    <keySizeCertGuidelineCheck>
+    <serverKeySizeGuidelineCheck>
         <name>All server and client certificates shall contain public keys that offer at least 112 bits of security.</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
@@ -70,7 +70,7 @@
         <minimumRsaKeyLength>2048</minimumRsaKeyLength>
         <minimumEcKeyLength>224</minimumEcKeyLength>
         <minimumDhKeyLength>2048</minimumDhKeyLength>
-    </keySizeCertGuidelineCheck>
+    </serverKeySizeGuidelineCheck>
     <certificateSignatureCheck>
         <name>If the server supports TLS versions prior to TLS 1.2, the certificate should be signed with an algorithm consistent with the public key.</name>
         <requirementLevel>SHOULD</requirementLevel>

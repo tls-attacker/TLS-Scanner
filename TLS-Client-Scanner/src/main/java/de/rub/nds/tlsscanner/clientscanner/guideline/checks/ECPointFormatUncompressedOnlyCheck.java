@@ -60,14 +60,16 @@ public class ECPointFormatUncompressedOnlyCheck extends TlsGuidelineCheck {
         if (tlsReport instanceof ClientReport) {
             clientReport = (ClientReport) tlsReport;
         } else {
-            return null;
+            throw new RuntimeException(
+                    "The report has to be of type ClientReport, but was: "
+                            + tlsReport.getClass().getName());
         }
         // Step 1: Check if client uses ec_point_formats extension.
         if (!clientReport
                 .getClientAdvertisedExtensions()
                 .contains(ExtensionType.EC_POINT_FORMATS)) {
             return new ECPointFormatUncompressedOnlyCheckResult(
-                    getName(), GuidelineAdherence.CONDITION_NOT_MET);
+                    this, GuidelineAdherence.CONDITION_NOT_MET);
         }
 
         // Step 2: Check if TlsAnalyzedProperty.SUPPORTS_UNCOMPRESSED_POINT is not
@@ -82,10 +84,10 @@ public class ECPointFormatUncompressedOnlyCheck extends TlsGuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new ECPointFormatUncompressedOnlyCheckResult(
-                        getName(), GuidelineAdherence.CHECK_FAILED);
+                        this, GuidelineAdherence.CHECK_FAILED);
             case FALSE:
                 return new ECPointFormatUncompressedOnlyCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED);
+                        this, GuidelineAdherence.VIOLATED);
             default:
                 break;
         }
@@ -103,10 +105,10 @@ public class ECPointFormatUncompressedOnlyCheck extends TlsGuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new ECPointFormatUncompressedOnlyCheckResult(
-                        getName(), GuidelineAdherence.CHECK_FAILED);
+                        this, GuidelineAdherence.CHECK_FAILED);
             case TRUE:
                 return new ECPointFormatUncompressedOnlyCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED);
+                        this, GuidelineAdherence.VIOLATED);
             default:
                 break;
         }
@@ -121,16 +123,16 @@ public class ECPointFormatUncompressedOnlyCheck extends TlsGuidelineCheck {
             case NOT_TESTED_YET:
             case TIMEOUT:
                 return new ECPointFormatUncompressedOnlyCheckResult(
-                        getName(), GuidelineAdherence.CHECK_FAILED);
+                        this, GuidelineAdherence.CHECK_FAILED);
             case TRUE:
                 return new ECPointFormatUncompressedOnlyCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED);
+                        this, GuidelineAdherence.VIOLATED);
             default:
                 break;
         }
 
         // If the three condition above are met, the check it passed.
-        return new ECPointFormatUncompressedOnlyCheckResult(getName(), GuidelineAdherence.ADHERED);
+        return new ECPointFormatUncompressedOnlyCheckResult(this, GuidelineAdherence.ADHERED);
     }
 
     @Override

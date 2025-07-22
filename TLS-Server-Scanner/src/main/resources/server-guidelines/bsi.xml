@@ -247,7 +247,7 @@
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
         <tls13>true</tls13>
     </signatureAndHashAlgorithmsGuidelineCheck>
-    <signatureAndHashAlgorithmsCertificateGuidelineCheck>
+    <sigAndHashCertificateGuidelineCheck>
         <name>Die folgenden Algorithmen werden für die "signature_algorithms_cert" Erweiterung empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -261,7 +261,7 @@
         <recommendedAlgorithms>ECDSA_WITH_SHA256</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_WITH_SHA384</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_WITH_SHA512</recommendedAlgorithms>
-    </signatureAndHashAlgorithmsCertificateGuidelineCheck>
+    </sigAndHashCertificateGuidelineCheck>
     <recommendedCipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -270,7 +270,7 @@
         <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_128_CCM_SHA256</recommendedCipherSuites>
     </recommendedCipherSuiteGuidelineCheck>
-    <keySizeCertGuidelineCheck>
+    <serverKeySizeGuidelineCheck>
         <name>Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
@@ -278,7 +278,7 @@
         <minimumRsaKeyLength>3000</minimumRsaKeyLength>
         <minimumEcKeyLength>250</minimumEcKeyLength>
         <minimumDhKeyLength>3000</minimumDhKeyLength>
-    </keySizeCertGuidelineCheck>
+    </serverKeySizeGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (DHE)</name>
         <requirementLevel>MUST</requirementLevel>

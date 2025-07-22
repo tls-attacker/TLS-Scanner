@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.guideline.results;
 
 import com.google.common.base.Joiner;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import java.util.Objects;
@@ -26,15 +27,15 @@ public class RecommendedNamedGroupsGuidelineCheckResult extends GuidelineCheckRe
     }
 
     public RecommendedNamedGroupsGuidelineCheckResult(
-            String checkName, GuidelineAdherence adherence) {
-        super(checkName, adherence);
+            GuidelineCheck check, GuidelineAdherence adherence) {
+        super(check, adherence);
     }
 
     public RecommendedNamedGroupsGuidelineCheckResult(
-            String checkName,
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             Set<NamedGroup> notRecommendedButSupported) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.notRecommendedButSupported = notRecommendedButSupported;
     }
 

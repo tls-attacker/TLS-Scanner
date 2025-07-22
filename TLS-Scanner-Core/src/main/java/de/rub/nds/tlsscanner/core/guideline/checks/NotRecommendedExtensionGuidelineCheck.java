@@ -58,7 +58,7 @@ public class NotRecommendedExtensionGuidelineCheck extends TlsGuidelineCheck {
         adherence = GuidelineAdherence.of(notRecommendedButSupportedExtensions.isEmpty());
 
         return new NotRecommendedExtensionGuidelineCheckResult(
-                getName(), adherence, notRecommendedButSupportedExtensions);
+                this, adherence, notRecommendedButSupportedExtensions);
     }
 
     @Override

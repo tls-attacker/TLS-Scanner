@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 
 public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResult {
@@ -25,8 +26,11 @@ public class CertificateValidityGuidelineCheckResult extends GuidelineCheckResul
     }
 
     public CertificateValidityGuidelineCheckResult(
-            String checkName, GuidelineAdherence adherence, int expectedResult, long actualResult) {
-        super(checkName, adherence);
+            GuidelineCheck check,
+            GuidelineAdherence adherence,
+            int expectedResult,
+            long actualResult) {
+        super(check, adherence);
         this.maximumValidity = expectedResult;
         this.actualValidity = actualResult;
     }

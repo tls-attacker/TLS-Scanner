@@ -29,9 +29,19 @@ public abstract class TlsGuidelineCheck extends GuidelineCheck {
     @Override
     public <ReportT extends ScanReport> GuidelineCheckResult evaluate(ReportT report) {
         if (report instanceof TlsScanReport) {
-            return evaluate(report);
+            return evaluate((TlsScanReport) report);
         }
-        return null;
+        throw new RuntimeException(
+                "The report has to be of type TlsScanReport, but was: "
+                        + report.getClass().getName());
+    }
+
+    @Override
+    public <ReportT extends ScanReport> boolean passesCondition(ReportT report) {
+        if (report instanceof TlsScanReport tlsScanReport) {
+            return passesCondition(tlsScanReport);
+        }
+        return super.passesCondition(report);
     }
 
     public boolean passesCondition(TlsScanReport report) {

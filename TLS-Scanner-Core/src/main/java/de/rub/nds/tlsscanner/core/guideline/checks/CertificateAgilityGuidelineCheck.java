@@ -46,8 +46,7 @@ public class CertificateAgilityGuidelineCheck extends TlsGuidelineCheck {
         @SuppressWarnings("unchecked")
         List<CertificateChainReport> chains = report.getCertificateChainList();
         if (chains == null || chains.size() < 2) {
-            return new CertificateAgilityGuidelineCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED);
+            return new CertificateAgilityGuidelineCheckResult(this, GuidelineAdherence.VIOLATED);
         }
         CertificateReport firstReport = chains.get(0).getCertificateReportList().get(0);
         ObjectIdentifier firstAlg = firstReport.getSignatureAndHashAlgorithmOid();
@@ -57,16 +56,14 @@ public class CertificateAgilityGuidelineCheck extends TlsGuidelineCheck {
             CertificateChainReport chain = chains.get(i);
             CertificateReport certReport = chain.getCertificateReportList().get(0);
             if (!firstAlg.equals(certReport.getSignatureAndHashAlgorithmOid())) {
-                return new CertificateAgilityGuidelineCheckResult(
-                        getName(), GuidelineAdherence.ADHERED);
+                return new CertificateAgilityGuidelineCheckResult(this, GuidelineAdherence.ADHERED);
             }
             if (firstKey != certReport.getPublicKey().length()
                     && firstKey != ((PublicKeyContainer) certReport.getPublicKey()).length()) {
-                return new CertificateAgilityGuidelineCheckResult(
-                        getName(), GuidelineAdherence.ADHERED);
+                return new CertificateAgilityGuidelineCheckResult(this, GuidelineAdherence.ADHERED);
             }
         }
-        return new CertificateAgilityGuidelineCheckResult(getName(), GuidelineAdherence.VIOLATED);
+        return new CertificateAgilityGuidelineCheckResult(this, GuidelineAdherence.VIOLATED);
     }
 
     @Override

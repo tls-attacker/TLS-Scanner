@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 
@@ -20,8 +21,9 @@ public class ExtendedKeyUsageCertificateCheckResult extends GuidelineCheckResult
         super(null, null);
     }
 
-    public ExtendedKeyUsageCertificateCheckResult(String checkName, GuidelineAdherence adherence) {
-        super(checkName, adherence);
+    public ExtendedKeyUsageCertificateCheckResult(
+            GuidelineCheck check, GuidelineAdherence adherence) {
+        super(check, adherence);
     }
 
     @Override

@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.guideline.results;
 
 import com.google.common.base.Joiner;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import java.util.List;
@@ -26,10 +27,10 @@ public class RequiredExtensionGuidelineCheckResult extends GuidelineCheckResult 
     }
 
     public RequiredExtensionGuidelineCheckResult(
-            String checkName,
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             List<ExtensionType> requiredButNotSupported) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.requiredButNotSupported = requiredButNotSupported;
     }
 

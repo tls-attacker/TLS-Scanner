@@ -15,6 +15,7 @@ import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
+import de.rub.nds.scanner.core.guideline.RequirementLevel;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.scanner.core.passive.TrackableValue;
 import de.rub.nds.scanner.core.probe.result.ListResult;
@@ -24,6 +25,7 @@ import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.guideline.checks.CertificateAgilityGuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.results.CertificateAgilityGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -66,7 +68,8 @@ public class ServerReportSerializerTest {
         List<GuidelineCheckResult> checkResultList = new LinkedList<>();
         checkResultList.add(
                 new CertificateAgilityGuidelineCheckResult(
-                        "some checke", GuidelineAdherence.ADHERED));
+                        new CertificateAgilityGuidelineCheck("some check", RequirementLevel.MUST),
+                        GuidelineAdherence.ADHERED));
         GuidelineReport guidelineReport =
                 new GuidelineReport("guideline", "here is a link", checkResultList);
 

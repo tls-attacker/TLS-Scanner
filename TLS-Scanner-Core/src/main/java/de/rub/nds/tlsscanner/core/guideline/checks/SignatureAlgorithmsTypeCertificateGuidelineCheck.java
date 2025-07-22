@@ -65,14 +65,14 @@ public class SignatureAlgorithmsTypeCertificateGuidelineCheck extends Certificat
         CertificateReport report = chain.getCertificateReportList().get(0);
         if (report.getX509SignatureAlgorithm() == null) {
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+                    this, GuidelineAdherence.CHECK_FAILED, null);
         }
         Set<SignatureAlgorithm> nonRecommended = new HashSet<>();
         if (!this.recommendedAlgorithms.contains(report.getSignatureAlgorithm())) {
             nonRecommended.add(report.getSignatureAlgorithm());
         }
         return new SignatureAlgorithmsGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+                this, GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

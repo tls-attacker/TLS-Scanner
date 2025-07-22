@@ -2398,6 +2398,9 @@
         <property>WEAKEST_DH_STRENGTH</property>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>WEAKEST_ECDH_STRENGTH</property>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>TOTAL_RECEIVED_RETRANSMISSIONS</property>
     </ratingInfluencer>
     <ratingInfluencer>

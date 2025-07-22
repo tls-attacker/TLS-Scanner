@@ -220,26 +220,6 @@
         <property>SUPPORTS_EXTENDED_MASTER_SECRET</property>
         <result>TRUE</result>
     </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>Der PSK-Modus psk_ke bietet keine Perfect Forward Secrecy. Dieser Modus sollte daher nur in speziellen Anwendungsfällen nach Hinzuziehen eines Experten eingesetzt werden.</name>
-        <requirementLevel>SHOULD_NOT</requirementLevel>
-        <condition>
-            <property>SUPPORTS_TLS_1_3</property>
-            <result>TRUE</result>
-        </condition>
-        <property>SUPPORTS_TLS13_PSK</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
-    <analyzedPropertyGuidelineCheck>
-        <name>Das Senden oder Annehmen von 0-RTT Daten wird nicht empfohlen.</name>
-        <requirementLevel>SHOULD_NOT</requirementLevel>
-        <condition>
-            <property>SUPPORTS_TLS_1_3</property>
-            <result>TRUE</result>
-        </condition>
-        <property>SUPPORTS_TLS13_0_RTT</property>
-        <result>FALSE</result>
-    </analyzedPropertyGuidelineCheck>
     <signatureAndHashAlgorithmsGuidelineCheck>
         <name>Die folgenden Signaturverfahren werden für die "signature_algorithms" Erweiterung empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -261,7 +241,7 @@
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
         <tls13>true</tls13>
     </signatureAndHashAlgorithmsGuidelineCheck>
-    <clientSignatureAndHashAlgorithmsCertificateGuidelineCheck>
+    <clientSigAndHashCertificateGuidelineCheck>
         <name>Die folgenden Algorithmen werden für die "signature_algorithms_cert" Erweiterung empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
         <condition>
@@ -283,7 +263,7 @@
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P256R1_TLS13_SHA256</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P384R1_TLS13_SHA384</recommendedAlgorithms>
         <recommendedAlgorithms>ECDSA_BRAINPOOL_P512R1_TLS13_SHA512</recommendedAlgorithms>
-    </clientSignatureAndHashAlgorithmsCertificateGuidelineCheck>
+    </clientSigAndHashCertificateGuidelineCheck>
     <recommendedCipherSuiteGuidelineCheck>
         <name>Die folgenden Cipher-Suiten werden empfohlen.</name>
         <requirementLevel>SHOULD</requirementLevel>
@@ -292,15 +272,14 @@
         <recommendedCipherSuites>TLS_AES_256_GCM_SHA384</recommendedCipherSuites>
         <recommendedCipherSuites>TLS_AES_128_CCM_SHA256</recommendedCipherSuites>
     </recommendedCipherSuiteGuidelineCheck>
-    <keySizeCertGuidelineCheck>
+    <clientKeySizeGuidelineCheck>
         <name>Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.</name>
         <requirementLevel>SHOULD</requirementLevel>
-        <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
         <minimumDsaKeyLength>3000</minimumDsaKeyLength>
         <minimumRsaKeyLength>3000</minimumRsaKeyLength>
         <minimumEcKeyLength>250</minimumEcKeyLength>
         <minimumDhKeyLength>3000</minimumDhKeyLength>
-    </keySizeCertGuidelineCheck>
+    </clientKeySizeGuidelineCheck>
     <analyzedPropertyGuidelineCheck>
         <name>Ephemer- bzw. Sitzungsschlüssel dürfen nur für eine Verbindung benutzt werden. (DHE)</name>
         <requirementLevel>MUST</requirementLevel>

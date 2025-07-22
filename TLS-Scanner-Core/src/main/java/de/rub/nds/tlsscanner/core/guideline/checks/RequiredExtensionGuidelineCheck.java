@@ -54,8 +54,7 @@ public class RequiredExtensionGuidelineCheck extends TlsGuidelineCheck {
 
         adherence = GuidelineAdherence.of(requiredButNotSupported.isEmpty());
 
-        return new RequiredExtensionGuidelineCheckResult(
-                getName(), adherence, requiredButNotSupported);
+        return new RequiredExtensionGuidelineCheckResult(this, adherence, requiredButNotSupported);
     }
 
     @Override

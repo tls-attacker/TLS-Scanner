@@ -9,22 +9,23 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeySizeCertGuidelineCheckResult extends GuidelineCheckResult {
+public class KeySizeGuidelineCheckResult extends GuidelineCheckResult {
 
     private final List<KeySizeData> keySizes = new ArrayList<>();
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    private KeySizeCertGuidelineCheckResult() {
+    private KeySizeGuidelineCheckResult() {
         super(null, null);
     }
 
-    public KeySizeCertGuidelineCheckResult(String checkName) {
-        super(checkName, GuidelineAdherence.CHECK_FAILED);
+    public KeySizeGuidelineCheckResult(GuidelineCheck check) {
+        super(check, GuidelineAdherence.CHECK_FAILED);
     }
 
     public void addKeySize(KeySizeData data) {
@@ -41,6 +42,7 @@ public class KeySizeCertGuidelineCheckResult extends GuidelineCheckResult {
         for (KeySizeData data : this.keySizes) {
             stringBuilder
                     .append(data.getAlgorithm())
+                    .append(data.isDheKeyexchange() ? " (KE)" : "")
                     .append(" Key Size: ")
                     .append(data.getActualLength());
             if (data.getActualLength() < data.getMinimumLength()) {

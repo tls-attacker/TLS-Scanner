@@ -57,7 +57,7 @@ public class CertificateValidityGuidelineCheck extends CertificateGuidelineCheck
         CertificateReport report = chain.getLeafReport();
         int validDays = Days.daysBetween(report.getNotBefore(), report.getNotAfter()).getDays();
         return new CertificateValidityGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(validDays <= this.days), days, validDays);
+                this, GuidelineAdherence.of(validDays <= this.days), days, validDays);
     }
 
     @Override

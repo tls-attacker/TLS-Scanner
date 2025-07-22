@@ -1135,6 +1135,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.VERIFY_CHECK_PATTERN,
                                 TlsAnalyzedProperty.HRR_SELECTED_GROUP,
                                 TlsAnalyzedProperty.WEAKEST_DH_STRENGTH,
+                                TlsAnalyzedProperty.WEAKEST_ECDH_STRENGTH,
                                 TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
                                 TlsAnalyzedProperty.COOKIE_LENGTH,
                                 TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,

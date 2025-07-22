@@ -9,7 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.checks;
 
 import de.rub.nds.scanner.core.guideline.*;
-import de.rub.nds.tlsscanner.core.guideline.results.X509SignatureAlgorithmGuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.results.SigAndHashCertificateGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -21,15 +21,15 @@ import java.util.Set;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends TlsGuidelineCheck {
+public class SigAndHashCertificateGuidelineCheck extends TlsGuidelineCheck {
 
     private List<X509SignatureAlgorithm> recommendedAlgorithms;
 
-    private SignatureAndHashAlgorithmsCertificateGuidelineCheck() {
+    private SigAndHashCertificateGuidelineCheck() {
         super(null, null);
     }
 
-    public SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+    public SigAndHashCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             List<X509SignatureAlgorithm> recommendedAlgorithms) {
@@ -37,7 +37,7 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends TlsGuid
         this.recommendedAlgorithms = recommendedAlgorithms;
     }
 
-    public SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+    public SigAndHashCertificateGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
@@ -54,8 +54,8 @@ public class SignatureAndHashAlgorithmsCertificateGuidelineCheck extends TlsGuid
                 nonRecommended.add(algorithm);
             }
         }
-        return new X509SignatureAlgorithmGuidelineCheckResult(
-                getName(), GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
+        return new SigAndHashCertificateGuidelineCheckResult(
+                this, GuidelineAdherence.of(nonRecommended.isEmpty()), nonRecommended);
     }
 
     @Override

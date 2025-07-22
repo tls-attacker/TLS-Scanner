@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.guideline.results;
 import com.google.common.base.Joiner;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 import java.util.Set;
@@ -27,10 +28,10 @@ public class RecommendedHashAlgorithmsGuidelineCheckResult extends GuidelineChec
     }
 
     public RecommendedHashAlgorithmsGuidelineCheckResult(
-            String checkName,
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             Set<HashAlgorithm> supportedButNotRecommendedAlgorithms) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.supportedButNotRecommendedAlgorithms = supportedButNotRecommendedAlgorithms;
     }
 

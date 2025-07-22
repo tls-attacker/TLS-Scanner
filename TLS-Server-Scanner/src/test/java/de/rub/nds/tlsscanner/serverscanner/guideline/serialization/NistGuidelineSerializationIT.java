@@ -106,7 +106,7 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.MUST,
                         X509Version.V3));
         checks.add(
-                new KeySizeCertGuidelineCheck(
+                new ServerKeySizeGuidelineCheck(
                         "All server and client certificates shall contain public keys that offer at least 112 bits of security.",
                         RequirementLevel.MUST,
                         2048,
@@ -539,6 +539,7 @@ public class NistGuidelineSerializationIT {
                 new Guideline(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
-        guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
+        guidelineIO.write(
+                Paths.get("src/main/resources/server-guidelines/nist.xml").toFile(), guideline);
     }
 }

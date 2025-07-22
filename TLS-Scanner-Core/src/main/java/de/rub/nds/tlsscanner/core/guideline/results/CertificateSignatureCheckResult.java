@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 
@@ -27,11 +28,11 @@ public class CertificateSignatureCheckResult extends GuidelineCheckResult {
     }
 
     public CertificateSignatureCheckResult(
-            String checkName,
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             X509PublicKeyType keyAlgorithm,
             SignatureAlgorithm signatureAlgorithm) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.keyAlgorithm = keyAlgorithm;
         this.signatureAlgorithm = signatureAlgorithm;
     }

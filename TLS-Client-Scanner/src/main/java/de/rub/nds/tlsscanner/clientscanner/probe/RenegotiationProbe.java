@@ -68,6 +68,7 @@ public class RenegotiationProbe extends TlsClientProbe {
     public Requirement<ClientReport> getRequirements() {
         return new ProbeRequirement<ClientReport>(TlsProbeType.PROTOCOL_VERSION)
                 .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_TLS_1_2))
+                .and(new ProbeRequirement<>(TlsProbeType.EXTENSIONS))
                 .and(new ExtensionRequirement<>(ExtensionType.RENEGOTIATION_INFO));
     }
 

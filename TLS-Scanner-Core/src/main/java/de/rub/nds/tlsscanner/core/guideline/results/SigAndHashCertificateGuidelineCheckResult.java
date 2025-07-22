@@ -10,27 +10,28 @@ package de.rub.nds.tlsscanner.core.guideline.results;
 
 import com.google.common.base.Joiner;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.Objects;
 import java.util.Set;
 
-public class X509SignatureAlgorithmGuidelineCheckResult extends GuidelineCheckResult {
+public class SigAndHashCertificateGuidelineCheckResult extends GuidelineCheckResult {
 
     private final Set<X509SignatureAlgorithm> notRecommendedAlgorithms;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")
-    private X509SignatureAlgorithmGuidelineCheckResult() {
+    private SigAndHashCertificateGuidelineCheckResult() {
         super(null, null);
         this.notRecommendedAlgorithms = null;
     }
 
-    public X509SignatureAlgorithmGuidelineCheckResult(
-            String checkName,
+    public SigAndHashCertificateGuidelineCheckResult(
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             Set<X509SignatureAlgorithm> notRecommendedAlgorithms) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.notRecommendedAlgorithms = notRecommendedAlgorithms;
     }
 

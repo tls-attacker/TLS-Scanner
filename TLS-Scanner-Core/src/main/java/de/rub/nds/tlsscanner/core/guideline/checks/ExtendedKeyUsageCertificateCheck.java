@@ -51,7 +51,7 @@ public class ExtendedKeyUsageCertificateCheck extends CertificateGuidelineCheck 
                 GuidelineAdherence.of(
                         Boolean.TRUE.equals(report.getExtendedKeyUsageServerAuth())
                                 && Boolean.FALSE.equals(report.getExtendedKeyUsagePresent()));
-        return new ExtendedKeyUsageCertificateCheckResult(getName(), adherence);
+        return new ExtendedKeyUsageCertificateCheckResult(this, adherence);
     }
 
     @Override

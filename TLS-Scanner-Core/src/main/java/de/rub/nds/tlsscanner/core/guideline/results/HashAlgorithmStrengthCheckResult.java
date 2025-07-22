@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.Objects;
 
@@ -25,8 +26,8 @@ public class HashAlgorithmStrengthCheckResult extends GuidelineCheckResult {
     }
 
     public HashAlgorithmStrengthCheckResult(
-            String checkName, GuidelineAdherence adherence, HashAlgorithm hashAlgorithm) {
-        super(checkName, adherence);
+            GuidelineCheck check, GuidelineAdherence adherence, HashAlgorithm hashAlgorithm) {
+        super(check, adherence);
         this.hashAlgorithm = hashAlgorithm;
     }
 

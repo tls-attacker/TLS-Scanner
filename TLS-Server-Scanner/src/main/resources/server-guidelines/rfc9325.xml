@@ -570,7 +570,7 @@
         <requiredGroups>ECDH_X25519</requiredGroups>
         <onlyOneIsRequired>false</onlyOneIsRequired>
     </requiredNamedGroupsGuidelineCheck>
-    <keySizeCertGuidelineCheck>
+    <serverKeySizeGuidelineCheck>
         <name>4.5. Public Key Length</name>
         <requirementLevel>MUST</requirementLevel>
         <atLeastOneCertificateShallPass>false</atLeastOneCertificateShallPass>
@@ -578,7 +578,7 @@
         <minimumRsaKeyLength>2048</minimumRsaKeyLength>
         <minimumEcKeyLength>224</minimumEcKeyLength>
         <minimumDhKeyLength>2048</minimumDhKeyLength>
-    </keySizeCertGuidelineCheck>
+    </serverKeySizeGuidelineCheck>
     <recommendedHashAlgorithmsGuidelineCheck>
         <name>In addition, the use of the SHA-256 hash algorithm is RECOMMENDED and SHA-1 or MD5 MUST NOT be used [RFC9155] (for more details, see also [CAB-Baseline], for which the current version at the time of writing is 1.8.4).</name>
         <requirementLevel>SHOULD</requirementLevel>

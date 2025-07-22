@@ -22,7 +22,8 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
-import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ClientKeySizeGuidelineCheck;
+import de.rub.nds.tlsscanner.clientscanner.guideline.checks.ClientSigAndHashCertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import jakarta.xml.bind.JAXBException;
@@ -237,7 +238,8 @@ public class BsiGuidelineSerializationIT {
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_2, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                         TestResults.TRUE));
-        checks.add(
+        // can not (currently) be tested for clients
+        /*checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Der PSK-Modus psk_ke bietet keine Perfect Forward Secrecy. Dieser Modus sollte daher nur in speziellen Anwendungsfällen nach Hinzuziehen eines Experten eingesetzt werden.",
                         RequirementLevel.SHOULD_NOT,
@@ -252,7 +254,7 @@ public class BsiGuidelineSerializationIT {
                         new GuidelineCheckCondition(
                                 TlsAnalyzedProperty.SUPPORTS_TLS_1_3, TestResults.TRUE),
                         TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT,
-                        TestResults.FALSE));
+                        TestResults.FALSE));*/
         checks.add(
                 new SignatureAndHashAlgorithmsGuidelineCheck(
                         "Die folgenden Signaturverfahren werden für die \"signature_algorithms\" Erweiterung empfohlen.",
@@ -274,7 +276,7 @@ public class BsiGuidelineSerializationIT {
                                 SignatureAndHashAlgorithm.ECDSA_BRAINPOOL_P512R1_TLS13_SHA512),
                         true));
         checks.add(
-                new ClientSignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                new ClientSigAndHashCertificateGuidelineCheck(
                         "Die folgenden Algorithmen werden für die \"signature_algorithms_cert\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
@@ -305,7 +307,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
-                new KeySizeCertGuidelineCheck(
+                new ClientKeySizeGuidelineCheck(
                         "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.",
                         RequirementLevel.SHOULD,
                         3000,
@@ -335,6 +337,7 @@ public class BsiGuidelineSerializationIT {
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
-        guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
+        guidelineIO.write(
+                Paths.get("src/main/resources/client-guidelines/bsi.xml").toFile(), guideline);
     }
 }

@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 
 public class CertificateNameGuidelineCheckResult extends GuidelineCheckResult {
@@ -25,8 +26,8 @@ public class CertificateNameGuidelineCheckResult extends GuidelineCheckResult {
     }
 
     public CertificateNameGuidelineCheckResult(
-            String checkName, GuidelineAdherence adherence, String rdn, String reason) {
-        super(checkName, adherence);
+            GuidelineCheck check, GuidelineAdherence adherence, String rdn, String reason) {
+        super(check, adherence);
         this.rdn = rdn;
         this.reason = reason;
     }

@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.guideline.checks;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.results.SignatureAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -49,8 +50,18 @@ public class SignatureAlgorithmsGuidelineCheck extends TlsGuidelineCheck {
 
     @Override
     public GuidelineCheckResult evaluate(TlsScanReport report) {
-        List<SignatureAndHashAlgorithm> algorithms =
-                report.getSupportedSignatureAndHashAlgorithms();
+        List<SignatureAndHashAlgorithm> algorithms;
+        if (report.getResultMap()
+                .containsKey(TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS)) {
+            algorithms =
+                    report.getListResult(
+                                    TlsAnalyzedProperty
+                                            .CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                    SignatureAndHashAlgorithm.class)
+                            .getList();
+        } else {
+            algorithms = report.getSupportedSignatureAndHashAlgorithms();
+        }
         if (algorithms != null) {
             Set<SignatureAlgorithm> notRecommended = new HashSet<>();
             for (SignatureAndHashAlgorithm alg : algorithms) {
@@ -59,10 +70,10 @@ public class SignatureAlgorithmsGuidelineCheck extends TlsGuidelineCheck {
                 }
             }
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
+                    this, GuidelineAdherence.of(notRecommended.isEmpty()), notRecommended);
         } else {
             return new SignatureAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, null);
+                    this, GuidelineAdherence.CHECK_FAILED, null);
         }
     }
 

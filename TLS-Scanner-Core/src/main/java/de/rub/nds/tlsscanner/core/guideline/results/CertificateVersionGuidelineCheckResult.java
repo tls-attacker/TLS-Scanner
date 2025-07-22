@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.x509attacker.constants.X509Version;
 
@@ -24,8 +25,8 @@ public class CertificateVersionGuidelineCheckResult extends GuidelineCheckResult
     }
 
     public CertificateVersionGuidelineCheckResult(
-            String checkName, GuidelineAdherence adherence, X509Version version) {
-        super(checkName, adherence);
+            GuidelineCheck check, GuidelineAdherence adherence, X509Version version) {
+        super(check, adherence);
         this.version = version;
     }
 

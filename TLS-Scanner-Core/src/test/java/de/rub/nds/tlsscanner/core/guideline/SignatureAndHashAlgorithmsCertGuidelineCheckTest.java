@@ -14,7 +14,7 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.TlsCoreTestReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
+import de.rub.nds.tlsscanner.core.guideline.checks.SigAndHashCertificateGuidelineCheck;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,8 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
                 Collections.singletonList(X509SignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION));
-        SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
-                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+        SigAndHashCertificateGuidelineCheck check =
+                new SigAndHashCertificateGuidelineCheck(
                         null,
                         null,
                         Collections.singletonList(X509SignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION));
@@ -42,8 +42,8 @@ public class SignatureAndHashAlgorithmsCertGuidelineCheckTest {
         report.putResult(
                 TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
                 Collections.singletonList(X509SignatureAlgorithm.DSA_WITH_SHA1));
-        SignatureAndHashAlgorithmsCertificateGuidelineCheck check =
-                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+        SigAndHashCertificateGuidelineCheck check =
+                new SigAndHashCertificateGuidelineCheck(
                         null,
                         null,
                         Collections.singletonList(X509SignatureAlgorithm.SHA1_WITH_RSA_ENCRYPTION));

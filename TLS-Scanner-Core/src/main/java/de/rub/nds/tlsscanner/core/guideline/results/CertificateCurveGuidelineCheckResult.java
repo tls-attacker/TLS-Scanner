@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 
@@ -24,17 +25,18 @@ public class CertificateCurveGuidelineCheckResult extends GuidelineCheckResult {
     }
 
     public CertificateCurveGuidelineCheckResult(
-            String checkName,
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             boolean supported,
             X509NamedCurve namedEllipticCurveParameters) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.supported = supported;
         this.namedCurve = namedEllipticCurveParameters;
     }
 
-    public CertificateCurveGuidelineCheckResult(String checkName, GuidelineAdherence adherence) {
-        super(checkName, adherence);
+    public CertificateCurveGuidelineCheckResult(
+            GuidelineCheck check, GuidelineAdherence adherence) {
+        super(check, adherence);
     }
 
     @Override

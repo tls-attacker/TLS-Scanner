@@ -341,7 +341,7 @@ public final class TlsServerScanner
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
         }
-        return guidelineIO.readGuidelines(getClass().getClassLoader(), "guideline");
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "server-guidelines");
     }
 
     /**

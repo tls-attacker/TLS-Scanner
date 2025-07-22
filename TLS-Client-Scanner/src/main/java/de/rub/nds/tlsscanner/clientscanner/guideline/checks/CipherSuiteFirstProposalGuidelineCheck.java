@@ -45,7 +45,7 @@ public class CipherSuiteFirstProposalGuidelineCheck extends TlsGuidelineCheck {
         // Abort if TLS 1.2 is not supported by the client.
         if (!clientReport.getSupportedProtocolVersions().contains(ProtocolVersion.TLS12)) {
             return new CipherSuiteFirstProposalGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CONDITION_NOT_MET);
+                    this, GuidelineAdherence.CONDITION_NOT_MET);
         }
         for (VersionSuiteListPair pair : clientReport.getVersionSuitePairs()) {
             if (pair.getVersion().equals(ProtocolVersion.TLS12)) {
@@ -54,15 +54,14 @@ public class CipherSuiteFirstProposalGuidelineCheck extends TlsGuidelineCheck {
                         .getFirst()
                         .equals(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256)) {
                     return new CipherSuiteFirstProposalGuidelineCheckResult(
-                            getName(), GuidelineAdherence.ADHERED);
+                            this, GuidelineAdherence.ADHERED);
                 }
             }
         }
 
         // If TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 is not the first cipher suite for TLS 1.2, the
         // check is violated.
-        return new CipherSuiteFirstProposalGuidelineCheckResult(
-                getName(), GuidelineAdherence.VIOLATED);
+        return new CipherSuiteFirstProposalGuidelineCheckResult(this, GuidelineAdherence.VIOLATED);
     }
 
     @Override

@@ -77,7 +77,7 @@ public class NotRecommendedCipherSuiteGuidelineCheck extends TlsGuidelineCheck {
                         .filter(suite -> this.notRecommendedCipherSuites.contains(suite))
                         .collect(Collectors.toList());
         return new NotRecommendedCipherSuiteGuidelineCheckResult(
-                getName(),
+                this,
                 GuidelineAdherence.of(notRecommendedButSupportedCipherSuites.isEmpty()),
                 notRecommendedButSupportedCipherSuites);
     }

@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.TestResult;
@@ -29,12 +30,12 @@ public class AnalyzedPropertyGuidelineCheckResult extends GuidelineCheckResult {
     }
 
     public AnalyzedPropertyGuidelineCheckResult(
-            String checkName,
+            GuidelineCheck check,
             GuidelineAdherence adherence,
             AnalyzedProperty property,
             TestResult expectedResult,
             TestResult actualResult) {
-        super(checkName, adherence);
+        super(check, adherence);
         this.property = property;
         this.expectedResult = expectedResult;
         this.actualResult = actualResult;

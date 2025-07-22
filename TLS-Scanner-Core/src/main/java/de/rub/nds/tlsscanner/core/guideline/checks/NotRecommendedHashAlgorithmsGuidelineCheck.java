@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.guideline.checks;
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.guideline.results.NotRecommendedHashAlgorithmsGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -50,8 +51,18 @@ public class NotRecommendedHashAlgorithmsGuidelineCheck extends TlsGuidelineChec
 
     @Override
     public GuidelineCheckResult evaluate(TlsScanReport report) {
-        List<SignatureAndHashAlgorithm> supportedAlgorithms =
-                report.getSupportedSignatureAndHashAlgorithms();
+        List<SignatureAndHashAlgorithm> supportedAlgorithms;
+        if (report.getResultMap()
+                .containsKey(TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS)) {
+            supportedAlgorithms =
+                    report.getListResult(
+                                    TlsAnalyzedProperty
+                                            .CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                    SignatureAndHashAlgorithm.class)
+                            .getList();
+        } else {
+            supportedAlgorithms = report.getSupportedSignatureAndHashAlgorithms();
+        }
         if (supportedAlgorithms != null) {
             Set<HashAlgorithm> nonRecommendedAndSupportedAlgorithms = new HashSet<>();
             for (SignatureAndHashAlgorithm alg : supportedAlgorithms) {
@@ -60,12 +71,12 @@ public class NotRecommendedHashAlgorithmsGuidelineCheck extends TlsGuidelineChec
                 }
             }
             return new NotRecommendedHashAlgorithmsGuidelineCheckResult(
-                    getName(),
+                    this,
                     GuidelineAdherence.of(nonRecommendedAndSupportedAlgorithms.isEmpty()),
                     nonRecommendedAndSupportedAlgorithms);
         } else {
             return new NotRecommendedHashAlgorithmsGuidelineCheckResult(
-                    getName(), GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
+                    this, GuidelineAdherence.CHECK_FAILED, Collections.emptySet());
         }
     }
 

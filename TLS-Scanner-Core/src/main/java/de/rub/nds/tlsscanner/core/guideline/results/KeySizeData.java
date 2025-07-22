@@ -12,6 +12,7 @@ import de.rub.nds.protocol.constants.AsymmetricAlgorithmType;
 
 public class KeySizeData {
     private AsymmetricAlgorithmType algorithm;
+    private boolean isDheKeyexchange;
     private int minimumLength;
     private int actualLength;
 
@@ -23,6 +24,18 @@ public class KeySizeData {
         this.algorithm = algorithm;
         this.minimumLength = minimumLength;
         this.actualLength = actualLength;
+        this.isDheKeyexchange = false;
+    }
+
+    public KeySizeData(
+            AsymmetricAlgorithmType algorithm,
+            int minimumLength,
+            int actualLength,
+            boolean isDheKeyexchange) {
+        this.algorithm = algorithm;
+        this.minimumLength = minimumLength;
+        this.actualLength = actualLength;
+        this.isDheKeyexchange = isDheKeyexchange;
     }
 
     public AsymmetricAlgorithmType getAlgorithm() {
@@ -47,5 +60,9 @@ public class KeySizeData {
 
     public void setActualLength(int actualLength) {
         this.actualLength = actualLength;
+    }
+
+    public boolean isDheKeyexchange() {
+        return isDheKeyexchange;
     }
 }

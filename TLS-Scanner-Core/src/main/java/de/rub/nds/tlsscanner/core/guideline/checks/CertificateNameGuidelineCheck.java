@@ -72,7 +72,7 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
             for (RelativeDistinguishedName rdn : name.getRelativeDistinguishedNames()) {
                 if (rdn.getAttributeTypeAndValueList().size() > 1) {
                     return new CertificateNameGuidelineCheckResult(
-                            getName(),
+                            this,
                             GuidelineAdherence.VIOLATED,
                             rdn.getIdentifier(),
                             "More than one value in the RDN.");
@@ -80,7 +80,7 @@ public class CertificateNameGuidelineCheck extends CertificateGuidelineCheck {
                 if (isPrintableString(
                         rdn.getAttributeTypeAndValueList().get(0).getStringValueOfValue())) {
                     return new CertificateNameGuidelineCheckResult(
-                            getName(),
+                            this,
                             GuidelineAdherence.VIOLATED,
                             rdn.getIdentifier(),
                             "Value is not a PrintableString.");

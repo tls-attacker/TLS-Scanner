@@ -25,6 +25,7 @@ public class ExtensionAfterProbe extends AfterProbe<ClientReport> {
         TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
+        TlsAnalyzedProperty.SUPPORTS_CLIENT_SIDE_SECURE_RENEGOTIATION_EXTENSION,
         TlsAnalyzedProperty.SUPPORTED_EXTENSIONS
     };
 

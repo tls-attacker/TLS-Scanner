@@ -74,10 +74,10 @@ public class HashAlgorithmStrengthCheck extends CertificateGuidelineCheck {
             int comparison = comparator.compare(hashAlgorithm, this.minimumStrength);
             if (comparison < 0) {
                 return new HashAlgorithmStrengthCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED, hashAlgorithm);
+                        this, GuidelineAdherence.VIOLATED, hashAlgorithm);
             }
         }
-        return new HashAlgorithmStrengthCheckResult(getName(), GuidelineAdherence.ADHERED, null);
+        return new HashAlgorithmStrengthCheckResult(this, GuidelineAdherence.ADHERED, null);
     }
 
     @Override

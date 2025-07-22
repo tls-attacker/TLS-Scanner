@@ -56,14 +56,14 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
         X509PublicKeyType publicKeyType;
         if (publicKey instanceof EcdsaPublicKey) {
             return new CertificateSignatureCheckResult(
-                    getName(),
+                    this,
                     GuidelineAdherence.of(signatureAlgorithm.equals(SignatureAlgorithm.ECDSA)),
                     X509PublicKeyType.ECDH_ECDSA,
                     signatureAlgorithm);
         }
         if (publicKey instanceof DhPublicKey) {
             return new CertificateSignatureCheckResult(
-                    getName(),
+                    this,
                     GuidelineAdherence.of(signatureAlgorithm.equals(SignatureAlgorithm.DSA)),
                     X509PublicKeyType.DH,
                     signatureAlgorithm);
@@ -76,14 +76,14 @@ public class CertificateSignatureCheck extends CertificateGuidelineCheck {
                 publicKeyType = X509PublicKeyType.DSA;
             }
             return new CertificateSignatureCheckResult(
-                    getName(),
+                    this,
                     GuidelineAdherence.of(
                             publicKeyType.canBeUsedWithSignatureAlgorithm(signatureAlgorithm)),
                     publicKeyType,
                     signatureAlgorithm);
         }
         return new CertificateSignatureCheckResult(
-                getName(), GuidelineAdherence.CHECK_FAILED, null, signatureAlgorithm);
+                this, GuidelineAdherence.CHECK_FAILED, null, signatureAlgorithm);
     }
 
     @Override

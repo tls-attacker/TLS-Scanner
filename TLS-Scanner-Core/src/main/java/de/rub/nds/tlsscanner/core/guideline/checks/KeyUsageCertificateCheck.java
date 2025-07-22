@@ -63,17 +63,17 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
         List<X509ExtensionType> extensions = report.getSupportedExtensionTypes();
         if (extensions == null) {
             return new KeyUsageCertificateCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED, false, null);
+                    this, GuidelineAdherence.VIOLATED, false, null);
         }
 
         // checks if the extension is set
         if (!extensions.contains(X509ExtensionType.KEY_USAGE)) {
             return new KeyUsageCertificateCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED, false, null);
+                    this, GuidelineAdherence.VIOLATED, false, null);
         }
         if (report.getKeyUsageSet() == null) {
             return new KeyUsageCertificateCheckResult(
-                    getName(), GuidelineAdherence.VIOLATED, false, null);
+                    this, GuidelineAdherence.VIOLATED, false, null);
         }
 
         // checks the right extension type based on the certificate key type
@@ -81,16 +81,15 @@ public class KeyUsageCertificateCheck extends CertificateGuidelineCheck {
                 || report.getPublicKey() instanceof EcdhPublicKey) {
             if (!report.getKeyUsageSet().contains(KeyUsage.KEY_AGREEMENT)) {
                 return new KeyUsageCertificateCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED, true, "keyAgreement");
+                        this, GuidelineAdherence.VIOLATED, true, "keyAgreement");
             }
         } else { // RSA, ECDSA or DSA
             if (!report.getKeyUsageSet().contains(KeyUsage.DIGITAL_SIGNATURE)) {
                 return new KeyUsageCertificateCheckResult(
-                        getName(), GuidelineAdherence.VIOLATED, true, "digitalSignature");
+                        this, GuidelineAdherence.VIOLATED, true, "digitalSignature");
             }
         }
-        return new KeyUsageCertificateCheckResult(
-                getName(), GuidelineAdherence.ADHERED, true, null);
+        return new KeyUsageCertificateCheckResult(this, GuidelineAdherence.ADHERED, true, null);
     }
 
     @Override

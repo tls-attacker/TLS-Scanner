@@ -6,7 +6,7 @@
  * Licensed under Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0.txt
  */
-package de.rub.nds.tlsscanner.core.guideline.checks;
+package de.rub.nds.tlsscanner.serverscanner.guideline.checks;
 
 import de.rub.nds.protocol.constants.AsymmetricAlgorithmType;
 import de.rub.nds.protocol.crypto.key.*;
@@ -14,9 +14,9 @@ import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.RequirementLevel;
-import de.rub.nds.tlsscanner.core.guideline.results.DhKeyLengthGuidelineCheckResult;
-import de.rub.nds.tlsscanner.core.guideline.results.KeySizeCertGuidelineCheckResult;
+import de.rub.nds.tlsscanner.core.guideline.checks.CertificateGuidelineCheck;
 import de.rub.nds.tlsscanner.core.guideline.results.KeySizeData;
+import de.rub.nds.tlsscanner.core.guideline.results.KeySizeGuidelineCheckResult;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
@@ -26,18 +26,20 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
+public class ServerKeySizeGuidelineCheck extends CertificateGuidelineCheck {
 
     private Integer minimumDsaKeyLength;
     private Integer minimumRsaKeyLength;
     private Integer minimumEcKeyLength;
     private Integer minimumDhKeyLength;
 
-    private KeySizeCertGuidelineCheck() {
+    private TlsScanReport tlsScanReport;
+
+    private ServerKeySizeGuidelineCheck() {
         super(null, null);
     }
 
-    public KeySizeCertGuidelineCheck(
+    public ServerKeySizeGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             Integer minimumDsaKeyLength,
@@ -51,7 +53,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         this.minimumDhKeyLength = minimumDhKeyLength;
     }
 
-    public KeySizeCertGuidelineCheck(
+    public ServerKeySizeGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             boolean onlyOneCertificate,
@@ -66,7 +68,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         this.minimumDhKeyLength = minimumDhKeyLength;
     }
 
-    public KeySizeCertGuidelineCheck(
+    public ServerKeySizeGuidelineCheck(
             String name,
             RequirementLevel requirementLevel,
             GuidelineCheckCondition condition,
@@ -87,7 +89,31 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
         boolean passFlag = false;
         boolean uncertainFlag = false;
         boolean failedFlag = false;
-        KeySizeCertGuidelineCheckResult result = new KeySizeCertGuidelineCheckResult(getName());
+        KeySizeGuidelineCheckResult result = new KeySizeGuidelineCheckResult(this);
+
+        if (tlsScanReport.getWeakestDhStrength() != null
+                && this.minimumDhKeyLength != null
+                && tlsScanReport.getWeakestDhStrength() < this.minimumDhKeyLength) {
+            failedFlag = true;
+            result.addKeySize(
+                    new KeySizeData(
+                            AsymmetricAlgorithmType.DH,
+                            this.minimumDhKeyLength,
+                            tlsScanReport.getWeakestDhStrength(),
+                            true));
+        }
+        if (tlsScanReport.getWeakestEcdhStrength() != null
+                && this.minimumEcKeyLength != null
+                && tlsScanReport.getWeakestEcdhStrength() < this.minimumEcKeyLength) {
+            failedFlag = true;
+            result.addKeySize(
+                    new KeySizeData(
+                            AsymmetricAlgorithmType.ECDH,
+                            this.minimumEcKeyLength,
+                            tlsScanReport.getWeakestEcdhStrength(),
+                            true));
+        }
+
         for (CertificateReport report : chain.getCertificateReportList()) {
 
             PublicKeyContainer publicKey = report.getPublicKey();
@@ -188,15 +214,7 @@ public class KeySizeCertGuidelineCheck extends CertificateGuidelineCheck {
 
     @Override
     public GuidelineCheckResult evaluate(TlsScanReport report) {
-        if (report.getWeakestDhStrength() != null
-                && this.minimumDhKeyLength != null
-                && report.getWeakestDhStrength() < this.minimumDhKeyLength) {
-            return new DhKeyLengthGuidelineCheckResult(
-                    getName(),
-                    GuidelineAdherence.VIOLATED,
-                    report.getWeakestDhStrength(),
-                    minimumDhKeyLength);
-        }
+        this.tlsScanReport = report;
         return super.evaluate(report);
     }
 

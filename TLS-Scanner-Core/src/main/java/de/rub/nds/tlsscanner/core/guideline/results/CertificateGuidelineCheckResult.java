@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.core.guideline.results;
 
 import de.rub.nds.scanner.core.guideline.GuidelineAdherence;
+import de.rub.nds.scanner.core.guideline.GuidelineCheck;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,8 @@ public class CertificateGuidelineCheckResult extends GuidelineCheckResult {
         super(null, null);
     }
 
-    public CertificateGuidelineCheckResult(String checkName) {
-        super(checkName, GuidelineAdherence.CHECK_FAILED);
+    public CertificateGuidelineCheckResult(GuidelineCheck check) {
+        super(check, GuidelineAdherence.CHECK_FAILED);
     }
 
     @Override

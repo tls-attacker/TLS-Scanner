@@ -59,7 +59,7 @@ public class CertificateVersionGuidelineCheck extends CertificateGuidelineCheck 
     public GuidelineCheckResult evaluateChain(CertificateChainReport chain) {
         CertificateReport report = chain.getLeafReport();
         return new CertificateVersionGuidelineCheckResult(
-                getName(),
+                this,
                 GuidelineAdherence.of(this.version == report.getVersion()),
                 report.getVersion());
     }
