@@ -10,11 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
-import de.rub.nds.scanner.core.guideline.Guideline;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineIO;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -22,8 +18,8 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
 import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.constants.X509Version;
 import jakarta.xml.bind.JAXBException;
@@ -40,7 +36,7 @@ public class NistGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
                         "Servers should support TLS 1.3 and shall support TLS 1.3 by January 1, 2024.",
@@ -110,7 +106,7 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.MUST,
                         X509Version.V3));
         checks.add(
-                new KeySizeCertGuidelineCheck(
+                new ServerKeySizeGuidelineCheck(
                         "All server and client certificates shall contain public keys that offer at least 112 bits of security.",
                         RequirementLevel.MUST,
                         2048,
@@ -136,7 +132,7 @@ public class NistGuidelineSerializationIT {
                         RequirementLevel.SHOULD,
                         1095));
         checks.add(
-                new CertificateNameGuidelineCheck(
+                new ServerCertificateNameGuidelineCheck(
                         "Issuer Distinguished Name (DN): A single value should be encoded in each Relative Distinguished Name (RDN). All attributes that are of DirectoryString type should be encoded as a PrintableString. [...] Subject Distinguished Name: A single value should be encoded in each RDN. All attributes that are of DirectoryString type should be encoded as a PrintableString. If present, the CN attribute should be of the form: CN={host IP address | host DNS name}",
                         RequirementLevel.SHOULD,
                         false));
@@ -539,10 +535,11 @@ public class NistGuidelineSerializationIT {
                         TlsAnalyzedProperty.SUPPORTS_TLS_COMPRESSION,
                         TestResults.FALSE));
 
-        Guideline<ServerReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "NIST SP 800-52r2", "https://doi.org/10.6028/NIST.SP.800-52r2", checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
-        guidelineIO.write(Paths.get("src/main/resources/guideline/nist.xml").toFile(), guideline);
+        guidelineIO.write(
+                Paths.get("src/main/resources/server-guidelines/nist.xml").toFile(), guideline);
     }
 }

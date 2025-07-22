@@ -320,12 +320,14 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                         AnsiColor.DEFAULT_COLOR,
                         String.valueOf(chain.getContainsTrustAnchor()),
                         chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN));
-        container.add(
-                new KeyValueContainer(
-                        "Generally Trusted",
-                        AnsiColor.DEFAULT_COLOR,
-                        String.valueOf(chain.getGenerallyTrusted()),
-                        chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED));
+        if (chain.getGenerallyTrusted() != null) {
+            container.add(
+                    new KeyValueContainer(
+                            "Generally Trusted",
+                            AnsiColor.DEFAULT_COLOR,
+                            String.valueOf(chain.getGenerallyTrusted()),
+                            chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED));
+        }
         if (chain.getCertificateIssues().size() > 0) {
             ListContainer issuesContainer = new ListContainer(1);
             issuesContainer.add(new HeadlineContainer("Certificate Issues"));

@@ -69,6 +69,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     CLIENT_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     CLIENT_ADVERTISED_COMPRESSIONS(TlsAnalyzedPropertyCategory.COMPRESSION),
     CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+    CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS(
+            TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
     CLIENT_ADVERTISED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
     CLIENT_ADVERTISED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
     CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
@@ -191,6 +193,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS_COMPRESSION(TlsAnalyzedPropertyCategory.COMPRESSION),
     SUPPORTS_INSECURE_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
+    ENFORCES_RENEGOTIATION_INFO_FROM_SERVER(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_HTTPS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS_PRELOADING(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
@@ -328,6 +331,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_GENERATOR_ONE(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_GENERATOR_ZERO(TlsAnalyzedPropertyCategory.FFDHE),
     WEAKEST_DH_STRENGTH(TlsAnalyzedPropertyCategory.FFDHE),
+    WEAKEST_ECDH_STRENGTH(TlsAnalyzedPropertyCategory.FFDHE),
     /** DTLS */
     SUPPORTS_DTLS_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
     DTLS_FRAGMENTATION_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),

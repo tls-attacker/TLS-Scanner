@@ -10,29 +10,13 @@ package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
 import de.rub.nds.protocol.constants.SignatureAlgorithm;
-import de.rub.nds.scanner.core.guideline.Guideline;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineIO;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.tlsattacker.core.constants.CipherSuite;
-import de.rub.nds.tlsattacker.core.constants.ExtensionType;
-import de.rub.nds.tlsattacker.core.constants.NamedGroup;
-import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
+import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.AnalyzedPropertyGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.KeySizeCertGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.NotRecommendedExtensionGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedCipherSuiteGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.RecommendedNamedGroupsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsCertificateGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.SignatureAndHashAlgorithmsGuidelineCheck;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ServerKeySizeGuidelineCheck;
 import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -48,7 +32,7 @@ public class BsiGuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -279,7 +263,7 @@ public class BsiGuidelineSerializationIT {
                 // server here and compare its algorithms to the ones recommended by BSI. Not all
                 // recommended algorithms are currently supported by X509Attacker and thus commented
                 // out.
-                new SignatureAndHashAlgorithmsCertificateGuidelineCheck(
+                new SigAndHashCertificateGuidelineCheck(
                         "Die folgenden Algorithmen werden für die \"signature_algorithms_cert\" Erweiterung empfohlen.",
                         RequirementLevel.SHOULD,
                         new GuidelineCheckCondition(
@@ -311,7 +295,7 @@ public class BsiGuidelineSerializationIT {
                                 CipherSuite.TLS_AES_256_GCM_SHA384,
                                 CipherSuite.TLS_AES_128_CCM_SHA256)));
         checks.add(
-                new KeySizeCertGuidelineCheck(
+                new ServerKeySizeGuidelineCheck(
                         "Es wird empfohlen, mindestens die folgenden Schlüssellängen zu verwenden.",
                         RequirementLevel.SHOULD,
                         3000,
@@ -335,12 +319,13 @@ public class BsiGuidelineSerializationIT {
                         TlsAnalyzedProperty.REUSES_EC_PUBLICKEY,
                         TestResults.FALSE));
 
-        Guideline<ServerReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "BSI TR-02102-2 (v2025-01)",
                         "https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102-2.html",
                         checks);
         GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
-        guidelineIO.write(Paths.get("src/main/resources/guideline/bsi.xml").toFile(), guideline);
+        guidelineIO.write(
+                Paths.get("src/main/resources/server-guidelines/bsi.xml").toFile(), guideline);
     }
 }

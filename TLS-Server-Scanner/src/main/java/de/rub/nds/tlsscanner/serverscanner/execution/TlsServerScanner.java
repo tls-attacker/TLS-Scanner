@@ -328,20 +328,20 @@ public final class TlsServerScanner
     }
 
     @Override
-    protected List<Guideline<ServerReport>> getGuidelines() {
+    protected List<Guideline> getGuidelines() {
         if (getProtocolType() == ProtocolType.DTLS) {
             return List.of();
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        GuidelineIO<ServerReport> guidelineIO;
+        GuidelineIO guidelineIO;
         try {
-            guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
+            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         } catch (JAXBException e) {
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
         }
-        return guidelineIO.readGuidelines(getClass().getClassLoader(), "guideline");
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "server-guidelines");
     }
 
     /**

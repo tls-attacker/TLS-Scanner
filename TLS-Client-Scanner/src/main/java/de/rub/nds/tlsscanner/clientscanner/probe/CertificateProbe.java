@@ -28,6 +28,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -153,8 +154,12 @@ public class CertificateProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
+        List<CertificateChainReport> certificateChainReports = new LinkedList<>();
         if (clientCertificates != null) {
-            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new LinkedList<>(clientCertificates));
+            for (X509CertificateChain chain : clientCertificates) {
+                certificateChainReports.add(new CertificateChainReport(chain, ""));
+            }
+            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, certificateChainReports);
         }
     }
 

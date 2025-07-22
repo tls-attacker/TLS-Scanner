@@ -9,17 +9,13 @@
 package de.rub.nds.tlsscanner.serverscanner.guideline.serialization;
 
 import de.rub.nds.protocol.constants.HashAlgorithm;
-import de.rub.nds.scanner.core.guideline.Guideline;
-import de.rub.nds.scanner.core.guideline.GuidelineCheck;
-import de.rub.nds.scanner.core.guideline.GuidelineCheckCondition;
-import de.rub.nds.scanner.core.guideline.GuidelineIO;
-import de.rub.nds.scanner.core.guideline.RequirementLevel;
+import de.rub.nds.scanner.core.guideline.*;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.*;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.serverscanner.guideline.checks.*;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.core.guideline.checks.*;
+import de.rub.nds.tlsscanner.serverscanner.guideline.checks.ServerKeySizeGuidelineCheck;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
@@ -35,7 +31,7 @@ public class Rfc9325GuidelineSerializationIT {
     @Test
     @Tag(TestCategories.INTEGRATION_TEST)
     public void serialize() throws JAXBException, IOException {
-        List<GuidelineCheck<ServerReport>> checks = new ArrayList<>();
+        List<GuidelineCheck> checks = new ArrayList<>();
 
         checks.add(
                 new AnalyzedPropertyGuidelineCheck(
@@ -264,7 +260,8 @@ public class Rfc9325GuidelineSerializationIT {
                         Arrays.asList(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519),
                         false));
         checks.add(
-                new KeySizeCertGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to 0
+                new ServerKeySizeGuidelineCheck( // DSA not allowed, thus minimumDsaKeyLength set to
+                        // 0
                         "4.5. Public Key Length", RequirementLevel.MUST, 0, 2048, 224, 2048));
         checks.add(
                 new RecommendedHashAlgorithmsGuidelineCheck(
@@ -305,13 +302,13 @@ public class Rfc9325GuidelineSerializationIT {
         //                        TlsAnalyzedProperty.SUPPORTS_OCSP,
         //                        TestResults.TRUE));
 
-        Guideline<ServerReport> guideline =
-                new Guideline<>(
+        Guideline guideline =
+                new Guideline(
                         "IETF RFC 9325: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)",
                         "https://datatracker.ietf.org/doc/rfc9325/",
                         checks);
-        GuidelineIO<ServerReport> guidelineIO = new GuidelineIO<>(TlsAnalyzedProperty.class);
+        GuidelineIO guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
         guidelineIO.write(
-                Paths.get("src/main/resources/guideline/rfc9325.xml").toFile(), guideline);
+                Paths.get("src/main/resources/server-guidelines/rfc9325.xml").toFile(), guideline);
     }
 }
