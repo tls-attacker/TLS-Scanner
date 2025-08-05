@@ -8,6 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.probe.requirements.AndRequirement;
+import de.rub.nds.scanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.ListResult;
@@ -23,8 +25,10 @@ import de.rub.nds.tlsattacker.core.workflow.action.SetMeasuringActiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.transport.TransportHandlerType;
 import de.rub.nds.tlsattacker.transport.tcp.timing.TimingClientTcpTransportHandler;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.LinkedList;
@@ -129,6 +133,13 @@ public class TlsLatencyProbe extends TlsServerProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE);
+        return new AndRequirement<>(
+                List.of(
+                        new ProbeRequirement<>(TlsProbeType.CIPHER_SUITE),
+                        new OrRequirement<ServerReport>(
+                                List.of(
+                                        new ProtocolTypeTrueRequirement<>(ProtocolType.TLS),
+                                        new ProtocolTypeTrueRequirement<>(
+                                                ProtocolType.STARTTLS)))));
     }
 }
