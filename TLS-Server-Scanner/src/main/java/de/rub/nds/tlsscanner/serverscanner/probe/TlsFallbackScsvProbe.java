@@ -8,10 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyComparatorRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlertDescription;
 import de.rub.nds.tlsattacker.core.constants.AlertLevel;
@@ -26,9 +27,9 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyComparatorRequirement;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class TlsFallbackScsvProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Config tlsConfig = configSelector.getBaseConfig();
         tlsConfig.getDefaultClientSupportedCipherSuites().add(CipherSuite.TLS_FALLBACK_SCSV);
         tlsConfig.setHighestProtocolVersion(this.secondHighestVersion);
@@ -84,7 +85,7 @@ public class TlsFallbackScsvProbe extends TlsServerProbe {
 
     @Override
     public void adjustConfig(ServerReport report) {
-        List<ProtocolVersion> versions = report.getSupportedProtocolVersions();
+        List<ProtocolVersion> versions = new ArrayList<>(report.getSupportedProtocolVersions());
         Collections.sort(versions);
         secondHighestVersion = versions.get(versions.size() - 2);
     }

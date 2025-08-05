@@ -9,9 +9,9 @@
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -25,6 +25,7 @@ import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceMutator;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeWriteSequenceNumberAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
@@ -43,6 +44,7 @@ import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
 
+    private TestResult supportsCookieExchange = TestResults.COULD_NOT_TEST;
     private TestResult acceptsLegacyServerVersionMismatch = TestResults.COULD_NOT_TEST;
     private TestResult acceptsHvrSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
     private TestResult acceptsServerHelloSequenceNumberMismatch = TestResults.COULD_NOT_TEST;
@@ -53,6 +55,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
             ParallelExecutor executor, ClientScannerConfig scannerConfig) {
         super(executor, TlsProbeType.DTLS_HELLO_VERIFY_REQUEST, scannerConfig);
         register(
+                TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE,
                 TlsAnalyzedProperty.ACCEPTS_HVR_LEGACY_SERVER_VERSION_MISMATCH,
                 TlsAnalyzedProperty.ACCEPTS_HVR_RECORD_SEQUENCE_NUMBER_MISMATCH,
                 TlsAnalyzedProperty.ACCEPTS_SERVER_HELLO_RECORD_SEQUENCE_NUMBER_MISMATCH,
@@ -61,12 +64,45 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
-        acceptsLegacyServerVersionMismatch = acceptsLegacyServerVersionMismatch();
-        acceptsHvrSequenceNumberMismatch = acceptsHvrSequenceNumberMismatch();
-        acceptsServerHelloSequenceNumberMismatch = acceptsServerHelloSequenceNumberMismatch();
-        hasClientHelloMismatch = hasClientHelloMismatch();
-        acceptsEmptyCookie = acceptsEmptyCookie();
+    protected void executeTest() {
+        supportsCookieExchange = supportsCookieExchange();
+        if (supportsCookieExchange == TestResults.TRUE) {
+            acceptsLegacyServerVersionMismatch = acceptsLegacyServerVersionMismatch();
+            acceptsHvrSequenceNumberMismatch = acceptsHvrSequenceNumberMismatch();
+            acceptsServerHelloSequenceNumberMismatch = acceptsServerHelloSequenceNumberMismatch();
+            hasClientHelloMismatch = hasClientHelloMismatch();
+            acceptsEmptyCookie = acceptsEmptyCookie();
+        }
+    }
+
+    private TestResult supportsCookieExchange() {
+        Config config = scannerConfig.createConfig();
+        config.setDtlsCookieExchange(true);
+        WorkflowTrace trace =
+                new WorkflowConfigurationFactory(config)
+                        .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
+        State state = new State(config, trace);
+        executeState(state);
+        ClientHelloMessage firstClientHello =
+                (ClientHelloMessage)
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, HandshakeMessageType.CLIENT_HELLO);
+        ClientHelloMessage secondClientHello =
+                (ClientHelloMessage)
+                        WorkflowTraceResultUtil.getLastReceivedMessage(
+                                trace, HandshakeMessageType.CLIENT_HELLO);
+        HelloVerifyRequestMessage helloVerifyRequest =
+                (HelloVerifyRequestMessage)
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, HandshakeMessageType.HELLO_VERIFY_REQUEST);
+        if (firstClientHello != secondClientHello
+                && secondClientHello
+                        .getCookie()
+                        .getValue()
+                        .equals(helloVerifyRequest.getCookie().getValue())) {
+            return TestResults.TRUE;
+        }
+        return TestResults.FALSE;
     }
 
     private TestResult acceptsLegacyServerVersionMismatch() {
@@ -77,11 +113,11 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
                         .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         HelloVerifyRequestMessage hvrMessage = new HelloVerifyRequestMessage();
         hvrMessage.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS10.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.HELLO_VERIFY_REQUEST, hvrMessage);
         ServerHelloMessage serverHello = new ServerHelloMessage(config);
         serverHello.setProtocolVersion(Modifiable.explicit(ProtocolVersion.DTLS12.getValue()));
-        WorkflowTraceMutator.replaceSendingMessage(
+        WorkflowTraceMutator.replaceStaticSendingMessage(
                 trace, HandshakeMessageType.SERVER_HELLO, serverHello);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
 
@@ -218,6 +254,7 @@ public class DtlsHelloVerifyRequestProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
+        put(TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE, supportsCookieExchange);
         put(
                 TlsAnalyzedProperty.ACCEPTS_HVR_LEGACY_SERVER_VERSION_MISMATCH,
                 acceptsLegacyServerVersionMismatch);

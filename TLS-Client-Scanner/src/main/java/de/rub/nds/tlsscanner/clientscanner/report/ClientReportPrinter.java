@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.report.ReportPrinter;
 

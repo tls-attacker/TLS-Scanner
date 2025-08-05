@@ -8,12 +8,12 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.NameType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.constants.SniType;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.sni.ServerNamePair;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -46,7 +46,7 @@ public class SniProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         Function<State, Integer> beforeTransportInitCallback =
                 getParallelExecutor().getDefaultBeforeTransportInitCallback();
         String runCommand =
@@ -73,7 +73,7 @@ public class SniProbe extends TlsClientProbe {
                 new LinkedList<>(
                         Arrays.asList(
                                 new ServerNamePair(
-                                        NameType.HOST_NAME.getValue(),
+                                        SniType.HOST_NAME.getValue(),
                                         SNI_FAKE_NAME.getBytes(Charset.forName("ASCII"))))));
 
         WorkflowTrace trace =

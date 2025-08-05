@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
@@ -49,7 +49,8 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                         ExtensionType.RENEGOTIATION_INFO,
                         ExtensionType.ELLIPTIC_CURVES,
                         ExtensionType.KEY_SHARE,
-                        ExtensionType.ENCRYPT_THEN_MAC);
+                        ExtensionType.ENCRYPT_THEN_MAC,
+                        ExtensionType.SERVER_NAME_INDICATION);
         List<ExtensionType> supportedExtensions = report.getSupportedExtensions();
         return expectedExtensions.size() == supportedExtensions.size()
                 && expectedExtensions.containsAll(
@@ -60,11 +61,14 @@ public class ExtensionProbeIT extends AbstractProbeIT {
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
                         TestResults.TRUE)
-                && verifyProperty(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, TestResults.TRUE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, TestResults.TRUE)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, TestResults.FALSE)
                 && verifyProperty(
                         TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
-                        TestResults.FALSE);
+                        TestResults.FALSE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL, TestResults.FALSE);
     }
 }

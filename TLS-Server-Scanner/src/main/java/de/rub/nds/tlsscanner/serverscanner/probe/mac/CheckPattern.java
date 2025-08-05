@@ -22,6 +22,8 @@ public class CheckPattern {
 
     private List<ResponseFingerprint> responseFingerprintList = null;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
     private CheckPattern() {}
 
     public CheckPattern(

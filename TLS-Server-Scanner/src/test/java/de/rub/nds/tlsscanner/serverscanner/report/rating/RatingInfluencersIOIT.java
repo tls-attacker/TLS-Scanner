@@ -8,12 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
+import de.rub.nds.protocol.util.SilentByteArrayOutputStream;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencers;
 import de.rub.nds.scanner.core.report.rating.RatingInfluencersIO;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.LinkedList;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -25,13 +25,13 @@ public class RatingInfluencersIOIT {
     @Tag(TestCategories.INTEGRATION_TEST)
     public void testWrite_OutputStream_RatingInfluencers() throws Exception {
         RatingInfluencers ratingInfluencers = new RatingInfluencers(new LinkedList<>());
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        SilentByteArrayOutputStream stream = new SilentByteArrayOutputStream();
         RatingInfluencersIO ratingInfluencersIO =
                 new RatingInfluencersIO(TlsAnalyzedProperty.class);
         ratingInfluencersIO.write(stream, ratingInfluencers);
         byte[] byteArray = stream.toByteArray();
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
-            RatingInfluencers read = ratingInfluencersIO.read(inputStream);
+            ratingInfluencersIO.read(inputStream);
         }
     }
 }

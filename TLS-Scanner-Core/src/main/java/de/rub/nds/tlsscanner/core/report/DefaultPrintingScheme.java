@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.core.report;
 
-import de.rub.nds.scanner.core.constants.AnalyzedProperty;
-import de.rub.nds.scanner.core.constants.AnalyzedPropertyCategory;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.AnalyzedPropertyCategory;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.ColorEncoding;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -22,6 +22,15 @@ import java.util.HashMap;
 
 public class DefaultPrintingScheme {
 
+    private DefaultPrintingScheme() {
+        // Private constructor to prevent instantiation of utility class
+    }
+
+    /**
+     * Creates and returns the default printing scheme for TLS scan reports.
+     *
+     * @return A PrintingScheme configured with default color encodings and text mappings
+     */
     public static PrintingScheme getDefaultPrintingScheme() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
@@ -258,7 +267,7 @@ public class DefaultPrintingScheme {
                 TlsAnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
                 TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_RESUMPTION,
@@ -516,8 +525,8 @@ public class DefaultPrintingScheme {
                 TlsAnalyzedProperty.STRICT_SNI,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
         colorMap.put(
-                TlsAnalyzedProperty.ALPACA_MITIGATED,
-                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.RED));
+                TlsAnalyzedProperty.VULNERABLE_TO_ALPACA,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(
                 TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
                 getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
@@ -537,7 +546,7 @@ public class DefaultPrintingScheme {
 
         HashMap<AnalyzedProperty, TestResultTextEncoder> specialTextMap = new HashMap<>();
 
-        specialTextMap.put(TlsAnalyzedProperty.ALPACA_MITIGATED, getAlpacaTextEncoding());
+        specialTextMap.put(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, getAlpacaTextEncoding());
 
         HashMap<AnalyzedProperty, String> propertyNamesMap = new HashMap<>();
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, "SSL 2");
@@ -547,17 +556,20 @@ public class DefaultPrintingScheme {
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_2, "TLS 1.2");
         propertyNamesMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_3, "TLS 1.3");
 
-        PrintingScheme scheme =
-                new PrintingScheme(
-                        colorMap,
-                        textMap,
-                        defaultTextEncoding,
-                        defaultColorEncoding,
-                        specialTextMap,
-                        new HashMap<>());
-        return scheme;
+        return new PrintingScheme(
+                colorMap,
+                textMap,
+                defaultTextEncoding,
+                defaultColorEncoding,
+                specialTextMap,
+                new HashMap<>());
     }
 
+    /**
+     * Creates a text encoder specifically for ALPACA vulnerability results.
+     *
+     * @return A TestResultTextEncoder with ALPACA-specific text mappings
+     */
     private static TestResultTextEncoder getAlpacaTextEncoding() {
         HashMap<TestResult, String> textEncodingMap = new HashMap<>();
         textEncodingMap.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
@@ -566,13 +578,20 @@ public class DefaultPrintingScheme {
         textEncodingMap.put(TestResults.FALSE, "not mitigated");
         textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
         textEncodingMap.put(TestResults.TIMEOUT, "timeout");
-        textEncodingMap.put(TestResults.TRUE, "true");
+        textEncodingMap.put(TestResults.TRUE, "mitigated");
         textEncodingMap.put(TestResults.UNCERTAIN, "uncertain");
         textEncodingMap.put(TestResults.UNSUPPORTED, "unsupported by tls-scanner");
         textEncodingMap.put(TestResults.PARTIALLY, "partially");
         return new TestResultTextEncoder(textEncodingMap);
     }
 
+    /**
+     * Creates a color encoding with the specified colors for true and false results.
+     *
+     * @param trueColor The color to use when a test result is TRUE
+     * @param falseColor The color to use when a test result is FALSE
+     * @return A ColorEncoding with the specified color mappings
+     */
     private static ColorEncoding getDefaultColorEncoding(
             AnsiColor trueColor, AnsiColor falseColor) {
         HashMap<TestResult, AnsiColor> colorMap = new HashMap<>();

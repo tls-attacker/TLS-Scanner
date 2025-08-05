@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.CertificateMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
@@ -52,7 +52,7 @@ public class DtlsMessageSequenceProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         acceptsStartedWithInvalidMessageNumber = acceptsStartedWithInvalidMessageNumber();
         acceptsSkippedMessageNumbersOnce = acceptsSkippedMessageNumbersOnce();
         acceptsSkippedMessageNumbersMultiple = acceptsSkippedMessageNumbersMultiple();
@@ -180,8 +180,12 @@ public class DtlsMessageSequenceProbe extends TlsClientProbe {
                 && acceptsSkippedMessageNumbersMultiple == TestResults.FALSE
                 && acceptsRandomMessageNumbers == TestResults.FALSE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.FALSE);
-        } else {
+        } else if (acceptsSkippedMessageNumbersOnce == TestResults.TRUE
+                || acceptsSkippedMessageNumbersMultiple == TestResults.TRUE
+                || acceptsRandomMessageNumbers == TestResults.TRUE) {
             put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.TRUE);
+        } else {
+            put(TlsAnalyzedProperty.MISSES_MESSAGE_SEQUENCE_CHECKS, TestResults.COULD_NOT_TEST);
         }
     }
 

@@ -9,11 +9,11 @@
 package de.rub.nds.tlsscanner.serverscanner.probe.drown;
 
 import de.rub.nds.modifiablevariable.util.Modifiable;
+import de.rub.nds.protocol.exception.ConfigurationException;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.SSL2CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.SSL2MessageType;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ClientMasterKeyMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.SSL2ServerVerifyMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -115,14 +115,14 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                         config.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
-        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, SSL2MessageType.SSL_SERVER_HELLO)) {
             return DrownVulnerabilityType.NONE;
         }
 
         SSL2ServerVerifyMessage serverVerifyMessage =
                 (SSL2ServerVerifyMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, SSL2MessageType.SSL_SERVER_VERIFY);
         if (serverVerifyMessage != null
                 && ServerVerifyChecker.check(serverVerifyMessage, state.getTlsContext(), true)) {
             return DrownVulnerabilityType.SPECIAL;
@@ -166,14 +166,14 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                         config.getWorkflowExecutorType(), state);
         workflowExecutor.executeWorkflow();
 
-        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, SSL2MessageType.SSL_SERVER_HELLO)) {
             return DrownVulnerabilityType.NONE;
         }
 
         SSL2ServerVerifyMessage serverVerifyMessage =
                 (SSL2ServerVerifyMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, SSL2MessageType.SSL_SERVER_VERIFY);
         if (serverVerifyMessage != null) {
             LeakyExportCheckData checkData =
                     new LeakyExportCheckData(
@@ -220,28 +220,36 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
 
         int threadNumber = Runtime.getRuntime().availableProcessors();
         LOGGER.debug("Using " + threadNumber + " threads");
-        ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
-        int firstBytesPerThread = 256 / threadNumber;
+        ExecutorService executor = null;
+        ArrayList<LeakyExportCheckCallable> allCallables;
+        ArrayList<Future<Boolean>> allResults;
+        try {
+            executor = Executors.newFixedThreadPool(threadNumber);
+            int firstBytesPerThread = 256 / threadNumber;
 
-        ArrayList<LeakyExportCheckCallable> allCallables = new ArrayList();
-        ArrayList<Future<Boolean>> allResults = new ArrayList();
+            allCallables = new ArrayList();
+            allResults = new ArrayList();
 
-        for (int i = 0; i < threadNumber; i++) {
-            int firstByteFrom = -128 + i * firstBytesPerThread;
-            int firstByteTo;
-            if (i == threadNumber - 1) {
-                firstByteTo = 128;
-            } else {
-                firstByteTo = firstByteFrom + firstBytesPerThread;
+            for (int i = 0; i < threadNumber; i++) {
+                int firstByteFrom = -128 + i * firstBytesPerThread;
+                int firstByteTo;
+                if (i == threadNumber - 1) {
+                    firstByteTo = 128;
+                } else {
+                    firstByteTo = firstByteFrom + firstBytesPerThread;
+                }
+
+                LeakyExportCheckCallable callable =
+                        new LeakyExportCheckCallable(firstByteFrom, firstByteTo, checkData);
+                allCallables.add(callable);
+                allResults.add(executor.submit(callable));
             }
 
-            LeakyExportCheckCallable callable =
-                    new LeakyExportCheckCallable(firstByteFrom, firstByteTo, checkData);
-            allCallables.add(callable);
-            allResults.add(executor.submit(callable));
+        } finally {
+            if (executor != null) {
+                executor.shutdown();
+            }
         }
-
-        executor.shutdown();
         DrownVulnerabilityType vulnerabilityType = DrownVulnerabilityType.SSL2;
         // Count the processed second bytes across all threads to get a quicker
         // and more accurate progress indicator than processing the first bytes
@@ -269,6 +277,9 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        LOGGER.warn("Was interrupted - aborting");
+                        Thread.currentThread().interrupt();
+                        break outer;
                     } catch (ExecutionException e) {
                         throw new RuntimeException(e);
                     }
@@ -279,6 +290,9 @@ public class SpecialDrownAttacker extends BaseDrownAttacker {
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                LOGGER.warn("Was interrupted - aborting");
+                Thread.currentThread().interrupt();
+                break;
             }
         } while (processedSecondBytes < 256 * 256);
 

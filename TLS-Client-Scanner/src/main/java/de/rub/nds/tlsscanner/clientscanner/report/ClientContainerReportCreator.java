@@ -8,8 +8,11 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.GuidelineReport;
+import de.rub.nds.scanner.core.probe.result.IntegerResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
@@ -19,7 +22,6 @@ import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TableContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
-import de.rub.nds.scanner.core.util.CollectionUtils;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -32,6 +34,7 @@ import de.rub.nds.tlsscanner.core.probe.padding.KnownPaddingOracleVulnerability;
 import de.rub.nds.tlsscanner.core.probe.padding.PaddingOracleStrength;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
+import de.rub.nds.tlsscanner.core.util.CollectionUtils;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
@@ -42,15 +45,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
 /** TODO: Need to be completed. */
 public class ClientContainerReportCreator extends TlsReportCreator<ClientReport> {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     public ClientContainerReportCreator(ScannerDetail detail) {
         super(detail, DefaultPrintingScheme.getDefaultPrintingScheme());
@@ -92,6 +92,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             rootContainer.add(createDtlsBugsContainer(report));
         }
         rootContainer.add(createProbePerformanceContainer(report));
+        rootContainer.add(createGuidelinesContainer(report));
         return rootContainer;
     }
 
@@ -174,8 +175,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. RSA Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA.name())
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -187,9 +188,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. RSA Sig. Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG
-                                                    .name())
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -201,8 +201,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. DSS Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS.name())
+                            report.getIntegerResult(
+                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -214,8 +214,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                     new KeyValueContainer(
                             "Min. DH Modulus Accepted",
                             AnsiColor.DEFAULT_COLOR,
-                            report.getNumericResult(
-                                            TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH.name())
+                            report.getIntegerResult(TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH)
                                     .getValue()
                                     .toString(),
                             AnsiColor.DEFAULT_COLOR));
@@ -379,7 +378,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private ReportContainer createSessionResumptionContainer(ClientReport report) {
         ListContainer container = new ListContainer();
-        if (report.getExecutedProbes().contains(TlsProbeType.RESUMPTION)) {
+        if (report.getExecutedProbeTypes().contains(TlsProbeType.RESUMPTION)) {
             container.add(new HeadlineContainer("Session Resumption"));
             container.add(
                     createKeyValueContainer(
@@ -422,34 +421,36 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_FREAK_DOWNGRADE, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_LOGJAM, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_SWEET_32, report));
-        container.add(createKeyValueContainer(TlsAnalyzedProperty.ALPACA_MITIGATED, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, report));
         return container;
     }
 
     private ReportContainer createDheParameterContainer(ClientReport report) {
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("DHE Parameters"));
-        Integer lowestPossibleDheModulusSize = report.getLowestPossibleDheModulusSize();
+        IntegerResult lowestPossibleDheModulusSize =
+                report.getIntegerResult(TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (lowestPossibleDheModulusSize != null) {
             String containerKey = "Lowest accepted modulus (>= 2 bits)";
-            String containerValue = lowestPossibleDheModulusSize + " bits";
+            String containerValue = lowestPossibleDheModulusSize.getValue() + " bits";
             container.add(
                     new KeyValueContainer(
                             containerKey,
                             AnsiColor.DEFAULT_COLOR,
                             containerValue,
-                            getColorForDhModulusSize(lowestPossibleDheModulusSize)));
+                            getColorForDhModulusSize(lowestPossibleDheModulusSize.getValue())));
         }
-        Integer highestPossibleDheModulusSize = report.getHighestPossibleDheModulusSize();
+        IntegerResult highestPossibleDheModulusSize =
+                report.getIntegerResult(TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (highestPossibleDheModulusSize != null) {
             String containerKey = "Highest accepted modulus (<= 8192 bits)";
-            String containerValue = highestPossibleDheModulusSize + " bits";
+            String containerValue = highestPossibleDheModulusSize.getValue() + " bits";
             container.add(
                     new KeyValueContainer(
                             containerKey,
                             AnsiColor.DEFAULT_COLOR,
                             containerValue,
-                            getColorForDhModulusSize(highestPossibleDheModulusSize)));
+                            getColorForDhModulusSize(highestPossibleDheModulusSize.getValue())));
         }
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_EVEN_MODULUS, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MOD3_MODULUS, report));
@@ -479,7 +480,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private ReportContainer createAlpnContainer(ClientReport report) {
         ListContainer container = new ListContainer();
-        if (report.getExecutedProbes().contains(TlsProbeType.ALPN)
+        if (report.getExecutedProbeTypes().contains(TlsProbeType.ALPN)
                 && report.getClientAdvertisedAlpns() != null) {
             container.add(new HeadlineContainer("Advertised ALPNs"));
             ListContainer listContainer = new ListContainer();
@@ -691,7 +692,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 ListContainer performance = new ListContainer(1);
                 container.add(performance);
                 performance.add(new HeadlineContainer("Probe execution performance"));
-                for (PerformanceData data : report.getPerformanceList()) {
+                for (PerformanceData data : report.getProbePerformanceData()) {
                     Period period = new Period(data.getStopTime() - data.getStartTime());
                     performance.add(
                             createDefaultKeyValueContainer(
@@ -700,6 +701,95 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 }
             } catch (Exception e) {
                 container.add(createDefaultTextContainer("Error: " + e.getMessage()));
+            }
+        }
+        return container;
+    }
+
+    private ReportContainer createGuidelinesContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        List<GuidelineReport> guidelineReports = report.getGuidelineReports();
+        if (guidelineReports != null && !guidelineReports.isEmpty()) {
+            container.add(new HeadlineContainer("Guidelines"));
+            for (GuidelineReport guidelineReport : guidelineReports) {
+                container.add(createGuidelineContainer(guidelineReport));
+            }
+        }
+        return container;
+    }
+
+    private ReportContainer createGuidelineContainer(GuidelineReport guidelineReport) {
+        ListContainer container = new ListContainer(1);
+        container.add(
+                new HeadlineContainer("Guideline " + StringUtils.trim(guidelineReport.getName())));
+        container.add(
+                new KeyValueContainer(
+                        "Adhered",
+                        AnsiColor.GREEN,
+                        String.valueOf(guidelineReport.getAdhered().size()),
+                        AnsiColor.GREEN));
+        container.add(
+                new KeyValueContainer(
+                        "Violated",
+                        AnsiColor.RED,
+                        String.valueOf(guidelineReport.getViolated().size()),
+                        AnsiColor.RED));
+        container.add(
+                new KeyValueContainer(
+                        "Failed",
+                        AnsiColor.YELLOW,
+                        String.valueOf(guidelineReport.getFailedChecks().size()),
+                        AnsiColor.YELLOW));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Condition Not Met: ",
+                        String.valueOf(guidelineReport.getConditionNotMet().size())));
+
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            container.add(
+                    new TextContainer(StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE));
+            ListContainer detailContainer = new ListContainer(1);
+            container.add(detailContainer);
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                detailContainer.add(new HeadlineContainer("Passed Checks:"));
+                for (GuidelineCheckResult result : guidelineReport.getAdhered()) {
+                    detailContainer.add(
+                            new TextContainer(
+                                    StringUtils.trim(result.getCheckName()), AnsiColor.GREEN));
+                    detailContainer.add(
+                            createDefaultTextContainer(
+                                    "\t"
+                                            + StringUtils.trim(result.toString())
+                                                    .replace("\n", "\n\t")));
+                }
+            }
+
+            detailContainer.add(new HeadlineContainer("Violated Checks:"));
+            for (GuidelineCheckResult result : guidelineReport.getViolated()) {
+                detailContainer.add(
+                        new TextContainer(StringUtils.trim(result.getCheckName()), AnsiColor.RED));
+                detailContainer.add(
+                        createDefaultTextContainer(
+                                "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
+            }
+
+            detailContainer.add(new HeadlineContainer("Failed Checks:"));
+            for (GuidelineCheckResult result : guidelineReport.getFailedChecks()) {
+                detailContainer.add(
+                        new TextContainer(
+                                StringUtils.trim(result.getCheckName()), AnsiColor.YELLOW));
+                detailContainer.add(
+                        createDefaultTextContainer(
+                                "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
+            }
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                detailContainer.add(new HeadlineContainer("Condition Not Met Checks:"));
+                for (GuidelineCheckResult result : guidelineReport.getConditionNotMet()) {
+                    detailContainer.add(
+                            createDefaultTextContainer(StringUtils.trim(result.getCheckName())));
+                }
             }
         }
         return container;

@@ -10,14 +10,16 @@ package de.rub.nds.tlsscanner.core.probe.requirements;
 
 import de.rub.nds.scanner.core.probe.requirements.PrimitiveRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
+import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import java.util.HashSet;
 import java.util.List;
 
 /** Represents a {@link Requirement} for required {@link ExtensionType}s. */
-public class ExtensionRequirement<R extends TlsScanReport<R>>
-        extends PrimitiveRequirement<R, ExtensionType> {
+public class ExtensionRequirement<ReportT extends TlsScanReport>
+        extends PrimitiveRequirement<ReportT, ExtensionType> {
 
     public ExtensionRequirement(List<ExtensionType> extensions) {
         super(extensions);
@@ -28,14 +30,20 @@ public class ExtensionRequirement<R extends TlsScanReport<R>>
     }
 
     @Override
-    public boolean evaluate(R report) {
+    public boolean evaluate(ReportT report) {
         if (parameters.size() == 0) {
             return true;
         }
-        List<ExtensionType> extensionTypes = report.getSupportedExtensions();
-        if (extensionTypes == null) {
-            return false;
+        HashSet<ExtensionType> extensionTypes = new HashSet<>();
+        if (report.getSupportedExtensions() != null) {
+            extensionTypes.addAll(report.getSupportedExtensions());
         }
-        return new HashSet<>(extensionTypes).containsAll(parameters);
+        if (report.getResultMap().containsKey(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS)) {
+            SetResult<ExtensionType> result =
+                    report.getSetResult(
+                            TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, ExtensionType.class);
+            extensionTypes.addAll(result.getSet());
+        }
+        return extensionTypes.containsAll(parameters);
     }
 }

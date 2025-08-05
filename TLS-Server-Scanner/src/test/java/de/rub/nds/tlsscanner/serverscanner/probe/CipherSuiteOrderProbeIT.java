@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -31,6 +31,8 @@ public class CipherSuiteOrderProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return verifyProperty(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, TestResults.TRUE);
+        return verifyProperty(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, TestResults.TRUE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325, TestResults.TRUE);
     }
 }

@@ -28,16 +28,23 @@ import java.util.LinkedList;
 public class ClassicCloseNotifyTraceGenerator extends PaddingTraceGenerator {
 
     /**
-     * @param recordGeneratorType
+     * Constructs a new ClassicCloseNotifyTraceGenerator with the specified record generator type.
+     *
+     * @param recordGeneratorType The type of padding record generator to use for creating padding
+     *     vectors
      */
     public ClassicCloseNotifyTraceGenerator(PaddingRecordGeneratorType recordGeneratorType) {
         super(recordGeneratorType);
     }
 
     /**
-     * @param config
-     * @param vector
-     * @return
+     * Creates a workflow trace for testing padding oracle vulnerabilities using a close notify
+     * alert message. The trace includes a handshake, an application message with the padding
+     * vector, and a close notify alert.
+     *
+     * @param config The TLS configuration to use for the workflow
+     * @param vector The padding vector to apply to the application message record
+     * @return A workflow trace configured for padding oracle testing with close notify
      */
     @Override
     public WorkflowTrace getPaddingOracleWorkflowTrace(Config config, PaddingVector vector) {
@@ -53,9 +60,9 @@ public class ClassicCloseNotifyTraceGenerator extends PaddingTraceGenerator {
         AlertMessage alert = new AlertMessage();
         alert.setConfig(AlertLevel.FATAL, AlertDescription.CLOSE_NOTIFY);
         SendAction sendAction = new SendAction(applicationMessage, alert);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
-        sendAction.getRecords().add(new Record(config));
+        sendAction.setConfiguredRecords(new LinkedList<>());
+        sendAction.getConfiguredRecords().add(vector.createRecord());
+        sendAction.getConfiguredRecords().add(new Record(config));
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;

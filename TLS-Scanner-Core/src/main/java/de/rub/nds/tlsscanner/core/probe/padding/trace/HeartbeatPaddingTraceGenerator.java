@@ -26,16 +26,23 @@ import java.util.LinkedList;
 public class HeartbeatPaddingTraceGenerator extends PaddingTraceGenerator {
 
     /**
-     * @param recordGeneratorType
+     * Constructs a new HeartbeatPaddingTraceGenerator with the specified record generator type.
+     *
+     * @param recordGeneratorType The type of padding record generator to use for creating padding
+     *     vectors
      */
     public HeartbeatPaddingTraceGenerator(PaddingRecordGeneratorType recordGeneratorType) {
         super(recordGeneratorType);
     }
 
     /**
-     * @param config
-     * @param vector
-     * @return
+     * Creates a workflow trace for testing padding oracle vulnerabilities using heartbeat messages.
+     * The trace includes a handshake, an application message with the padding vector, and a
+     * heartbeat message.
+     *
+     * @param config The TLS configuration to use for the workflow
+     * @param vector The padding vector to apply to the application message record
+     * @return A workflow trace configured for padding oracle testing with heartbeat messages
      */
     @Override
     public WorkflowTrace getPaddingOracleWorkflowTrace(Config config, PaddingVector vector) {
@@ -50,9 +57,9 @@ public class HeartbeatPaddingTraceGenerator extends PaddingTraceGenerator {
         ApplicationMessage applicationMessage = new ApplicationMessage();
         HeartbeatMessage heartbeat = new HeartbeatMessage();
         SendAction sendAction = new SendAction(applicationMessage, heartbeat);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
-        sendAction.getRecords().add(new Record(config));
+        sendAction.setConfiguredRecords(new LinkedList<>());
+        sendAction.getConfiguredRecords().add(vector.createRecord());
+        sendAction.getConfiguredRecords().add(new Record(config));
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;

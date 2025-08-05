@@ -10,8 +10,9 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -32,10 +33,10 @@ public class ServerReportRaterTest {
 
     @Test
     public void testGetScoreReport() throws Exception {
-        HashMap<String, TestResult> resultMap = new HashMap<>();
-        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_2.toString(), TestResults.FALSE);
-        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_3.toString(), TestResults.TRUE);
-        resultMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0.toString(), TestResults.TRUE);
+        HashMap<AnalyzedProperty, TestResult> resultMap = new HashMap<>();
+        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
+        resultMap.put(TlsAnalyzedProperty.SUPPORTS_SSL_3, TestResults.TRUE);
+        resultMap.put(TlsAnalyzedProperty.SUPPORTS_TLS_1_0, TestResults.TRUE);
 
         SiteReportRater rater = DefaultRatingLoader.getServerReportRater("en");
         ScoreReport report = rater.getScoreReport(resultMap);

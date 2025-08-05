@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import java.util.List;
@@ -47,13 +47,13 @@ public class SimulationRequest {
             SendAction sendAction = new SendAction(new SSL2ClientHelloMessage());
             Record record = new Record();
             record.setCompleteRecordBytes(Modifiable.explicit(tlsClientConfig.getInitialBytes()));
-            sendAction.setRecords(record);
+            sendAction.setConfiguredRecords(List.of(record));
             trace.addTlsAction(sendAction);
         } else {
             ClientHelloMessage msg = new ClientHelloMessage(config);
             List<ExtensionMessage> extensions =
-                    WorkflowTraceUtil.getLastReceivedMessage(
-                                    HandshakeMessageType.CLIENT_HELLO, tlsClientConfig.getTrace())
+                    WorkflowTraceResultUtil.getLastReceivedMessage(
+                                    tlsClientConfig.getTrace(), HandshakeMessageType.CLIENT_HELLO)
                             .getExtensions();
             msg.setExtensions(extensions);
             trace.addTlsAction(new SendAction(msg));

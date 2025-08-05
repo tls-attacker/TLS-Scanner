@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.report.rating;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendations;
@@ -1115,11 +1115,11 @@ public class DefaultRecommendationsIT {
                         ""));
         recommendations.add(
                 new Recommendation(
-                        TlsAnalyzedProperty.ALPACA_MITIGATED,
-                        "ALPACA Mitigation",
+                        TlsAnalyzedProperty.VULNERABLE_TO_ALPACA,
+                        "Vulnerable to Alpaca",
                         "Evaluated whether the server is vulnerable to ALPACA",
                         new PropertyResultRecommendation(
-                                TestResults.FALSE,
+                                TestResults.TRUE,
                                 "The server does not reject invalid SNI names",
                                 "If possible configure your server to use strict SNI and strict ALPN verification"),
                         ""));

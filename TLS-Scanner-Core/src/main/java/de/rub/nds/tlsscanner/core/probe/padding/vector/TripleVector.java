@@ -10,7 +10,7 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -22,6 +22,15 @@ public class TripleVector extends PaddingVector {
     private final VariableModification cleanModification;
     private final VariableModification macModification;
     private final VariableModification paddingModification;
+
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private TripleVector() {
+        super(null, null);
+        this.cleanModification = null;
+        this.macModification = null;
+        this.paddingModification = null;
+    }
 
     public TripleVector(
             String name,
@@ -40,13 +49,19 @@ public class TripleVector extends PaddingVector {
         Record r = new Record();
         r.prepareComputations();
         ModifiableByteArray byteArray = new ModifiableByteArray();
-        byteArray.setModification(paddingModification);
+        if (paddingModification != null) {
+            byteArray.setModifications(paddingModification);
+        }
         r.getComputations().setPadding(byteArray);
         byteArray = new ModifiableByteArray();
-        byteArray.setModification(cleanModification);
+        if (cleanModification != null) {
+            byteArray.setModifications(cleanModification);
+        }
         r.setCleanProtocolMessageBytes(byteArray);
         byteArray = new ModifiableByteArray();
-        byteArray.setModification(macModification);
+        if (macModification != null) {
+            byteArray.setModifications(macModification);
+        }
         r.getComputations().setMac(byteArray);
         return r;
     }
@@ -55,18 +70,19 @@ public class TripleVector extends PaddingVector {
     public int getRecordLength(
             CipherSuite testedSuite, ProtocolVersion testedVersion, int appDataLength) {
         Record r = createRecord();
-        int macLength = AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getSize();
+        int macLength =
+                AlgorithmResolver.getMacAlgorithm(testedVersion, testedSuite).getMacLength();
 
         r.setCleanProtocolMessageBytes(new byte[appDataLength]);
         r.getComputations().setMac(new byte[macLength]);
         int paddingLength =
-                AlgorithmResolver.getCipher(testedSuite).getBlocksize()
+                testedSuite.getCipherAlgorithm().getBlocksize()
                         - ((r.getCleanProtocolMessageBytes().getValue().length
                                         + r.getComputations().getMac().getValue().length)
-                                % AlgorithmResolver.getCipher(testedSuite).getBlocksize());
+                                % testedSuite.getCipherAlgorithm().getBlocksize());
 
         r.getComputations().setPadding(new byte[paddingLength]);
-        return ArrayConverter.concatenate(
+        return DataConverter.concatenate(
                         r.getCleanProtocolMessageBytes().getValue(),
                         r.getComputations().getMac().getValue(),
                         r.getComputations().getPadding().getValue())

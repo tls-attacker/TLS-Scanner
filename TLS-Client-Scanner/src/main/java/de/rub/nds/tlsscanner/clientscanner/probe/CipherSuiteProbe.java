@@ -40,7 +40,7 @@ public class CipherSuiteProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         evaluationHelper.setPairLists(new LinkedList<>());
         List<State> statesToExecute = new LinkedList<>();
         for (ProtocolVersion version : evaluationHelper.getProtocolVersions()) {

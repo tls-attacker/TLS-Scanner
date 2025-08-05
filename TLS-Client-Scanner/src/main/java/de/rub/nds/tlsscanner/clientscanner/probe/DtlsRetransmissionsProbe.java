@@ -8,9 +8,9 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
@@ -42,7 +42,7 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         sendsRetransmissions = doesRetransmissions();
         processesRetransmissions = processesRetransmissions();
     }
@@ -81,7 +81,7 @@ public class DtlsRetransmissionsProbe extends TlsClientProbe {
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         trace.addTlsAction(new SendAction(new HelloVerifyRequestMessage()));
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
-        trace.addTlsAction(new SendRecordsFromLastFlightAction(1));
+        trace.addTlsAction(new SendRecordsFromLastFlightAction());
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
 
         State state = new State(config, trace);

@@ -8,6 +8,9 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher;
 
+import de.rub.nds.protocol.constants.AsymmetricAlgorithmType;
+import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -30,7 +33,6 @@ import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace.Bleichenba
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1Vector;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector.Pkcs1VectorGenerator;
 import java.security.cert.CertificateParsingException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -58,10 +60,6 @@ public class BleichenbacherAttacker {
     private long additionalTimeout = 1000;
     private long additionalTcpTimeout = 5000;
     private List<VectorResponse> fullResponseMap;
-    private EqualityError resultError;
-
-    private boolean shakyScans = false;
-    private boolean erroneousScans = false;
 
     public BleichenbacherAttacker(
             Config baseConfig,
@@ -113,22 +111,24 @@ public class BleichenbacherAttacker {
             }
         }
 
-        resultError = referenceError;
         return referenceError != EqualityError.NONE;
     }
 
     private List<VectorResponse> createVectorResponseList() {
         prepareConfig();
-        RSAPublicKey publicKey = getServerPublicKey();
-        if (publicKey == null) {
-            LOGGER.fatal("Could not retrieve PublicKey from Server - is the Server running?");
-            throw new OracleUnstableException("Fatal Extraction error");
+        PublicKeyContainer publicKey = getServerPublicKey();
+        if (publicKey == null || publicKey.getAlgorithmType() != AsymmetricAlgorithmType.RSA) {
+            throw new RuntimeException(
+                    "Could not retrieve RSA public key from Server. Broken server config?");
         }
+        RsaPublicKey rsaPublicKey = (RsaPublicKey) publicKey;
         List<TlsTask> taskList = new LinkedList<>();
         List<FingerprintTaskVectorPair> stateVectorPairList = new LinkedList<>();
         for (Pkcs1Vector vector :
                 Pkcs1VectorGenerator.generatePkcs1Vectors(
-                        publicKey, scanType, tlsConfig.getDefaultHighestClientProtocolVersion())) {
+                        rsaPublicKey,
+                        scanType,
+                        tlsConfig.getDefaultHighestClientProtocolVersion())) {
             State state =
                     new State(
                             tlsConfig,
@@ -149,8 +149,7 @@ public class BleichenbacherAttacker {
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
             ResponseFingerprint fingerprint = null;
             if (pair.getFingerPrintTask().isHasError()) {
-                erroneousScans = true;
-                LOGGER.warn("Could not extract fingerprint for " + pair.toString());
+                LOGGER.warn("Could not extract fingerprint for {}", pair);
             } else {
                 testedSuite =
                         pair.getFingerPrintTask()
@@ -176,12 +175,18 @@ public class BleichenbacherAttacker {
         // not dynamically. We
         // will adjust this in future versions.
         for (FingerprintTaskVectorPair pair : stateVectorPairList) {
-            if (pair.getFingerPrintTask().getState().getTlsContext().getServerRSAModulus() != null
+            if (pair.getFingerPrintTask()
+                                    .getState()
+                                    .getTlsContext()
+                                    .getPeerX509Context()
+                                    .getSubjectRsaModulus()
+                            != null
                     && !pair.getFingerPrintTask()
                             .getState()
                             .getTlsContext()
-                            .getServerRSAModulus()
-                            .equals(publicKey.getModulus())) {
+                            .getPeerX509Context()
+                            .getSubjectRsaModulus()
+                            .equals(rsaPublicKey.getModulus())) {
                 throw new OracleUnstableException(
                         "Server sent us a different publickey during the scan. Aborting test");
             }
@@ -216,10 +221,10 @@ public class BleichenbacherAttacker {
         return EqualityError.NONE;
     }
 
-    private RSAPublicKey getServerPublicKey() {
-        RSAPublicKey publicKey = null;
+    private PublicKeyContainer getServerPublicKey() {
+        PublicKeyContainer publicKey = null;
         try {
-            publicKey = (RSAPublicKey) CertificateFetcher.fetchServerPublicKey(tlsConfig);
+            publicKey = CertificateFetcher.fetchServerPublicKey(tlsConfig);
         } catch (CertificateParsingException ignored) {
         }
         if (publicKey == null) {

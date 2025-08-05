@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsscanner.core.TlsCoreTestReport;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,9 +33,8 @@ public class DtlsRetransmissionAfterProbeTest {
 
     @Test
     public void testNoRetransmissions() {
-        report.setExtractedValueContainerMap(
-                Collections.singletonMap(
-                        TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer));
+        report.putExtractedValueContainer(
+                TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer);
 
         probe.analyze(report);
 
@@ -48,9 +47,8 @@ public class DtlsRetransmissionAfterProbeTest {
         for (HandshakeMessageType type : HandshakeMessageType.values()) {
             retransmissionsContainer.put(type);
         }
-        report.setExtractedValueContainerMap(
-                Collections.singletonMap(
-                        TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer));
+        report.putExtractedValueContainer(
+                TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer);
 
         probe.analyze(report);
 
@@ -68,9 +66,8 @@ public class DtlsRetransmissionAfterProbeTest {
             retransmissionsContainer =
                     new ExtractedValueContainer<>(TrackableValueType.DTLS_RETRANSMISSIONS);
             retransmissionsContainer.put(type);
-            report.setExtractedValueContainerMap(
-                    Collections.singletonMap(
-                            TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer));
+            report.putExtractedValueContainer(
+                    TrackableValueType.DTLS_RETRANSMISSIONS, retransmissionsContainer);
 
             probe.analyze(report);
 

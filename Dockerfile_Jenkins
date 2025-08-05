@@ -1,0 +1,5 @@
+FROM eclipse-temurin:21
+
+COPY ./apps/ /apps/
+WORKDIR /apps
+ENTRYPOINT ["java", "-jar", "TLS-Server-Scanner.jar"]

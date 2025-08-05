@@ -53,6 +53,8 @@ public class SimulatedClientResult {
     private List<HandshakeFailureReasons> failureReasons = null;
     private List<String> insecureReasons = null;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
     private SimulatedClientResult() {
         // tlsClientConfig = null;
     }

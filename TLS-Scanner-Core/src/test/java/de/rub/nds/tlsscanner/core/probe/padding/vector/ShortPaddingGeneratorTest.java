@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import de.rub.nds.modifiablevariable.VariableModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -59,10 +59,11 @@ public class ShortPaddingGeneratorTest {
                 AlgorithmResolver.getMacAlgorithm(
                                 ProtocolVersion.TLS12,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA)
-                        .getSize();
+                        .getMacLength();
         VariableModification modification = ((TripleVector) vectors.get(0)).getCleanModification();
         ModifiableByteArray array = new ModifiableByteArray();
-        array.setModification(modification);
+        array.setOriginalValue(new byte[0]);
+        array.setModifications(modification);
         byte[] expectedPlain =
                 new byte
                         [ShortPaddingGenerator.DEFAULT_CIPHERTEXT_LENGTH
@@ -82,15 +83,17 @@ public class ShortPaddingGeneratorTest {
                 AlgorithmResolver.getMacAlgorithm(
                                 ProtocolVersion.TLS12,
                                 CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA)
-                        .getSize();
+                        .getMacLength();
         VariableModification modification = ((TripleVector) vectors.get(0)).getCleanModification();
         ModifiableByteArray array = new ModifiableByteArray();
-        array.setModification(modification);
+        array.setOriginalValue(new byte[0]);
+        array.setModifications(modification);
         assertArrayEquals(new byte[0], array.getValue(), "Validation of clean bytes");
 
         modification = ((TripleVector) vectors.get(0)).getPaddingModification();
         array = new ModifiableByteArray();
-        array.setModification(modification);
+        array.setOriginalValue(new byte[0]);
+        array.setModifications(modification);
         byte[] expectedPadding =
                 generator.createPaddingBytes(
                         ShortPaddingGenerator.DEFAULT_CIPHERTEXT_LENGTH - macSize);
@@ -100,7 +103,7 @@ public class ShortPaddingGeneratorTest {
         modification = ((TripleVector) vectors.get(0)).getMacModification();
         array = new ModifiableByteArray();
         array.setOriginalValue(macToModify);
-        array.setModification(modification);
+        array.setModifications(modification);
         byte[] expectedMac = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
         assertArrayEquals(
                 expectedMac, array.getValue(), "Validation of the deleted first byte in MAC");
@@ -108,7 +111,7 @@ public class ShortPaddingGeneratorTest {
         modification = ((TripleVector) vectors.get(1)).getMacModification();
         array = new ModifiableByteArray();
         array.setOriginalValue(macToModify);
-        array.setModification(modification);
+        array.setModifications(modification);
         expectedMac = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
         assertArrayEquals(
                 expectedMac, array.getValue(), "Validation of the deleted last byte in MAC");
@@ -474,7 +477,7 @@ public class ShortPaddingGeneratorTest {
         r.setCleanProtocolMessageBytes(new byte[20]);
         r.getComputations().setMac(new byte[20]);
         r.getComputations().setPadding(new byte[20]);
-        return ArrayConverter.concatenate(
+        return DataConverter.concatenate(
                 r.getCleanProtocolMessageBytes().getValue(),
                 r.getComputations().getMac().getValue(),
                 r.getComputations().getPadding().getValue());
@@ -487,13 +490,13 @@ public class ShortPaddingGeneratorTest {
         ModifiableByteArray array = new ModifiableByteArray();
         array.setOriginalValue(new byte[10]);
         byte[] expected = new byte[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-        array.setModification(modifications.get(0));
+        array.setModifications(modifications.get(0));
         assertArrayEquals(expected, array.getValue(), "Last byte should be xored with 0x01");
         expected = new byte[] {0, 0, 0, 0, 0, 8, 0, 0, 0, 0};
-        array.setModification(modifications.get(1));
+        array.setModifications(modifications.get(1));
         assertArrayEquals(expected, array.getValue(), "Middle byte should be xored with 0x08");
         expected = new byte[] {(byte) 128, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        array.setModification(modifications.get(2));
+        array.setModifications(modifications.get(2));
         assertArrayEquals(expected, array.getValue(), "First byte should be xored with 0x80");
     }
 }

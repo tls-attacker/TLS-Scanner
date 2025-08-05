@@ -25,16 +25,23 @@ import java.util.LinkedList;
 public class FinishedResumptionPaddingTraceGenerator extends PaddingTraceGenerator {
 
     /**
-     * @param type
+     * Constructs a new FinishedResumptionPaddingTraceGenerator with the specified record generator
+     * type.
+     *
+     * @param type The type of padding record generator to use for creating padding vectors
      */
     public FinishedResumptionPaddingTraceGenerator(PaddingRecordGeneratorType type) {
         super(type);
     }
 
     /**
-     * @param config
-     * @param vector
-     * @return
+     * Creates a workflow trace for testing padding oracle vulnerabilities in the Finished message
+     * during a session resumption handshake. The padding vector is applied specifically to the
+     * record containing the Finished message.
+     *
+     * @param config The TLS configuration to use for the workflow
+     * @param vector The padding vector to apply to the Finished message record
+     * @return A workflow trace configured for testing padding oracles in session resumption
      */
     @Override
     public WorkflowTrace getPaddingOracleWorkflowTrace(Config config, PaddingVector vector) {
@@ -48,14 +55,14 @@ public class FinishedResumptionPaddingTraceGenerator extends PaddingTraceGenerat
         }
         SendAction sendAction = (SendAction) trace.getLastSendingAction();
         LinkedList<Record> recordList = new LinkedList<>();
-        for (ProtocolMessage msg : sendAction.getMessages()) {
+        for (ProtocolMessage msg : sendAction.getConfiguredMessages()) {
             if (msg instanceof FinishedMessage) {
                 recordList.add(vector.createRecord());
             } else {
                 recordList.add(new Record(config));
             }
         }
-        sendAction.setRecords(recordList);
+        sendAction.setConfiguredRecords(recordList);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;
     }

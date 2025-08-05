@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.trace;
 
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
+import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
@@ -26,6 +26,16 @@ public class BleichenbacherWorkflowGenerator {
 
     private BleichenbacherWorkflowGenerator() {}
 
+    /**
+     * Generates a workflow trace for Bleichenbacher attack testing with the specified configuration
+     * and encrypted premaster secret.
+     *
+     * @param tlsConfig The TLS configuration to use for the workflow
+     * @param type The type of Bleichenbacher workflow to generate (CKE, CKE_CCS, CKE_CCS_FIN, or
+     *     CKE_FIN)
+     * @param encryptedPMS The encrypted premaster secret to use in the RSA client key exchange
+     * @return A WorkflowTrace configured for the specified Bleichenbacher attack test scenario
+     */
     public static WorkflowTrace generateWorkflow(
             Config tlsConfig, BleichenbacherWorkflowType type, byte[] encryptedPMS) {
         WorkflowTrace trace =
@@ -34,7 +44,7 @@ public class BleichenbacherWorkflowGenerator {
                                 WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         RSAClientKeyExchangeMessage cke = new RSAClientKeyExchangeMessage();
         ModifiableByteArray epms = new ModifiableByteArray();
-        epms.setModification(ByteArrayModificationFactory.explicitValue(encryptedPMS));
+        epms.setModifications(new ByteArrayExplicitValueModification(encryptedPMS));
         cke.setPublicKey(epms);
         if (null != type) {
             switch (type) {

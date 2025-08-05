@@ -8,12 +8,14 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.vector;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
+import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.protocol.exception.ConfigurationException;
 import de.rub.nds.tlsattacker.core.constants.Bits;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsscanner.serverscanner.probe.bleichenbacher.constans.BleichenbacherScanType;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
@@ -34,41 +36,40 @@ public class Pkcs1VectorGenerator {
     private Pkcs1VectorGenerator() {}
 
     /**
-     * Generates different encrypted PKCS1 vectors
+     * Generates different encrypted PKCS#1 vectors for Bleichenbacher vulnerability testing. This
+     * method creates various malformed and correctly formatted PKCS#1 padded messages that can be
+     * used to test RSA implementations for padding oracle vulnerabilities.
      *
-     * @param publicKey The public key
-     * @param type the type
-     * @param protocolVersion
-     * @return encrypted pkcs1Vectors
+     * @param publicKey the RSA public key to use for encryption
+     * @param type the type of Bleichenbacher scan (FAST or FULL)
+     * @param protocolVersion the TLS protocol version to embed in the premaster secret
+     * @return a list of PKCS#1 vectors with both plain and encrypted values
      */
     public static List<Pkcs1Vector> generatePkcs1Vectors(
-            RSAPublicKey publicKey, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
+            RsaPublicKey publicKey, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
         List<Pkcs1Vector> encryptedVectors =
                 generatePlainPkcs1Vectors(
                         publicKey.getModulus().bitLength(), type, protocolVersion);
-        try {
-            Cipher rsa = Cipher.getInstance("RSA/NONE/NoPadding");
-            rsa.init(Cipher.ENCRYPT_MODE, publicKey);
-            // encrypt all the padded keys
-            for (Pkcs1Vector vector : encryptedVectors) {
-                byte[] encrypted = rsa.doFinal(vector.getPlainValue());
-                vector.setEncryptedValue(encrypted);
-            }
-            return encryptedVectors;
-        } catch (BadPaddingException
-                | IllegalBlockSizeException
-                | InvalidKeyException
-                | NoSuchAlgorithmException
-                | NoSuchPaddingException ex) {
-            throw new ConfigurationException(
-                    "The different PKCS#1 attack vectors could not be generated.", ex);
+        // encrypt all the padded keys
+        for (Pkcs1Vector vector : encryptedVectors) {
+            BigInteger plaintext = new BigInteger(1, vector.getPlainValue());
+            byte[] encrypted =
+                    DataConverter.bigIntegerToNullPaddedByteArray(
+                            plaintext.modPow(publicKey.getPublicExponent(), publicKey.getModulus()),
+                            publicKey.getModulus().bitLength() / Bits.IN_A_BYTE);
+            vector.setEncryptedValue(encrypted);
         }
+        return encryptedVectors;
     }
 
     /**
-     * @param publicKey
-     * @param protocolVersion
-     * @return
+     * Generates a single correctly formatted PKCS#1 vector using Java's Cipher implementation. This
+     * method creates a properly padded PKCS#1 message with the correct TLS version bytes.
+     *
+     * @param publicKey the RSA public key to use for encryption
+     * @param protocolVersion the TLS protocol version to embed in the premaster secret
+     * @return a correctly formatted and encrypted PKCS#1 vector
+     * @throws ConfigurationException if the vector cannot be generated due to cryptographic errors
      */
     public static Pkcs1Vector generateCorrectPkcs1Vector(
             RSAPublicKey publicKey, ProtocolVersion protocolVersion) {
@@ -92,12 +93,15 @@ public class Pkcs1VectorGenerator {
     }
 
     /**
-     * Generates different plain PKCS1 vectors
+     * Generates different plain (unencrypted) PKCS#1 vectors with various padding errors. These
+     * vectors include correctly formatted messages as well as messages with specific malformations
+     * designed to test padding oracle vulnerabilities.
      *
-     * @param publicKeyBitLength The publicKeyBitLength
-     * @param type the type
-     * @param protocolVersion
-     * @return pkcs1Vectors
+     * @param publicKeyBitLength the bit length of the RSA public key
+     * @param type the type of Bleichenbacher scan (FAST or FULL). FULL includes additional vectors
+     *     with 0x00 bytes at different positions
+     * @param protocolVersion the TLS protocol version to embed in the premaster secret
+     * @return a list of plain PKCS#1 vectors with various padding formats
      */
     public static List<Pkcs1Vector> generatePlainPkcs1Vectors(
             int publicKeyBitLength, BleichenbacherScanType type, ProtocolVersion protocolVersion) {
@@ -207,7 +211,7 @@ public class Pkcs1VectorGenerator {
                 symmetricKey, 0, key, rsaKeyLength - symmetricKey.length, symmetricKey.length);
         LOGGER.debug(
                 "Generated a PKCS1 padded message a correct key length, but invalid protocol version: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
 
         return key;
     }
@@ -218,7 +222,7 @@ public class Pkcs1VectorGenerator {
         key[rsaKeyLength - symmetricKey.length + 1] = 0x42;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a wrong TLS version bytes: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -227,7 +231,7 @@ public class Pkcs1VectorGenerator {
         key[0] = 23;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a wrong first byte: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -236,7 +240,7 @@ public class Pkcs1VectorGenerator {
         key[1] = 23;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a wrong second byte: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -249,7 +253,7 @@ public class Pkcs1VectorGenerator {
         }
         LOGGER.debug(
                 "Generated a PKCS1 padded message with no separating byte: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -258,7 +262,7 @@ public class Pkcs1VectorGenerator {
         key[3] = 0x00;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a 0x00 byte in the PKCS1 padding: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -267,7 +271,7 @@ public class Pkcs1VectorGenerator {
         key[11] = 0x00;
         LOGGER.debug(
                 "Generated a PKCS1 padded message with a 0x00 byte in padding: {}",
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 
@@ -283,7 +287,7 @@ public class Pkcs1VectorGenerator {
         LOGGER.debug(
                 "Generated a PKCS1 padded symmetric key of size {}: {}",
                 size,
-                ArrayConverter.bytesToHexString(key));
+                DataConverter.bytesToHexString(key));
         return key;
     }
 

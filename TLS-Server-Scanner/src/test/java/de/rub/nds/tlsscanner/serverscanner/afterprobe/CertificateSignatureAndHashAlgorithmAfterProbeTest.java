@@ -13,18 +13,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.signatureengine.keyparsers.PemUtil;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
+import de.rub.nds.x509attacker.filesystem.CertificateIo;
+import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.security.cert.CertificateException;
+import java.security.Security;
 import java.util.List;
-import org.bouncycastle.crypto.tls.Certificate;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +37,7 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
 
     @BeforeEach
     public void setup() {
+        Security.addProvider(new BouncyCastleProvider());
         report = new ServerReport();
         probe = new CertificateSignatureAndHashAlgorithmAfterProbe();
     }
@@ -44,18 +45,16 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
     @Test
     public void testMissingCertificateChain() {
         probe.analyze(report);
-        assertNull(report.getSupportedSignatureAndHashAlgorithmsCert());
+        assertNull(report.getSupportedCertSignatureAlgorithms());
     }
 
     @Test
     public void testEmptyCertificateChain() {
         report.putResult(
                 TlsAnalyzedProperty.CERTIFICATE_CHAINS,
-                new ListResult<>(
-                        List.of(new CertificateChain(Certificate.EMPTY_CHAIN, "a.com")),
-                        TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
+                List.of(new CertificateChainReport(new X509CertificateChain(), "a.com")));
         probe.analyze(report);
-        assertTrue(report.getSupportedSignatureAndHashAlgorithmsCert().isEmpty());
+        assertTrue(report.getSupportedCertSignatureAlgorithms().isEmpty());
     }
 
     @Test
@@ -67,19 +66,16 @@ public class CertificateSignatureAndHashAlgorithmAfterProbeTest {
                                     .getClassLoader()
                                     .getResource(PATH_TO_CERTIFICATE)
                                     .toURI());
-            Certificate certificate = PemUtil.readCertificate(certificateFile);
-            report.putResult(
-                    TlsAnalyzedProperty.CERTIFICATE_CHAINS,
-                    new ListResult<>(
-                            List.of(new CertificateChain(certificate, "a.com")),
-                            TlsAnalyzedProperty.CERTIFICATE_CHAINS.name()));
+            X509CertificateChain chain = CertificateIo.readPemChain(certificateFile);
+            CertificateChainReport chainReport = new CertificateChainReport(chain, "a.com");
+            report.putResult(TlsAnalyzedProperty.CERTIFICATE_CHAINS, List.of(chainReport));
             probe.analyze(report);
-        } catch (IOException | URISyntaxException | CertificateException e) {
+        } catch (IOException | URISyntaxException e) {
             fail("Could not load certificate from resources");
         }
-        assertEquals(1, report.getSupportedSignatureAndHashAlgorithmsCert().size());
+        assertEquals(1, report.getSupportedCertSignatureAlgorithms().size());
         assertTrue(
-                report.getSupportedSignatureAndHashAlgorithmsCert()
-                        .contains(SignatureAndHashAlgorithm.RSA_SHA256));
+                report.getSupportedCertSignatureAlgorithms()
+                        .contains(X509SignatureAlgorithm.SHA256_WITH_RSA_ENCRYPTION));
     }
 }

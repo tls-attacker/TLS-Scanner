@@ -8,29 +8,8 @@
  */
 package de.rub.nds.tlsscanner.core.probe.ciphersuite;
 
-import static de.rub.nds.scanner.core.constants.ScannerDetail.ALL;
-import static de.rub.nds.scanner.core.constants.ScannerDetail.DETAILED;
-import static de.rub.nds.scanner.core.constants.ScannerDetail.NORMAL;
-import static de.rub.nds.scanner.core.constants.ScannerDetail.QUICK;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.AES;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.ARIA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.CAMELLIA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.CHACHA20_POLY1305;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.DES;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.DES40;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.DESede;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.FORTEZZA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.IDEA;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.NULL;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.RC2;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.RC4;
-import static de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm.SEED;
-import static de.rub.nds.tlsattacker.core.constants.CipherType.AEAD;
-import static de.rub.nds.tlsattacker.core.constants.CipherType.BLOCK;
-import static de.rub.nds.tlsattacker.core.constants.CipherType.STREAM;
-
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.BulkCipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -98,6 +77,7 @@ public class CipherSuiteEvaluationHelper {
     private TestResult supportsLegacyPrf = TestResults.FALSE;
     private TestResult supportsSha256Prf = TestResults.FALSE;
     private TestResult supportsSha384Prf = TestResults.FALSE;
+    private TestResult supportsCbc = TestResults.FALSE;
 
     public CipherSuiteEvaluationHelper(List<ProtocolVersion> protocolVersions) {
         this.protocolVersions = protocolVersions;
@@ -148,7 +128,8 @@ public class CipherSuiteEvaluationHelper {
             TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES,
             TlsAnalyzedProperty.SUPPORTS_ECDHE,
             TlsAnalyzedProperty.SUPPORTS_DHE,
-            TlsAnalyzedProperty.SUPPORTS_STATIC_DH
+            TlsAnalyzedProperty.SUPPORTS_STATIC_DH,
+            TlsAnalyzedProperty.SUPPORTS_CBC
         };
     }
 
@@ -205,10 +186,10 @@ public class CipherSuiteEvaluationHelper {
                     if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
                         supportsLegacyPrf = TestResults.TRUE;
                     }
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_SHA256) {
                         supportsSha256Prf = TestResults.TRUE;
                     }
-                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_LEGACY) {
+                    if (prfAlgorithm == PRFAlgorithm.TLS_PRF_SHA384) {
                         supportsSha384Prf = TestResults.TRUE;
                     }
                 }
@@ -218,17 +199,18 @@ public class CipherSuiteEvaluationHelper {
                 adjustKeyExchange(suite);
                 adjustCipherType(suite);
                 adjustCertificate(suite);
+                adjustModeOfOperation(suite);
             }
             probe.put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, allSupported);
             writeToReport(probe);
         } else {
             probe.put(TlsAnalyzedProperty.SUPPORTED_CIPHERSUITES, Collections.emptySet());
-            probe.setPropertiesToCouldNotTest();
+            probe.setPropertiesToCannotBeTested();
         }
     }
 
     public void adjustCipherType(CipherSuite suite) {
-        CipherType cipherType = AlgorithmResolver.getCipherType(suite);
+        CipherType cipherType = suite.getCipherType();
         switch (cipherType) {
             case AEAD:
                 supportsAeadCiphers = TestResults.TRUE;
@@ -241,6 +223,12 @@ public class CipherSuiteEvaluationHelper {
                 break;
             default:
                 ;
+        }
+    }
+
+    public void adjustModeOfOperation(CipherSuite suite) {
+        if (suite.isCBC()) {
+            supportsCbc = TestResults.TRUE;
         }
     }
 
@@ -263,7 +251,7 @@ public class CipherSuiteEvaluationHelper {
         if (suite.name().contains("ECDH_")) {
             supportsStaticEcdh = TestResults.TRUE;
         }
-        if (suite.name().contains("ECDH")) {
+        if (suite.name().contains("ECDH") && suite.isEphemeral()) {
             supportsEcdhe = TestResults.TRUE;
         }
         if (suite.name().contains("NULL")) {
@@ -312,7 +300,7 @@ public class CipherSuiteEvaluationHelper {
     }
 
     public void adjustBulk(CipherSuite suite) {
-        BulkCipherAlgorithm bulkCipherAlgorithm = AlgorithmResolver.getBulkCipherAlgorithm(suite);
+        BulkCipherAlgorithm bulkCipherAlgorithm = BulkCipherAlgorithm.getBulkCipherAlgorithm(suite);
         switch (bulkCipherAlgorithm) {
             case AES:
                 supportsAes = TestResults.TRUE;
@@ -414,6 +402,7 @@ public class CipherSuiteEvaluationHelper {
         probe.put(TlsAnalyzedProperty.SUPPORTS_LEGACY_PRF, supportsLegacyPrf);
         probe.put(TlsAnalyzedProperty.SUPPORTS_SHA256_PRF, supportsSha256Prf);
         probe.put(TlsAnalyzedProperty.SUPPORTS_SHA384_PRF, supportsSha384Prf);
+        probe.put(TlsAnalyzedProperty.SUPPORTS_CBC, supportsCbc);
         probe.put(TlsAnalyzedProperty.VERSION_SUITE_PAIRS, getPairLists());
     }
 

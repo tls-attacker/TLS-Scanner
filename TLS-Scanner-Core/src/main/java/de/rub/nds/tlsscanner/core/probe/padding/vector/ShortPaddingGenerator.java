@@ -10,9 +10,8 @@ package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayDeleteModification;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -27,6 +26,7 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
      * two full padding blocks can be inserted.
      */
     static final int DEFAULT_CIPHERTEXT_LENGTH = 80;
+
     /** Default padding length for the construction of modified encrypted plaintexts */
     static final int DEFAULT_PADDING_LENGTH = 4;
 
@@ -49,7 +49,7 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
      */
     List<PaddingVector> createBasicMacVectors(CipherSuite suite, ProtocolVersion version) {
         List<PaddingVector> vectorList = new LinkedList<>();
-        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getSize();
+        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         int i = 1;
         for (ByteArrayXorModification modification : createFlippedModifications(macSize)) {
             vectorList.add(
@@ -57,7 +57,7 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
                             "BasicMac-"
                                     + modification.getStartPosition()
                                     + "-"
-                                    + ArrayConverter.bytesToHexString(modification.getXor()),
+                                    + DataConverter.bytesToHexString(modification.getXor()),
                             "BasicMac" + i,
                             new ByteArrayExplicitValueModification(
                                     new byte
@@ -80,7 +80,7 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
      */
     List<PaddingVector> createMissingMacByteVectors(CipherSuite suite, ProtocolVersion version) {
         List<PaddingVector> vectorList = new LinkedList<>();
-        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getSize();
+        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         byte[] padding = createPaddingBytes(DEFAULT_CIPHERTEXT_LENGTH - macSize);
         // Missing first MAC byte because of overlong valid padding
         vectorList.add(
@@ -197,7 +197,7 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
     }
 
     List<PaddingVector> createClassicModifiedPadding(CipherSuite suite, ProtocolVersion version) {
-        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getSize();
+        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         int paddingValue = DEFAULT_CIPHERTEXT_LENGTH - macSize - 1;
         int applicationLength = 0;
         List<PaddingVector> vectorList =
@@ -339,9 +339,6 @@ public class ShortPaddingGenerator extends PaddingVectorGenerator {
 
     private PaddingVector createVectorWithPlainData(String name, String identifier, byte[] plain) {
         return new PlainPaddingVector(
-                name,
-                identifier,
-                (ByteArrayExplicitValueModification)
-                        ByteArrayModificationFactory.explicitValue(plain));
+                name, identifier, new ByteArrayExplicitValueModification(plain));
     }
 }

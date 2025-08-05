@@ -24,7 +24,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionM
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -40,6 +40,7 @@ public class BasicProbe extends TlsClientProbe {
     private List<CipherSuite> clientAdvertisedCipherSuites = null;
     private List<CompressionMethod> clientAdvertisedCompressions = null;
     private List<SignatureAndHashAlgorithm> clientAdvertisedSignatureAndHashAlgorithms = null;
+    private List<SignatureAndHashAlgorithm> clientAdvertisedCertSignatureAndHashAlgorithms = null;
     private Set<ExtensionType> clientAdvertisedExtensions = null;
     private List<NamedGroup> clientAdvertisedNamedGroupsList = null;
     private List<NamedGroup> clientKeyShareNamedGroupsList = null;
@@ -51,6 +52,7 @@ public class BasicProbe extends TlsClientProbe {
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES,
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS,
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
@@ -58,7 +60,8 @@ public class BasicProbe extends TlsClientProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
+        LOGGER.info("Waiting for client to connect...");
         Config config = scannerConfig.createConfig();
         WorkflowTrace trace =
                 new WorkflowConfigurationFactory(config)
@@ -66,20 +69,23 @@ public class BasicProbe extends TlsClientProbe {
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         State state = new State(config, trace);
         executeState(state);
+        LOGGER.info("Client connected");
         if (state.getWorkflowTrace().executedAsPlanned()) {
             TlsContext traceContext = state.getTlsContext();
             clientAdvertisedCipherSuites = traceContext.getClientSupportedCipherSuites();
             clientAdvertisedCompressions = traceContext.getClientSupportedCompressions();
             clientAdvertisedSignatureAndHashAlgorithms =
                     traceContext.getClientSupportedSignatureAndHashAlgorithms();
+            clientAdvertisedCertSignatureAndHashAlgorithms =
+                    traceContext.getClientSupportedCertificateSignAlgorithms();
             clientAdvertisedExtensions = traceContext.getProposedExtensions();
             clientAdvertisedNamedGroupsList = traceContext.getClientNamedGroupsList();
             clientAdvertisedPointFormatsList = traceContext.getClientPointFormatsList();
 
             ClientHelloMessage receivedClientHello =
                     (ClientHelloMessage)
-                            WorkflowTraceUtil.getFirstReceivedMessage(
-                                    HandshakeMessageType.CLIENT_HELLO, state.getWorkflowTrace());
+                            WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                    state.getWorkflowTrace(), HandshakeMessageType.CLIENT_HELLO);
             clientKeyShareNamedGroupsList = getKeyShareGroups(receivedClientHello);
         }
     }
@@ -90,7 +96,12 @@ public class BasicProbe extends TlsClientProbe {
             KeyShareExtensionMessage keyShareExtension =
                     clientHello.getExtension(KeyShareExtensionMessage.class);
             keyShareExtension.getKeyShareList().stream()
-                    .forEach(entry -> keyShareGroups.add(entry.getGroupConfig()));
+                    .forEach(
+                            entry -> {
+                                if (entry.getGroupConfig() != null) {
+                                    keyShareGroups.add(entry.getGroupConfig());
+                                }
+                            });
         }
         return keyShareGroups;
     }
@@ -110,6 +121,9 @@ public class BasicProbe extends TlsClientProbe {
         put(
                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
                 clientAdvertisedSignatureAndHashAlgorithms);
+        put(
+                TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
+                clientAdvertisedCertSignatureAndHashAlgorithms);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, clientAdvertisedExtensions);
         put(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, clientAdvertisedNamedGroupsList);
         put(

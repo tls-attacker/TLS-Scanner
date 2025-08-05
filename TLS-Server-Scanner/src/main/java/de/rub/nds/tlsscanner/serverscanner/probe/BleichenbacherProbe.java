@@ -8,19 +8,18 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.BleichenbacherOracleTestInfo;
@@ -67,7 +66,7 @@ public class BleichenbacherProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         LOGGER.debug("Starting evaluation");
         List<BleichenbacherWorkflowType> workflowTypeList = createWorkflowTypeList();
         testResultList = new LinkedList<>();
@@ -75,8 +74,7 @@ public class BleichenbacherProbe extends TlsServerProbe {
             for (VersionSuiteListPair pair : serverSupportedSuites) {
                 if (!pair.getVersion().isSSL() && !pair.getVersion().isTLS13()) {
                     for (CipherSuite suite : pair.getCipherSuiteList()) {
-                        if (AlgorithmResolver.getKeyExchangeAlgorithm(suite)
-                                        == KeyExchangeAlgorithm.RSA
+                        if (suite.getKeyExchangeAlgorithm() == KeyExchangeAlgorithm.RSA
                                 && CipherSuite.getImplemented().contains(suite)) {
                             BleichenbacherScanType recordGeneratorType =
                                     scanDetail.isGreaterEqualTo(ScannerDetail.ALL)

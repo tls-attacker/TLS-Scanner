@@ -14,10 +14,15 @@ public enum TrackableValueType implements TrackableValue {
     COOKIE,
     RANDOM,
     SESSION_ID,
+    SESSION_TICKET,
     DHE_PUBLICKEY,
     ECDHE_PUBKEY,
     GCM_NONCE_EXPLICIT,
     CBC_IV,
     DTLS_RETRANSMISSIONS,
-    DESTINATION_PORT,
+    DESTINATION_PORT;
+
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
+    private TrackableValueType() {}
 }

@@ -17,8 +17,8 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
  * Represents a {@link Requirement} for required {@link TlsAnalyzedProperty} properties which were
  * negatively evaluated.
  */
-public class ProtocolTypeFalseRequirement<R extends TlsScanReport<R>>
-        extends ProtocolTypeRequirement<R> {
+public class ProtocolTypeFalseRequirement<ReportT extends TlsScanReport>
+        extends ProtocolTypeRequirement<ReportT> {
 
     public ProtocolTypeFalseRequirement(ProtocolType protocolType) {
         super(false, protocolType);

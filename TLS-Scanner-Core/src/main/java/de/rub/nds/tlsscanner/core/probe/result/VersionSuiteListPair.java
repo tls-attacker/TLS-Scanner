@@ -19,6 +19,8 @@ public class VersionSuiteListPair implements Serializable {
 
     private final List<CipherSuite> cipherSuiteList;
 
+    /** Default constructor for serialization. */
+    @SuppressWarnings("unused")
     private VersionSuiteListPair() {
         version = null;
         cipherSuiteList = null;

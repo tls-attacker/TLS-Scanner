@@ -8,14 +8,16 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
+import de.rub.nds.asn1.oid.ObjectIdentifier;
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChain;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.x509attacker.constants.X509SignatureAlgorithm;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,26 +25,33 @@ public class CertificateSignatureAndHashAlgorithmAfterProbe extends AfterProbe<S
 
     @Override
     public void analyze(ServerReport report) {
-        Set<SignatureAndHashAlgorithm> algorithms = new HashSet<>();
-        List<CertificateChain> certList = report.getCertificateChainList();
-        if (certList == null) {
+        Set<ObjectIdentifier> algorithms = new HashSet<>();
+        List<CertificateChainReport> chainList = report.getCertificateChainList();
+        if (chainList == null) {
             return;
         }
-        for (CertificateChain chain : report.getCertificateChainList()) {
+        for (CertificateChainReport chain : chainList) {
             if (chain.getCertificateReportList() == null
                     || chain.getCertificateReportList().isEmpty()) {
                 continue;
             }
-            SignatureAndHashAlgorithm algorithm =
-                    chain.getCertificateReportList().get(0).getSignatureAndHashAlgorithm();
-            if (algorithm != null) {
-                algorithms.add(algorithm);
+            for (CertificateReport certReport : chain.getCertificateReportList()) {
+                ObjectIdentifier algorithm = certReport.getSignatureAndHashAlgorithmOid();
+                if (algorithm != null) {
+                    algorithms.add(algorithm);
+                }
             }
         }
         report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT,
-                new ListResult<>(
-                        new ArrayList<>(algorithms),
-                        TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_CERT.name()));
+                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHM_OIDS,
+                new ArrayList<>(algorithms));
+        List<X509SignatureAlgorithm> x509SignatureAlgorithms = new LinkedList<>();
+        for (ObjectIdentifier oid : algorithms) {
+            x509SignatureAlgorithms.add(
+                    X509SignatureAlgorithm.decodeFromOidBytes(oid.getEncoded()));
+        }
+        report.putResult(
+                TlsAnalyzedProperty.SUPPORTED_CERT_SIGNATURE_ALGORITHMS,
+                new ArrayList<>(x509SignatureAlgorithms));
     }
 }

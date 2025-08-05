@@ -8,8 +8,8 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.ProtocolMessageType;
@@ -19,7 +19,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ActivateEncryptionAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeMasterSecretAction;
 import de.rub.nds.tlsattacker.core.workflow.action.EarlyCcsAction;
@@ -40,13 +40,19 @@ public class EarlyCcsProbe extends TlsServerProbe {
 
     private EarlyCcsVulnerabilityType earlyCcsVulnerabilityType;
 
+    /**
+     * Constructs a new EarlyCcsProbe to test for Early CCS vulnerability.
+     *
+     * @param configSelector the configuration selector for TLS configurations
+     * @param parallelExecutor the executor for parallel workflow execution
+     */
     public EarlyCcsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.EARLY_CCS, configSelector);
         register(TlsAnalyzedProperty.VULNERABLE_TO_EARLY_CCS);
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         if (checkTargetVersion(TargetVersion.OPENSSL_1_0_0) == TestResults.TRUE) {
             earlyCcsVulnerabilityType = EarlyCcsVulnerabilityType.VULN_NOT_EXPLOITABLE;
         }
@@ -62,12 +68,12 @@ public class EarlyCcsProbe extends TlsServerProbe {
 
         State state = new State(tlsConfig, getTrace(tlsConfig, targetVersion));
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                ProtocolMessageType.ALERT, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), ProtocolMessageType.ALERT)) {
             LOGGER.debug("Not vulnerable (definitely), Alert message found");
             return TestResults.FALSE;
-        } else if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.FINISHED, state.getWorkflowTrace())) {
+        } else if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.FINISHED)) {
             LOGGER.debug("Vulnerable (definitely), Finished message found");
             return TestResults.TRUE;
         } else {
@@ -95,6 +101,11 @@ public class EarlyCcsProbe extends TlsServerProbe {
         return workflowTrace;
     }
 
+    /**
+     * Adjusts the configuration based on the server report.
+     *
+     * @param report the server report to use for configuration adjustment
+     */
     @Override
     public void adjustConfig(ServerReport report) {}
 
@@ -117,6 +128,11 @@ public class EarlyCcsProbe extends TlsServerProbe {
         }
     }
 
+    /**
+     * Gets the requirements for executing this probe.
+     *
+     * @return the requirements that must be satisfied before running this probe
+     */
     @Override
     public Requirement<ServerReport> getRequirements() {
         return new ProtocolTypeFalseRequirement<ServerReport>(ProtocolType.DTLS)

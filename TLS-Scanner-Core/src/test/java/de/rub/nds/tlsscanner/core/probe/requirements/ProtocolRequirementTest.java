@@ -12,19 +12,20 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.rub.nds.scanner.core.constants.ListResult;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsscanner.core.TlsCoreTestReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class ProtocolRequirementTest {
     @Test
     public void testProtocolRequirement() {
-        TestReport report = new TestReport();
+        TlsCoreTestReport report = new TlsCoreTestReport();
         ProtocolVersion[] protocolVersion = new ProtocolVersion[] {ProtocolVersion.TLS10};
 
-        ProtocolVersionRequirement<TestReport> requirement = new ProtocolVersionRequirement<>();
+        ProtocolVersionRequirement<TlsCoreTestReport> requirement =
+                new ProtocolVersionRequirement<>();
         assertTrue(requirement.evaluate(report));
 
         requirement = new ProtocolVersionRequirement<>(new ProtocolVersion[0]);
@@ -34,11 +35,7 @@ public class ProtocolRequirementTest {
         assertArrayEquals(requirement.getParameters().toArray(), protocolVersion);
         assertFalse(requirement.evaluate(report));
 
-        report.putResult(
-                TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS,
-                new ListResult<>(
-                        Arrays.asList(protocolVersion),
-                        TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS.name()));
+        report.putResult(TlsAnalyzedProperty.SUPPORTED_PROTOCOL_VERSIONS, List.of(protocolVersion));
         assertTrue(requirement.evaluate(report));
     }
 }

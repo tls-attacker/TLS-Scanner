@@ -16,7 +16,7 @@ import de.rub.nds.tlsscanner.core.probe.TlsProbe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class TlsClientProbe extends TlsProbe<ClientReport, TlsClientProbe> {
+public abstract class TlsClientProbe extends TlsProbe<ClientReport> {
 
     protected static final Logger LOGGER = LogManager.getLogger();
 

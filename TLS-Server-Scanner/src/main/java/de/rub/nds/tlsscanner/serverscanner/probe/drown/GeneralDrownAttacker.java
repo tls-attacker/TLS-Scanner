@@ -20,7 +20,7 @@ import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowExecutorFactory;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
@@ -52,15 +52,15 @@ public class GeneralDrownAttacker extends BaseDrownAttacker {
         workflowExecutor.executeWorkflow();
 
         // See if the server talks SSLv2 at all
-        if (!WorkflowTraceUtil.didReceiveMessage(SSL2MessageType.SSL_SERVER_HELLO, trace)) {
+        if (!WorkflowTraceResultUtil.didReceiveMessage(trace, SSL2MessageType.SSL_SERVER_HELLO)) {
             return DrownVulnerabilityType.NONE;
         }
 
         // See if export ciphers are announced
         SSL2ServerHelloMessage serverHello =
                 (SSL2ServerHelloMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                SSL2MessageType.SSL_SERVER_HELLO, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, SSL2MessageType.SSL_SERVER_HELLO);
         List<SSL2CipherSuite> serverCipherSuites =
                 SSL2CipherSuite.getCipherSuites(serverHello.getCipherSuites().getValue());
         for (SSL2CipherSuite cipherSuite : serverCipherSuites) {
@@ -75,8 +75,8 @@ public class GeneralDrownAttacker extends BaseDrownAttacker {
         // been announced (CVE-2015-3197)
         SSL2ServerVerifyMessage message =
                 (SSL2ServerVerifyMessage)
-                        WorkflowTraceUtil.getFirstReceivedMessage(
-                                SSL2MessageType.SSL_SERVER_VERIFY, trace);
+                        WorkflowTraceResultUtil.getFirstReceivedMessage(
+                                trace, SSL2MessageType.SSL_SERVER_VERIFY);
         if (message != null && ServerVerifyChecker.check(message, state.getTlsContext(), false)) {
             LOGGER.debug(
                     "Declaring host as vulnerable based on export cipher suite selection (CVE-2015-3197).");

@@ -16,8 +16,8 @@ import de.rub.nds.tlsscanner.core.report.TlsScanReport;
  * Represents a {@link Requirement} for required {@link ProtocolType} properties which were
  * positively evaluated.
  */
-public class ProtocolTypeTrueRequirement<R extends TlsScanReport<R>>
-        extends ProtocolTypeRequirement<R> {
+public class ProtocolTypeTrueRequirement<ReportT extends TlsScanReport>
+        extends ProtocolTypeRequirement<ReportT> {
 
     public ProtocolTypeTrueRequirement(ProtocolType protocolType) {
         super(true, protocolType);

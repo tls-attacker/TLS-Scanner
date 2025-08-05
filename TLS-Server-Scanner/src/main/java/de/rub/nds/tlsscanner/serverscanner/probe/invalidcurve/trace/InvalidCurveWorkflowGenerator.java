@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.ExtensionMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ChangeDefaultPreMasterSecretAction;
 import de.rub.nds.tlsattacker.core.workflow.action.GenericReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
@@ -37,6 +37,17 @@ public class InvalidCurveWorkflowGenerator {
 
     private InvalidCurveWorkflowGenerator() {}
 
+    /**
+     * Generates a workflow trace for invalid curve testing based on the specified type.
+     *
+     * @param type The type of invalid curve workflow to generate (REGULAR or RENEGOTIATION)
+     * @param serializedPublicKey The serialized public key to use in the workflow
+     * @param pms The pre-master secret to use in the workflow
+     * @param explicitPMS The explicit pre-master secret bytes
+     * @param tlsConfig The TLS configuration to use for the workflow
+     * @return A configured WorkflowTrace for invalid curve testing
+     * @throws IllegalArgumentException if an unknown InvalidCurveWorkflowType is provided
+     */
     public static WorkflowTrace generateWorkflow(
             InvalidCurveWorkflowType type,
             ModifiableByteArray serializedPublicKey,
@@ -72,8 +83,8 @@ public class InvalidCurveWorkflowGenerator {
 
             ClientHelloMessage clientHello =
                     (ClientHelloMessage)
-                            WorkflowTraceUtil.getFirstSendMessage(
-                                    HandshakeMessageType.CLIENT_HELLO, trace);
+                            WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                    trace, HandshakeMessageType.CLIENT_HELLO);
             KeyShareExtensionMessage ksExt;
             for (ExtensionMessage ext : clientHello.getExtensions()) {
                 if (ext instanceof KeyShareExtensionMessage) {
@@ -96,8 +107,8 @@ public class InvalidCurveWorkflowGenerator {
 
             ECDHClientKeyExchangeMessage message =
                     (ECDHClientKeyExchangeMessage)
-                            WorkflowTraceUtil.getFirstSendMessage(
-                                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+                            WorkflowTraceConfigurationUtil.getFirstStaticConfiguredSendMessage(
+                                    trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
             message.getComputations().setPremasterSecret(pms);
@@ -155,8 +166,8 @@ public class InvalidCurveWorkflowGenerator {
                                     RunningModeType.CLIENT);
             ECDHClientKeyExchangeMessage message =
                     (ECDHClientKeyExchangeMessage)
-                            WorkflowTraceUtil.getLastSendMessage(
-                                    HandshakeMessageType.CLIENT_KEY_EXCHANGE, trace);
+                            WorkflowTraceConfigurationUtil.getLastStaticConfiguredSendMessage(
+                                    trace, HandshakeMessageType.CLIENT_KEY_EXCHANGE);
             message.setPublicKey(serializedPublicKey);
             message.prepareComputations();
             message.getComputations().setPremasterSecret(pms);

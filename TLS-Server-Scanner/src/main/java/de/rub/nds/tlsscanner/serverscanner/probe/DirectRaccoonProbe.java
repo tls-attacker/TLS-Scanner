@@ -8,10 +8,11 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -21,7 +22,6 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
-import de.rub.nds.tlsscanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
@@ -47,6 +47,8 @@ public class DirectRaccoonProbe extends TlsServerProbe {
     private static final int ITERATIONS_PER_HANDSHAKE = 3;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
 
+    private final Random random = new Random();
+
     private List<VersionSuiteListPair> serverSupportedSuites;
     private List<InformationLeakTest<DirectRaccoonOracleTestInfo>> testResultList =
             new LinkedList<>();
@@ -61,7 +63,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         testResultList = new LinkedList<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
@@ -111,8 +113,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
             CipherSuite suite,
             DirectRaccoonWorkflowType type,
             int numberOfExecutionsEach) {
-        Random r = new Random();
-        BigInteger initialDhSecret = new BigInteger("" + (r.nextInt()));
+        BigInteger initialDhSecret = new BigInteger("" + (random.nextInt()));
         List<Boolean> booleanList = new LinkedList<>();
         for (int i = 0; i < numberOfExecutionsEach; i++) {
             booleanList.add(true);

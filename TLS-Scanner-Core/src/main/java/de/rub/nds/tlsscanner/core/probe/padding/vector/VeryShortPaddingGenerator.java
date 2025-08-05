@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.core.probe.padding.vector;
 
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayExplicitValueModification;
-import de.rub.nds.modifiablevariable.bytearray.ByteArrayModificationFactory;
 import de.rub.nds.modifiablevariable.bytearray.ByteArrayXorModification;
 import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,6 +20,7 @@ public class VeryShortPaddingGenerator extends PaddingVectorGenerator {
 
     /** Default length of the encrypted data (app + mac + padding) */
     static final int DEFAULT_CIPHERTEXT_LENGTH = 80;
+
     /** Default padding length for the construction of modified encrypted plaintexts */
     static final int DEFAULT_PADDING_LENGTH = 4;
 
@@ -126,7 +126,7 @@ public class VeryShortPaddingGenerator extends PaddingVectorGenerator {
     }
 
     List<PaddingVector> createClassicModifiedPadding(CipherSuite suite, ProtocolVersion version) {
-        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getSize();
+        int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         int paddingValue = DEFAULT_CIPHERTEXT_LENGTH - macSize - 1;
         int applicationLength = 0;
         List<PaddingVector> vectorList =
@@ -183,9 +183,6 @@ public class VeryShortPaddingGenerator extends PaddingVectorGenerator {
 
     private PaddingVector createVectorWithPlainData(String name, String identifier, byte[] plain) {
         return new PlainPaddingVector(
-                name,
-                identifier,
-                (ByteArrayExplicitValueModification)
-                        ByteArrayModificationFactory.explicitValue(plain));
+                name, identifier, new ByteArrayExplicitValueModification(plain));
     }
 }

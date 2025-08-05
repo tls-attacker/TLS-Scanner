@@ -10,11 +10,9 @@ package de.rub.nds.tlsscanner.core.trust;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import de.rub.nds.tlsattacker.core.certificate.PemUtil;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
@@ -22,23 +20,12 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.PKIXParameters;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.security.cert.*;
+import java.util.*;
 import javax.security.auth.x500.X500Principal;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.asn1.x509.Certificate;
-import org.bouncycastle.jce.provider.X509CertificateObject;
+import org.bouncycastle.util.encoders.Hex;
 
 public class TrustAnchorManager {
 
@@ -53,8 +40,14 @@ public class TrustAnchorManager {
     private static TrustAnchorManager INSTANCE = null;
 
     private Set<TrustAnchor> trustAnchorSet;
-    private Set<Certificate> asn1CaCertificateSet;
 
+    private Set<X509Certificate> asn1CaCertificateSet;
+
+    /**
+     * Returns the singleton instance of TrustAnchorManager.
+     *
+     * @return the TrustAnchorManager instance
+     */
     public static synchronized TrustAnchorManager getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new TrustAnchorManager();
@@ -103,6 +96,11 @@ public class TrustAnchorManager {
         }
     }
 
+    /**
+     * Checks whether the TrustAnchorManager has been successfully initialized with trust anchors.
+     *
+     * @return true if initialized, false otherwise
+     */
     public boolean isInitialized() {
         return trustAnchorSet != null && trustPlatformList != null && trustAnchors != null;
     }
@@ -115,10 +113,21 @@ public class TrustAnchorManager {
         return loadedPlatform;
     }
 
+    /**
+     * Returns the list of all loaded trust platforms.
+     *
+     * @return the list of trust platforms
+     */
     public List<TrustPlatform> getTrustPlatformList() {
-        return trustPlatformList;
+        return trustPlatformList == null ? null : new ArrayList<>(trustPlatformList);
     }
 
+    /**
+     * Checks if the given certificate report represents a trust anchor.
+     *
+     * @param report the certificate report to check
+     * @return true if the certificate is a trust anchor, false otherwise
+     */
     public boolean isTrustAnchor(CertificateReport report) {
         if (trustAnchors.containsKey(report.getIssuer())) {
             LOGGER.debug("Found a trustAnchor for Issuer report");
@@ -134,6 +143,12 @@ public class TrustAnchorManager {
         }
     }
 
+    /**
+     * Checks if the given X500Principal represents a trust anchor.
+     *
+     * @param principal the X500Principal to check
+     * @return true if the principal is a trust anchor, false otherwise
+     */
     public boolean isTrustAnchor(X500Principal principal) {
         for (TrustAnchor anchor : trustAnchorSet) {
             if (anchor.getTrustedCert().getSubjectX500Principal().equals(principal)) {
@@ -187,10 +202,21 @@ public class TrustAnchorManager {
         return new HashSet<>();
     }
 
+    /**
+     * Returns the set of all trust anchors.
+     *
+     * @return the set of trust anchors
+     */
     public Set<TrustAnchor> getTrustAnchorSet() {
-        return trustAnchorSet;
+        return trustAnchorSet == null ? null : new HashSet<>(trustAnchorSet);
     }
 
+    /**
+     * Returns the X509Certificate for a trust anchor with the given principal.
+     *
+     * @param principal the X500Principal to search for
+     * @return the X509Certificate if found, null otherwise
+     */
     public X509Certificate getTrustAnchorX509Certificate(X500Principal principal) {
         for (TrustAnchor anchor : trustAnchorSet) {
             if (anchor.getTrustedCert().getSubjectX500Principal().equals(principal)) {
@@ -200,32 +226,34 @@ public class TrustAnchorManager {
         return null;
     }
 
-    public Certificate getTrustAnchorCertificate(X500Principal principal) {
-        for (Certificate cert : asn1CaCertificateSet) {
-            try {
-                X509Certificate x509Cert = new X509CertificateObject(cert);
-                if (principal.equals(x509Cert.getSubjectX500Principal())) {
-                    return cert;
-                }
-            } catch (CertificateParsingException ex) {
-                LOGGER.error("Could not parse Certificate", ex);
+    /**
+     * Returns the X509Certificate from the CA certificate set for the given principal.
+     *
+     * @param principal the X500Principal to search for
+     * @return the X509Certificate if found, null otherwise
+     */
+    public X509Certificate getTrustAnchorCertificate(X500Principal principal) {
+        for (X509Certificate cert : asn1CaCertificateSet) {
+            if (principal.equals(cert.getSubjectX500Principal())) {
+                return cert;
             }
         }
         return null;
     }
 
-    private Set<Certificate> getFullCaCertificateSet() {
-        Set<Certificate> certificateSet = new HashSet<>();
+    private Set<X509Certificate> getFullCaCertificateSet() {
+        Set<X509Certificate> certificateSet = new HashSet<>();
         for (CertificateEntry entry : trustAnchors.values()) {
             InputStream resourceAsStream =
                     TrustAnchorManager.class
                             .getClassLoader()
                             .getResourceAsStream("trust/" + entry.getFingerprint() + ".pem");
             try {
-                org.bouncycastle.crypto.tls.Certificate cert =
-                        PemUtil.readCertificate(resourceAsStream);
-                certificateSet.add(cert.getCertificateAt(0));
-            } catch (IOException | CertificateException ex) {
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                X509Certificate cert =
+                        (X509Certificate) certFactory.generateCertificate(resourceAsStream);
+                certificateSet.add(cert);
+            } catch (CertificateException ex) {
                 LOGGER.error(
                         "Could not load Certificate:"
                                 + entry.getSubjectName()
@@ -237,20 +265,27 @@ public class TrustAnchorManager {
         return certificateSet;
     }
 
-    private List<org.bouncycastle.crypto.tls.Certificate> getCustomCA(List<String> customCAPaths) {
-        List<org.bouncycastle.crypto.tls.Certificate> certX509List = new ArrayList<>();
+    private List<X509Certificate> getCustomCA(List<String> customCAPaths) {
+        List<X509Certificate> certX509List = new ArrayList<>();
         for (String filepath : customCAPaths) {
-            try {
-                certX509List.add(PemUtil.readCertificate(new File(filepath)));
+            try (InputStream inStream = new FileInputStream(filepath)) {
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                X509Certificate cert = (X509Certificate) certFactory.generateCertificate(inStream);
+                certX509List.add(cert);
             } catch (CertificateException | IOException ex) {
-                LOGGER.error("Could't load the CA: " + filepath, ex);
+                LOGGER.error("Couldn't load the CA: {}", filepath, ex);
             }
         }
         return certX509List;
     }
 
+    /**
+     * Adds custom Certificate Authorities from the specified file paths.
+     *
+     * @param customCAPaths list of file paths to custom CA certificates
+     */
     public void addCustomCA(List<String> customCAPaths) {
-        List<org.bouncycastle.crypto.tls.Certificate> customCAList = getCustomCA(customCAPaths);
+        List<X509Certificate> customCAList = getCustomCA(customCAPaths);
         KeyStore keyStore = null;
 
         // Initializes the keyStore
@@ -265,18 +300,14 @@ public class TrustAnchorManager {
         }
 
         for (int i = 0; i < customCAList.size(); i++) {
-            org.bouncycastle.crypto.tls.Certificate cert = customCAList.get(i);
-            // Converts each certificate in customCAList to a x.509 formatted certificate and adds
-            // it to the keystore.
+            X509Certificate cert = customCAList.get(i);
             try {
-                CertificateFactory certFactory = CertificateFactory.getInstance("X509");
-                keyStore.setCertificateEntry(
-                        "custom_" + i,
-                        certFactory.generateCertificate(
-                                new ByteArrayInputStream(cert.getCertificateAt(0).getEncoded())));
-            } catch (CertificateException | IOException | KeyStoreException ex) {
+                keyStore.setCertificateEntry("custom_" + i, cert);
+            } catch (KeyStoreException ex) {
                 throw new RuntimeException(
-                        "Couldn't add the certificate:" + customCAPaths.get(i) + "to the keyStore",
+                        "Couldn't add the certificate: "
+                                + customCAPaths.get(i)
+                                + " to the keyStore",
                         ex);
             }
 
@@ -287,19 +318,18 @@ public class TrustAnchorManager {
              */
             try {
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] sha256Fingerprint = digest.digest(cert.getCertificateAt(0).getEncoded());
+                byte[] sha256Fingerprint = digest.digest(cert.getEncoded());
+                String fingerprintHex = Hex.toHexString(sha256Fingerprint);
                 CertificateEntry certEntry =
                         new CertificateEntry(
-                                cert.getCertificateAt(0).getSubject().toString(),
-                                sha256Fingerprint.toString());
-                this.trustAnchors.put(sha256Fingerprint.toString(), certEntry);
-                this.customTrustAnchors.put(sha256Fingerprint.toString(), certEntry);
-                this.asn1CaCertificateSet.add(cert.getCertificateAt(0));
-            } catch (NoSuchAlgorithmException | IOException ex) {
+                                cert.getSubjectX500Principal().getName(), fingerprintHex);
+                this.trustAnchors.put(fingerprintHex, certEntry);
+                this.customTrustAnchors.put(fingerprintHex, certEntry);
+                this.asn1CaCertificateSet.add(cert);
+            } catch (NoSuchAlgorithmException | CertificateEncodingException ex) {
                 LOGGER.error(
-                        "Couldn't add CA "
-                                + customCAList.get(i)
-                                + "to either trustAnchor or asn1CaCertificateSet.",
+                        "Couldn't add CA {} to either trustAnchor or asn1CaCertificateSet.",
+                        customCAList.get(i),
                         ex);
             }
         }
@@ -319,10 +349,21 @@ public class TrustAnchorManager {
         }
     }
 
+    /**
+     * Checks whether custom trust anchors have been added.
+     *
+     * @return true if custom trust anchors exist, false otherwise
+     */
     public boolean hasCustomTrustAnchros() {
         return customTrustAnchors != null && !customTrustAnchors.isEmpty();
     }
 
+    /**
+     * Checks if the given certificate report represents a custom trust anchor.
+     *
+     * @param report the certificate report to check
+     * @return true if the certificate is a custom trust anchor, false otherwise
+     */
     public boolean isCustomTrustAnchor(CertificateReport report) {
         if (customTrustAnchors.containsKey(report.getIssuer())) {
             LOGGER.debug("Found a customTrustAnchor for Issuer report");

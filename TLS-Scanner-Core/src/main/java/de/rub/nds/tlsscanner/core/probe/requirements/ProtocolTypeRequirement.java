@@ -13,7 +13,7 @@ import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
 /** Represents a {@link Requirement} of required supported {@link ProtocolType}s. */
-public class ProtocolTypeRequirement<R extends TlsScanReport<R>> extends Requirement<R> {
+public class ProtocolTypeRequirement<ReportT extends TlsScanReport> extends Requirement<ReportT> {
 
     private final ProtocolType protocolType;
 
@@ -25,7 +25,7 @@ public class ProtocolTypeRequirement<R extends TlsScanReport<R>> extends Require
     }
 
     @Override
-    public boolean evaluate(R report) {
+    public boolean evaluate(ReportT report) {
         return (report.getProtocolType() == protocolType) == requiredBooleanResult;
     }
 

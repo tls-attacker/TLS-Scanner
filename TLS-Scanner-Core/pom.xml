@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.rub.nds.tls.scanner</groupId>
         <artifactId>tls-scanner</artifactId>
-        <version>5.3.2a-SNAPSHOT</version>
+        <version>7.2.1-SNAPSHOT</version>
     </parent>
     <artifactId>tls-scanner-core</artifactId>
 
@@ -13,21 +13,13 @@
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Scanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Scanner-Development.git</developerConnection>
-        <tag>v5.3.1</tag>
+        <tag>v7.1.0</tag>
         <url>https://github.com/tls-attacker/TLS-Scanner</url>
     </scm>
 
     <properties>
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
-
-    <dependencies>
-        <!-- scope: compile -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>scanner-core</artifactId>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -37,7 +29,7 @@
                 <artifactId>maven-clean-plugin</artifactId>
             </plugin>
             <!--################# default lifecycle plugins #################-->
-            <!-- Copy project resources to output directory -->
+            <!-- Copy project resources and process with filtering for version properties -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -55,6 +47,31 @@
                                 </resource>
                                 <resource>
                                     <directory>${main.basedir}/trust_stores_observatory/certificates/</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-resources</id>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/*.properties</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>false</filtering>
+                                    <excludes>
+                                        <exclude>**/*.properties</exclude>
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>

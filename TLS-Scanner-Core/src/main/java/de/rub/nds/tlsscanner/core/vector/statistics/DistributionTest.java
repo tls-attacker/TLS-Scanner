@@ -14,11 +14,27 @@ import java.util.List;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import org.apache.commons.math3.stat.inference.ChiSquareTest;
 
-public class DistributionTest<T extends TestInfo> extends VectorStatisticTest<T> {
+/**
+ * Performs statistical distribution tests to determine if observed responses follow an expected
+ * probability distribution.
+ *
+ * @param <TestInfoT> The type of test information associated with this test
+ */
+public class DistributionTest<TestInfoT extends TestInfo> extends VectorStatisticTest<TestInfoT> {
 
     private final double probability;
 
-    public DistributionTest(T testInfo, List<VectorResponse> responseList, double probability) {
+    /**
+     * Creates a new distribution test for analyzing response patterns against an expected
+     * probability.
+     *
+     * @param testInfo Information about the test being performed
+     * @param responseList List of vector responses to analyze
+     * @param probability Expected probability for the distribution
+     * @throws RuntimeException if the number of vector containers is not exactly one
+     */
+    public DistributionTest(
+            TestInfoT testInfo, List<VectorResponse> responseList, double probability) {
         super(testInfo, responseList);
         if (vectorContainerList.size() != 1) {
             throw new RuntimeException("DistributionTest expects exactly one VectorContainer");

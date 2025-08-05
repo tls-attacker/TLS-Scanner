@@ -9,8 +9,8 @@
 package de.rub.nds.tlsscanner.clientscanner.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 
@@ -24,20 +24,20 @@ public class AlpacaAfterProbe extends AfterProbe<ClientReport> {
         if ((strictSni != TestResults.TRUE && strictSni != TestResults.FALSE)
                 || (strictAlpn != TestResults.TRUE && strictAlpn != TestResults.FALSE)) {
             // at least one of the two properties could not be evaluated
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.UNCERTAIN);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.UNCERTAIN);
             return;
         }
 
         if (strictAlpn == TestResults.TRUE && strictSni == TestResults.TRUE) {
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.TRUE);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.FALSE);
             return;
         }
 
         if (strictAlpn == TestResults.TRUE || strictSni == TestResults.TRUE) {
-            report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.PARTIALLY);
+            report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.PARTIALLY);
             return;
         }
 
-        report.putResult(TlsAnalyzedProperty.ALPACA_MITIGATED, TestResults.FALSE);
+        report.putResult(TlsAnalyzedProperty.VULNERABLE_TO_ALPACA, TestResults.TRUE);
     }
 }

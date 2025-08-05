@@ -24,16 +24,23 @@ import java.util.LinkedList;
 public class ClassicPaddingTraceGenerator extends PaddingTraceGenerator {
 
     /**
-     * @param recordGeneratorType
+     * Constructs a new ClassicPaddingTraceGenerator with the specified record generator type.
+     *
+     * @param recordGeneratorType The type of padding record generator to use for creating padding
+     *     vectors
      */
     public ClassicPaddingTraceGenerator(PaddingRecordGeneratorType recordGeneratorType) {
         super(recordGeneratorType);
     }
 
     /**
-     * @param config
-     * @param vector
-     * @return
+     * Creates a workflow trace for testing padding oracle vulnerabilities using a standard
+     * handshake. The trace includes a complete handshake followed by an application message with
+     * the specified padding vector.
+     *
+     * @param config The TLS configuration to use for the workflow
+     * @param vector The padding vector to apply to the application message record
+     * @return A workflow trace configured for classic padding oracle testing
      */
     @Override
     public WorkflowTrace getPaddingOracleWorkflowTrace(Config config, PaddingVector vector) {
@@ -47,8 +54,8 @@ public class ClassicPaddingTraceGenerator extends PaddingTraceGenerator {
         }
         ApplicationMessage applicationMessage = new ApplicationMessage();
         SendAction sendAction = new SendAction(applicationMessage);
-        sendAction.setRecords(new LinkedList<>());
-        sendAction.getRecords().add(vector.createRecord());
+        sendAction.setConfiguredRecords(new LinkedList<>());
+        sendAction.getConfiguredRecords().add(vector.createRecord());
         trace.addTlsAction(sendAction);
         trace.addTlsAction(new GenericReceiveAction());
         return trace;

@@ -8,10 +8,14 @@
  */
 package de.rub.nds.tlsscanner.clientscanner.report;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.ScannerDetail;
-import de.rub.nds.scanner.core.constants.SetResult;
-import de.rub.nds.scanner.core.report.container.ReportContainer;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ByteArraySerializer;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import de.rub.nds.scanner.core.passive.TrackableValue;
+import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
@@ -19,89 +23,92 @@ import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.converter.AnalyzedPropertyKeyDeserializer;
+import de.rub.nds.tlsscanner.core.converter.ByteArrayDeserializer;
+import de.rub.nds.tlsscanner.core.converter.TrackableValueTypeKeyDeserializer;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
 @XmlRootElement()
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ClientReport extends TlsScanReport<ClientReport> {
+public class ClientReport extends TlsScanReport {
 
-    // DHE
-    private Integer lowestPossibleDheModulusSize;
-    private Integer highestPossibleDheModulusSize;
+    public static Module[] getSerializerModules() {
+        return new Module[] {
+            new SimpleModule()
+                    .addSerializer(new ByteArraySerializer())
+                    .addDeserializer(byte[].class, new ByteArrayDeserializer())
+                    .addKeyDeserializer(
+                            AnalyzedProperty.class, new AnalyzedPropertyKeyDeserializer())
+                    .addKeyDeserializer(
+                            TrackableValue.class, new TrackableValueTypeKeyDeserializer()),
+            new JodaModule()
+        };
+    }
 
     public ClientReport() {
         super();
     }
 
+    @Override
+    public synchronized void serializeToJson(OutputStream outputStream) {
+        ClientReportSerializer.serialize(outputStream, this);
+    }
+
     public synchronized List<CompressionMethod> getClientAdvertisedCompressions() {
-        @SuppressWarnings("unchecked")
         ListResult<CompressionMethod> listResult =
-                (ListResult<CompressionMethod>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
+                        CompressionMethod.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<SignatureAndHashAlgorithm>
             getClientAdvertisedSignatureAndHashAlgorithms() {
-        @SuppressWarnings("unchecked")
         ListResult<SignatureAndHashAlgorithm> listResult =
-                (ListResult<SignatureAndHashAlgorithm>)
-                        getListResult(
-                                TlsAnalyzedProperty
-                                        .CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                        SignatureAndHashAlgorithm.class);
+        return listResult == null ? null : listResult.getList();
+    }
+
+    public synchronized List<SignatureAndHashAlgorithm>
+            getClientAdvertisedCertSignatureAndHashAlgorithms() {
+        ListResult<SignatureAndHashAlgorithm> listResult =
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
+                        SignatureAndHashAlgorithm.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized Set<ExtensionType> getClientAdvertisedExtensions() {
-        @SuppressWarnings("unchecked")
         SetResult<ExtensionType> setResult =
-                (SetResult<ExtensionType>)
-                        getSetResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS);
+                getSetResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS, ExtensionType.class);
         return setResult == null ? null : setResult.getSet();
     }
 
     public synchronized List<NamedGroup> getClientAdvertisedNamedGroupsList() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS);
+                getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS, NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
     public synchronized List<ECPointFormat> getClientAdvertisedPointFormatsList() {
-        @SuppressWarnings("unchecked")
         ListResult<ECPointFormat> listResult =
-                (ListResult<ECPointFormat>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS, ECPointFormat.class);
         return listResult == null ? null : listResult.getList();
     }
 
-    public synchronized Integer getLowestPossibleDheModulusSize() {
-        return lowestPossibleDheModulusSize;
-    }
-
-    public Integer getHighestPossibleDheModulusSize() {
-        return highestPossibleDheModulusSize;
-    }
-
-    public void setHighestPossibleDheModulusSize(Integer highestPossibleDheModulusSize) {
-        this.highestPossibleDheModulusSize = highestPossibleDheModulusSize;
-    }
-
-    public synchronized void setLowestPossibleDheModulusSize(Integer lowestPossibleDheModulusSize) {
-        this.lowestPossibleDheModulusSize = lowestPossibleDheModulusSize;
-    }
-
     public synchronized List<CipherSuite> getClientAdvertisedCipherSuites() {
-        @SuppressWarnings("unchecked")
         ListResult<CipherSuite> listResult =
-                (ListResult<CipherSuite>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_CIPHERSUITES, CipherSuite.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -111,10 +118,10 @@ public class ClientReport extends TlsScanReport<ClientReport> {
     }
 
     public synchronized List<NamedGroup> getClientAdvertisedKeyShareNamedGroupsList() {
-        @SuppressWarnings("unchecked")
         ListResult<NamedGroup> listResult =
-                (ListResult<NamedGroup>)
-                        getListResult(TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS);
+                getListResult(
+                        TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
+                        NamedGroup.class);
         return listResult == null ? null : listResult.getList();
     }
 
@@ -126,17 +133,7 @@ public class ClientReport extends TlsScanReport<ClientReport> {
     }
 
     @Override
-    public String getFullReport(ScannerDetail detail, boolean printColorful) {
-        // TODO: Implement ClientReportPrinter and use them.
-        ClientContainerReportCreator creator = new ClientContainerReportCreator(detail);
-        ReportContainer createReport = creator.createReport(this);
-        StringBuilder builder = new StringBuilder();
-        createReport.print(builder, 0, printColorful);
-        return builder.toString();
-    }
-
-    @Override
-    public synchronized String toString() {
-        return getFullReport(ScannerDetail.NORMAL, false);
+    public String getRemoteName() {
+        return "client";
     }
 }

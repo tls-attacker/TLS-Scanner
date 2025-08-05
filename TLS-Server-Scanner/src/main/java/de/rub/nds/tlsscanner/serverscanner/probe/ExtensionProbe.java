@@ -8,10 +8,10 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.AlpnProtocol;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -21,7 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.protocol.message.extension.statusrequestv2.RequestItemV2;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -42,6 +42,7 @@ public class ExtensionProbe extends TlsServerProbe {
 
     private List<ExtensionType> allSupportedExtensions;
     private TestResult extendedMasterSecret = TestResults.FALSE;
+    private TestResult supportsClientCertificateUrl = TestResults.FALSE;
     private TestResult encryptThenMac = TestResults.FALSE;
     private TestResult secureRenegotiation = TestResults.FALSE;
     private TestResult sessionTickets = TestResults.FALSE;
@@ -54,14 +55,15 @@ public class ExtensionProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET,
                 TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC,
                 TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION,
-                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS,
+                TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION,
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
+                TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
                 TlsAnalyzedProperty.SUPPORTED_EXTENSIONS);
     }
 
     @Override
-    public void executeTest() {
+    protected void executeTest() {
         allSupportedExtensions = getSupportedExtensions();
     }
 
@@ -70,7 +72,7 @@ public class ExtensionProbe extends TlsServerProbe {
         List<ExtensionType> commonExtensions = new LinkedList<>();
 
         if (this.supportsPreTls13) {
-            getCommonExtension(ProtocolVersion.TLS12, suite -> true);
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS12, suite -> true);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
             }
@@ -80,12 +82,26 @@ public class ExtensionProbe extends TlsServerProbe {
             }
         }
         if (supportsTls13) {
-            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTLS13);
+            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTls13);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
             }
         }
+        if (!allSupportedExtensions.contains(ExtensionType.SERVER_NAME_INDICATION)
+                && supportsSni()) {
+            allSupportedExtensions.add(ExtensionType.SERVER_NAME_INDICATION);
+        }
         return new ArrayList<>(allSupportedExtensions);
+    }
+
+    private boolean supportsSni() {
+        Config config = configSelector.getAnyWorkingBaseConfig();
+        config.setAddServerNameIndicationExtension(true);
+        config.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
+        State state = new State(config);
+        executeState(state);
+        return WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO);
     }
 
     private List<ExtensionType> getCommonExtension(
@@ -107,6 +123,8 @@ public class ExtensionProbe extends TlsServerProbe {
         tlsConfig.setAddECPointFormatExtension(true);
         tlsConfig.setAddEllipticCurveExtension(true);
         tlsConfig.setAddHeartbeatExtension(true);
+        tlsConfig.setAddClientCertificateUrlExtension(true);
+        tlsConfig.setAddServerCertificateTypeExtension(true);
         tlsConfig.setAddMaxFragmentLengthExtension(true);
         tlsConfig.setAddSignatureAndHashAlgorithmsExtension(true);
         tlsConfig.setAddAlpnExtension(true);
@@ -133,8 +151,8 @@ public class ExtensionProbe extends TlsServerProbe {
 
         State state = new State(tlsConfig);
         executeState(state);
-        if (WorkflowTraceUtil.didReceiveMessage(
-                HandshakeMessageType.SERVER_HELLO, state.getWorkflowTrace())) {
+        if (WorkflowTraceResultUtil.didReceiveMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO)) {
             return new ArrayList<>(state.getTlsContext().getNegotiatedExtensionSet());
         } else {
             LOGGER.debug(
@@ -183,15 +201,19 @@ public class ExtensionProbe extends TlsServerProbe {
                 if (type == ExtensionType.STATUS_REQUEST_V2) {
                     certStatusRequestV2 = TestResults.TRUE;
                 }
+                if (type == ExtensionType.CLIENT_CERTIFICATE_URL) {
+                    supportsClientCertificateUrl = TestResults.TRUE;
+                }
             }
             put(TlsAnalyzedProperty.SUPPORTS_EXTENDED_MASTER_SECRET, extendedMasterSecret);
             put(TlsAnalyzedProperty.SUPPORTS_ENCRYPT_THEN_MAC, encryptThenMac);
             put(TlsAnalyzedProperty.SUPPORTS_SECURE_RENEGOTIATION_EXTENSION, secureRenegotiation);
-            put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKETS, sessionTickets);
+            put(TlsAnalyzedProperty.SUPPORTS_SESSION_TICKET_EXTENSION, sessionTickets);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST, certStatusRequest);
             put(TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2, certStatusRequestV2);
+            put(TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL, supportsClientCertificateUrl);
         } else {
-            setPropertiesToCouldNotTest();
+            setPropertiesToCannotBeTested();
         }
     }
 }

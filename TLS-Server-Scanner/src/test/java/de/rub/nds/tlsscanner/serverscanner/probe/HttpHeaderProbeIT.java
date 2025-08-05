@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -32,8 +32,7 @@ public class HttpHeaderProbeIT extends AbstractProbeIT {
     @Override
     protected boolean executedAsPlanned() {
         return report.getHttpHeader().size() == 1
-                && report.getHttpHeader().get(0).getHeaderName().getValue().equals("Content-type")
-                && report.getHttpHeader().get(0).getHeaderValue().getValue().equals("text/html")
+                && report.getHttpHeader().get(0).equals("Content-type:text/html")
                 && report.getHstsMaxAge() == null
                 && report.getHpkpMaxAge() == null
                 && report.getNormalHpkpPins().size() == 0

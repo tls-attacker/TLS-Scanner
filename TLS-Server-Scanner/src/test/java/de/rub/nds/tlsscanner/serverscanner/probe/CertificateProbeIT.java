@@ -8,7 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tls.subject.TlsImplementationType;
 import de.rub.nds.tlsattacker.util.tests.TestCategories;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
@@ -37,6 +37,9 @@ public class CertificateProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
+        System.out.println(
+                "report.getCertificateChainList().size() = "
+                        + report.getCertificateChainList().size());
         return report.getCertificateChainList().size() == 1
                 && report.getStaticEcdsaPkgGroups().size() == 0
                 && report.getEphemeralEcdsaPkgGroups().size() == 0

@@ -9,16 +9,31 @@
 package de.rub.nds.tlsscanner.core.afterprobe;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
-import de.rub.nds.scanner.core.constants.TestResult;
-import de.rub.nds.scanner.core.constants.TestResults;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 
-public class LogjamAfterProbe<R extends TlsScanReport<R>> extends AfterProbe<R> {
+/**
+ * AfterProbe implementation that checks for vulnerability to the Logjam attack by detecting support
+ * for weak DH_EXPORT cipher suites.
+ *
+ * @param <ReportT> the type of TLS scan report this probe operates on
+ */
+public class LogjamAfterProbe<ReportT extends TlsScanReport> extends AfterProbe<ReportT> {
 
+    /**
+     * Analyzes the supported cipher suites to determine if the server is vulnerable to the Logjam
+     * attack. A server is vulnerable if it supports any DH_EXPORT cipher suites (including
+     * DH_anon_EXPORT, DH_DSS_EXPORT, DH_RSA_EXPORT, DHE_DSS_EXPORT, or DHE_RSA_EXPORT). Sets the
+     * result to TRUE if vulnerable, FALSE if not vulnerable, UNCERTAIN if cipher suites cannot be
+     * determined, or ERROR_DURING_TEST if an exception occurs.
+     *
+     * @param report the TLS scan report containing supported cipher suite information
+     */
     @Override
-    public void analyze(R report) {
+    public void analyze(ReportT report) {
         TestResult vulnerable = TestResults.NOT_TESTED_YET;
         try {
             if (report.getSupportedCipherSuites() != null) {

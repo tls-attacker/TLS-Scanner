@@ -11,8 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe.stats;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.rub.nds.modifiablevariable.util.ArrayConverter;
-import de.rub.nds.scanner.core.util.ComparableByteArray;
+import de.rub.nds.modifiablevariable.util.ComparableByteArray;
+import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
@@ -20,8 +20,10 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Test-Class for RandomExtractor.java, which currently looks for the serverHello-message of the
@@ -34,17 +36,17 @@ public class RandomExtractorTest {
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] STATIC_RANDOM1 =
-            ArrayConverter.hexStringToByteArray(
+            DataConverter.hexStringToByteArray(
                     "4DDE56987D18EF88F94030A808800DC680BBFD3B9D6B9B522E8339053DC2EDEE");
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] STATIC_RANDOM2 =
-            ArrayConverter.hexStringToByteArray(
+            DataConverter.hexStringToByteArray(
                     "CC4DC97612BDB5DA500D45B69B9F4FD8D1B449AD9FDD509DA7DC95F8077CDA7B");
 
     @SuppressWarnings("SpellCheckingInspection")
     private static final byte[] LONG_STATIC_RANDOM3 =
-            ArrayConverter.hexStringToByteArray(
+            DataConverter.hexStringToByteArray(
                     "19C26C4DD15B39"
                             + "C49DFF3EAFB83130E8FAA462F252C2E0ED7F389ECC349A38DA1DB5D3E8D04BA6D77E6B05E81B04CF41CF737CC44E"
                             + "F614E2B05672A18BE97E94345A112186A15529B05918CE3662D4DD18B909C161AA76AF7192CA6D20E074788E0059"
@@ -59,10 +61,12 @@ public class RandomExtractorTest {
      * @return serverHello Message with the random-bytes set.
      */
     private ReceiveAction generateServerHello(byte[] rndBytes) {
-        ReceiveAction testServerHello = new ReceiveAction();
+        ReceiveAction testServerHello = Mockito.mock(ReceiveAction.class);
         ServerHelloMessage msg = new ServerHelloMessage();
         msg.setRandom(rndBytes);
-        testServerHello.setMessages(msg);
+        testServerHello.setExpectedMessages(msg);
+        Mockito.when(testServerHello.getReceivedMessages()).thenReturn(List.of(msg));
+
         return testServerHello;
     }
 
@@ -75,7 +79,7 @@ public class RandomExtractorTest {
         testClientHello = new SendAction();
         ClientHelloMessage msgClient = new ClientHelloMessage();
         msgClient.setRandom(STATIC_RANDOM1.clone());
-        testClientHello.setMessages(msgClient);
+        testClientHello.setConfiguredMessages(msgClient);
 
         testTrace = new WorkflowTrace();
         extractor = new RandomExtractor();
@@ -213,7 +217,7 @@ public class RandomExtractorTest {
         // ServerHello without random-bytes
         ReceiveAction testServerHello2 = new ReceiveAction();
         ServerHelloMessage msg = new ServerHelloMessage();
-        testServerHello2.setMessages(msg);
+        testServerHello2.setExpectedMessages(msg);
 
         testTrace.addTlsAction(testServerHello1);
         testTrace.addTlsAction(testServerHello2);
@@ -234,7 +238,7 @@ public class RandomExtractorTest {
         // ServerHello without random-bytes
         ReceiveAction testServerHello = new ReceiveAction();
         ServerHelloMessage msg = new ServerHelloMessage();
-        testServerHello.setMessages(msg);
+        testServerHello.setExpectedMessages(msg);
 
         testTrace.addTlsAction(testServerHello);
         State state = new State(testTrace);

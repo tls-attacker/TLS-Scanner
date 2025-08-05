@@ -15,10 +15,10 @@ import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import java.util.List;
 
-public class DtlsRetransmissionsExtractor extends StatExtractor<HandshakeMessageType> {
+public class DtlsRetransmissionsExtractor extends StatExtractor<State, HandshakeMessageType> {
 
     public DtlsRetransmissionsExtractor() {
         super(TrackableValueType.DTLS_RETRANSMISSIONS);
@@ -28,7 +28,8 @@ public class DtlsRetransmissionsExtractor extends StatExtractor<HandshakeMessage
     public void extract(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();
         List<ProtocolMessage> allReceivedMessages =
-                WorkflowTraceUtil.getAllReceivedMessages(trace, ProtocolMessageType.HANDSHAKE);
+                WorkflowTraceResultUtil.getAllReceivedMessagesOfType(
+                        trace, ProtocolMessageType.HANDSHAKE);
         for (ProtocolMessage message : allReceivedMessages) {
             if (message instanceof HandshakeMessage
                     && ((HandshakeMessage) message).isRetransmission()) {

@@ -10,12 +10,11 @@ package de.rub.nds.tlsscanner.serverscanner.afterprobe;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,9 +33,8 @@ public class DestinationPortAfterProbeTest {
         probe = new DestinationPortAfterProbe();
         destinationPortsContainer =
                 new ExtractedValueContainer<>(TrackableValueType.DESTINATION_PORT);
-        report.setExtractedValueContainerMap(
-                Collections.singletonMap(
-                        TrackableValueType.DESTINATION_PORT, destinationPortsContainer));
+        report.putExtractedValueContainer(
+                TrackableValueType.DESTINATION_PORT, destinationPortsContainer);
     }
 
     @Test
