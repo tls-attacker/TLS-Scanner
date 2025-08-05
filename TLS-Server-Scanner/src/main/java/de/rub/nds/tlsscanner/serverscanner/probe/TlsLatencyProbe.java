@@ -8,17 +8,17 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
-import de.rub.nds.scanner.core.constants.ListResult;
-import de.rub.nds.scanner.core.constants.TestResults;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.ListResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
-import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceUtil;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.SetMeasuringActiveAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.transport.TransportHandlerType;
@@ -40,6 +40,8 @@ public class TlsLatencyProbe extends TlsServerProbe {
 
     public TlsLatencyProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.TLS_LATENCY, configSelector);
+        register(TlsAnalyzedProperty.TLS_LATENCY_HELLO);
+        register(TlsAnalyzedProperty.TLS_LATENCY_KEY_EXCHANGE);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class TlsLatencyProbe extends TlsServerProbe {
 
     public void mergeMeasurements(ServerReport report, TlsAnalyzedProperty type, List<Long> list) {
         if (!list.isEmpty()) {
-            report.putResult(type, new ListResult<>(list, TlsProbeType.TLS_LATENCY.name()));
+            report.putResult(type, new ListResult<>(type, List.of(list)));
         } else {
             report.putResult(type, TestResults.COULD_NOT_TEST);
         }
@@ -86,7 +88,8 @@ public class TlsLatencyProbe extends TlsServerProbe {
             executeState(state);
             TimingClientTcpTransportHandler transportHandler =
                     (TimingClientTcpTransportHandler) state.getTlsContext().getTransportHandler();
-            if (WorkflowTraceUtil.didReceiveMessage(HandshakeMessageType.FINISHED, workflowTrace)) {
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                    workflowTrace, HandshakeMessageType.FINISHED)) {
                 latenciesKeyExchange.add(transportHandler.getLastMeasurement());
             } else {
                 LOGGER.info("Following trace failed: \n {}", workflowTrace.toString());
@@ -103,8 +106,8 @@ public class TlsLatencyProbe extends TlsServerProbe {
             executeState(state);
             TimingClientTcpTransportHandler transportHandler =
                     (TimingClientTcpTransportHandler) state.getTlsContext().getTransportHandler();
-            if (WorkflowTraceUtil.didReceiveMessage(
-                    HandshakeMessageType.SERVER_HELLO, workflowTrace)) {
+            if (WorkflowTraceResultUtil.didReceiveMessage(
+                    workflowTrace, HandshakeMessageType.SERVER_HELLO)) {
                 latenciesHello.add(transportHandler.getLastMeasurement());
             } else {
                 LOGGER.info("Following trace failed: \n {}", workflowTrace.toString());

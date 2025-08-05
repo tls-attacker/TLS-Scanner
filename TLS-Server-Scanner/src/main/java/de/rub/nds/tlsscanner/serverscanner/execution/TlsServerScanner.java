@@ -205,6 +205,7 @@ public final class TlsServerScanner
         registerProbeForExecution(
                 new SignatureHashAlgorithmOrderProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new TlsFallbackScsvProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new TlsLatencyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new Sweet32AfterProbe<>());
         registerProbeForExecution(new FreakAfterProbe<>());
         registerProbeForExecution(new LogjamAfterProbe<>());
@@ -214,7 +215,6 @@ public final class TlsServerScanner
         registerProbeForExecution(new PaddingOracleIdentificationAfterProbe<>());
         registerProbeForExecution(new RaccoonAttackAfterProbe());
         registerProbeForExecution(new CertificateSignatureAndHashAlgorithmAfterProbe());
-        registerProbeForExecution(new TlsLatencyProbe());
         // DTLS-specific
         registerProbeForExecution(new DtlsReorderingProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new DtlsFragmentationProbe(configSelector, parallelExecutor));
