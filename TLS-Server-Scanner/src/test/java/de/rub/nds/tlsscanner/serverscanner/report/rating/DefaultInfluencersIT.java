@@ -1143,6 +1143,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER,
                                 TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
                                 TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER,
+                                TlsAnalyzedProperty.TLS_LATENCY_HELLO,
+                                TlsAnalyzedProperty.TLS_LATENCY_KEY_EXCHANGE,
 
                                 // TODO: decide on rating
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
