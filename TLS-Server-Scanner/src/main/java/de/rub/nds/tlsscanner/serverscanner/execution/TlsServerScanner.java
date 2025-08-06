@@ -188,6 +188,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new RawPublicKeyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ProtocolVersionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new TlsLatencyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new DirectRaccoonProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteOrderProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ExtensionProbe(configSelector, parallelExecutor));

@@ -21,6 +21,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     CLOSED_AFTER_FINISHED_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
     CLOSED_AFTER_APP_DATA_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
     KNOWN_PADDING_ORACLE_VULNERABILITY(TlsAnalyzedPropertyCategory.ATTACKS),
+    TLS_LATENCY_HELLO(TlsAnalyzedPropertyCategory.CONNECTION),
+    TLS_LATENCY_KEY_EXCHANGE(TlsAnalyzedPropertyCategory.CONNECTION),
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
     BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
