@@ -209,25 +209,31 @@ public class ClientScannerConfig extends TlsScannerConfig {
             if (serverPort == 0) {
                 serverPort = getServerPort(state.getTlsContext().getTransportHandler());
             }
-            String command = baseCommand.replace(PORT_REPLACEMENT_MARKER, serverPort.toString());
-            LOGGER.debug("Client run command: {}", command);
-            ProcessBuilder runCommandBuilder = new ProcessBuilder(command.split(" "));
-            if (hasProperRunDirectory()) {
-                LOGGER.debug("Client working directory: {}", getRunDirectory().getAbsolutePath());
-                runCommandBuilder.directory(getRunDirectory());
-            }
-            if (hasProperLogDirectory()) {
-                LOGGER.debug("Client log directory: {}", getLogDirectory().getAbsolutePath());
-                String fileName = System.currentTimeMillis() + CLIENT_RUN_LOG_SUFFIX;
-                File logFile = new File(getLogDirectory(), fileName);
-                runCommandBuilder.redirectOutput(logFile);
-                runCommandBuilder.redirectError(logFile);
-            }
-            try {
-                Process runCommandProcess = runCommandBuilder.start();
-                state.addSpawnedSubprocess(runCommandProcess);
-            } catch (IOException E) {
-                LOGGER.error("Error during client run command execution", E);
+            if (baseCommand != null) {
+                String command =
+                        baseCommand.replace(PORT_REPLACEMENT_MARKER, serverPort.toString());
+                LOGGER.debug("Client run command: {}", command);
+                ProcessBuilder runCommandBuilder = new ProcessBuilder(command.split(" "));
+                if (hasProperRunDirectory()) {
+                    LOGGER.debug(
+                            "Client working directory: {}", getRunDirectory().getAbsolutePath());
+                    runCommandBuilder.directory(getRunDirectory());
+                }
+                if (hasProperLogDirectory()) {
+                    LOGGER.debug("Client log directory: {}", getLogDirectory().getAbsolutePath());
+                    String fileName = System.currentTimeMillis() + CLIENT_RUN_LOG_SUFFIX;
+                    File logFile = new File(getLogDirectory(), fileName);
+                    runCommandBuilder.redirectOutput(logFile);
+                    runCommandBuilder.redirectError(logFile);
+                }
+                try {
+                    Process runCommandProcess = runCommandBuilder.start();
+                    state.addSpawnedSubprocess(runCommandProcess);
+                } catch (IOException E) {
+                    LOGGER.error("Error during client run command execution", E);
+                }
+            } else {
+                LOGGER.debug("No run command given, skipping command execution");
             }
             return 0;
         };
