@@ -378,7 +378,7 @@ public class ServerReport extends TlsScanReport {
                 getObjectResult(TlsAnalyzedProperty.HRR_SELECTED_GROUP, NamedGroup.class);
         return objectResult == null ? null : objectResult.getValue();
     }
-    
+
     public synchronized String getConfigProfileIdentifier() {
         return configProfileIdentifier;
     }
