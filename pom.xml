@@ -130,7 +130,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>asn1-attacker</artifactId>
-            <version>4.2.0</version>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
@@ -140,12 +140,12 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>6.2.1</version>
+            <version>6.2.3</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>x509-attacker</artifactId>
-            <version>4.3.1</version>
+            <version>4.3.2</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
