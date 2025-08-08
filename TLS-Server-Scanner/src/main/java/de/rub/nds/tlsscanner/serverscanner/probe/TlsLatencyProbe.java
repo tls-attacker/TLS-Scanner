@@ -57,7 +57,7 @@ public class TlsLatencyProbe extends TlsServerProbe {
 
     public void mergeMeasurements(ServerReport report, TlsAnalyzedProperty type, List<Long> list) {
         if (!list.isEmpty()) {
-            put(type, new ListResult<>(type, List.of(list)));
+            put(type, new ListResult<>(type, list));
         } else {
             put(type, TestResults.COULD_NOT_TEST);
         }
