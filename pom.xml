@@ -63,7 +63,7 @@
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
         <skip.failsafe.tests>${skipTests}</skip.failsafe.tests>
         <!-- Set TLS-Attacker version once -->
-        <toolkit.tls.attacker.version>7.5.1</toolkit.tls.attacker.version>
+        <toolkit.tls.attacker.version>7.5.2</toolkit.tls.attacker.version>
     </properties>
 
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>asn1-attacker</artifactId>
-            <version>4.2.0</version>
+            <version>4.2.1</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
@@ -140,12 +140,12 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>6.2.1</version>
+            <version>6.2.3</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>x509-attacker</artifactId>
-            <version>4.3.1</version>
+            <version>4.3.2</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
