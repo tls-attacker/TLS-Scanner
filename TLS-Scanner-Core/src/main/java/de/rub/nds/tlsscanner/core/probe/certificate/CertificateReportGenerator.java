@@ -91,7 +91,9 @@ public class CertificateReportGenerator {
     }
 
     private static void setVersion(CertificateReport report, X509Certificate cert) {
-        report.setVersion(cert.getX509Version());
+        if (cert.getTbsCertificate().getVersion() != null) {
+            report.setVersion(cert.getX509Version());
+        }
     }
 
     private static void setPublicKeyType(CertificateReport report, X509Certificate cert) {
@@ -119,9 +121,12 @@ public class CertificateReportGenerator {
     }
 
     private static void setExtendedKeyUsage(CertificateReport report, X509Certificate cert) {
-        Extensions extensions = cert.getTbsCertificate().getExplicitExtensions().getInnerField();
-        for (Extension extension : extensions.getExtensionList()) {
-            // TODO
+        if (cert.getTbsCertificate().getExplicitExtensions() != null) {
+            Extensions extensions =
+                    cert.getTbsCertificate().getExplicitExtensions().getInnerField();
+            for (Extension extension : extensions.getExtensionList()) {
+                // TODO
+            }
         }
     }
 
