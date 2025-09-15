@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
@@ -193,8 +192,8 @@ public class DheParameterProbe extends TlsClientProbe {
     public void adjustConfig(ClientReport report) {
         supportedDheCipherSuites = new LinkedList<>();
         for (CipherSuite suite : report.getSupportedCipherSuites()) {
-            if (AlgorithmResolver.getKeyExchangeAlgorithm(suite) != null
-                    && AlgorithmResolver.getKeyExchangeAlgorithm(suite).isKeyExchangeDhe()) {
+            if (suite.getKeyExchangeAlgorithm() != null
+                    && suite.getKeyExchangeAlgorithm().isKeyExchangeDhe()) {
                 supportedDheCipherSuites.add(suite);
             }
         }

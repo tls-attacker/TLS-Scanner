@@ -10,39 +10,15 @@ package de.rub.nds.tlsscanner.clientscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.execution.Scanner;
+import de.rub.nds.scanner.core.guideline.Guideline;
+import de.rub.nds.scanner.core.guideline.GuidelineIO;
 import de.rub.nds.scanner.core.passive.StatsWriter;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
-import de.rub.nds.tlsscanner.clientscanner.afterprobe.AlpacaAfterProbe;
-import de.rub.nds.tlsscanner.clientscanner.afterprobe.ClientRandomnessAfterProbe;
-import de.rub.nds.tlsscanner.clientscanner.afterprobe.DhValueAfterProbe;
+import de.rub.nds.tlsscanner.clientscanner.afterprobe.*;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
-import de.rub.nds.tlsscanner.clientscanner.probe.AlpnProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ApplicationMessageProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.BasicProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CcaSupportProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CertificateProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CipherSuiteProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.CompressionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ConnectionClosingProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DheParameterProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsBugsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsFragmentationProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsHelloVerifyRequestProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsMessageSequenceProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsReorderingProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.DtlsRetransmissionsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ECPointFormatProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.FreakProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.NamedGroupsProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.PaddingOracleProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ProtocolVersionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.RecordFragmentationProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ResumptionProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.ServerCertificateKeySizeProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.SniProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.TlsClientProbe;
-import de.rub.nds.tlsscanner.clientscanner.probe.Version13RandomProbe;
+import de.rub.nds.tlsscanner.clientscanner.probe.*;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.afterprobe.DtlsRetransmissionAfterProbe;
 import de.rub.nds.tlsscanner.core.afterprobe.EcPublicKeyAfterProbe;
@@ -58,6 +34,8 @@ import de.rub.nds.tlsscanner.core.passive.DhPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.DtlsRetransmissionsExtractor;
 import de.rub.nds.tlsscanner.core.passive.EcPublicKeyExtractor;
 import de.rub.nds.tlsscanner.core.passive.RandomExtractor;
+import jakarta.xml.bind.JAXBException;
+import java.util.List;
 import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -173,10 +151,13 @@ public final class TlsClientScanner
         registerProbeForExecution(new AlpnProbe(parallelExecutor, config));
         registerProbeForExecution(new SniProbe(parallelExecutor, config));
         registerProbeForExecution(new ResumptionProbe(parallelExecutor, config));
+        registerProbeForExecution(new RenegotiationProbe(parallelExecutor, config));
         registerProbeForExecution(new ServerCertificateKeySizeProbe(parallelExecutor, config));
         registerProbeForExecution(new ConnectionClosingProbe(parallelExecutor, config));
         registerProbeForExecution(new ECPointFormatProbe(parallelExecutor, config));
         registerProbeForExecution(new NamedGroupsProbe(parallelExecutor, config));
+        registerProbeForExecution(new TlsFallbackScsvAfterProbe());
+        registerProbeForExecution(new ExtensionAfterProbe());
         registerProbeForExecution(new Sweet32AfterProbe<>());
         registerProbeForExecution(new FreakAfterProbe<>());
         registerProbeForExecution(new LogjamAfterProbe<>());
@@ -197,6 +178,33 @@ public final class TlsClientScanner
         registerProbeForExecution(new Version13RandomProbe(parallelExecutor, config));
         registerProbeForExecution(new RecordFragmentationProbe(parallelExecutor, config));
         registerProbeForExecution(new ResumptionProbe(parallelExecutor, config));
+    }
+
+    @Override
+    protected List<Guideline> getGuidelines() {
+        if (getProtocolType() == ProtocolType.DTLS) {
+            return List.of();
+        }
+
+        LOGGER.debug("Loading guidelines from files...");
+        GuidelineIO guidelineIO;
+        try {
+            guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
+        } catch (JAXBException e) {
+            LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
+            return null;
+        }
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "client-guidelines");
+    }
+
+    private ProtocolType getProtocolType() {
+        if (config.getDtlsDelegate().isDTLS()) {
+            return ProtocolType.DTLS;
+        } else if (config.getStartTlsDelegate().getStarttlsType() != StarttlsType.NONE) {
+            return ProtocolType.STARTTLS;
+        } else {
+            return ProtocolType.TLS;
+        }
     }
 
     /**

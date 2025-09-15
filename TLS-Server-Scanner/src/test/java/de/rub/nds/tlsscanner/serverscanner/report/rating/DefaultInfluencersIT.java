@@ -418,6 +418,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 
         influencers.add(
                 new RatingInfluencer(
@@ -1055,6 +1060,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SUPPORTS_CLIENT_CERTIFICATE_URL,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 50)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =
@@ -1102,6 +1112,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_COMPRESSIONS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_NAMED_GROUPS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS,
+                                TlsAnalyzedProperty
+                                        .CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_EXTENSIONS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS,
                                 TlsAnalyzedProperty.CLIENT_ADVERTISED_POINTFORMATS,
@@ -1123,6 +1135,7 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.VERIFY_CHECK_PATTERN,
                                 TlsAnalyzedProperty.HRR_SELECTED_GROUP,
                                 TlsAnalyzedProperty.WEAKEST_DH_STRENGTH,
+                                TlsAnalyzedProperty.WEAKEST_ECDH_STRENGTH,
                                 TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS,
                                 TlsAnalyzedProperty.COOKIE_LENGTH,
                                 TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE,
@@ -1130,6 +1143,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.HANDSHAKE_SUCCESFUL_COUNTER,
                                 TlsAnalyzedProperty.HANDSHAKE_FAILED_COUNTER,
                                 TlsAnalyzedProperty.CONNECTION_INSECURE_COUNTER,
+                                TlsAnalyzedProperty.TLS_LATENCY_HELLO,
+                                TlsAnalyzedProperty.TLS_LATENCY_KEY_EXCHANGE,
 
                                 // TODO: decide on rating
                                 TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
@@ -1156,8 +1171,10 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.SUPPORTS_DTLS_COOKIE_EXCHANGE_IN_RENEGOTIATION,
                                 TlsAnalyzedProperty.SUPPORTS_INSECURE_RENEGOTIATION,
                                 TlsAnalyzedProperty.SUPPORTS_RENEGOTIATION,
+                                TlsAnalyzedProperty.ENFORCES_RENEGOTIATION_INFO_FROM_SERVER,
                                 TlsAnalyzedProperty.HANDSHAKES_WITH_UNDEFINED_POINT_FORMAT,
                                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION,
+                                TlsAnalyzedProperty.MIN_RECORD_LENGTH,
                                 TlsAnalyzedProperty.HAS_GREASE_CIPHER_SUITE_INTOLERANCE,
                                 TlsAnalyzedProperty.HAS_GREASE_NAMED_GROUP_INTOLERANCE,
                                 TlsAnalyzedProperty

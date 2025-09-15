@@ -18,13 +18,13 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bouncycastle.crypto.BlockCipher;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.bouncycastle.crypto.engines.DESEngine;
 import org.bouncycastle.crypto.engines.DESedeEngine;
 import org.bouncycastle.crypto.engines.RC2Engine;
 import org.bouncycastle.crypto.engines.RC4Engine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.crypto.modes.CBCModeCipher;
 import org.bouncycastle.crypto.params.DESParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
@@ -124,7 +124,7 @@ public class ServerVerifyChecker {
     }
 
     static byte[] decryptRC2(byte[] clientReadKey, byte[] encrypted, byte[] iv, int paddingLength) {
-        CBCBlockCipher cbcRc2 = new CBCBlockCipher(new RC2Engine());
+        CBCModeCipher cbcRc2 = CBCBlockCipher.newInstance(new RC2Engine());
         ParametersWithIV cbcRc2Params = new ParametersWithIV(new KeyParameter(clientReadKey), iv);
         cbcRc2.init(false, cbcRc2Params);
 
@@ -141,7 +141,7 @@ public class ServerVerifyChecker {
         DESParameters.setOddParity(clientReadKey);
         byte[] iv = context.getSSL2Iv();
 
-        CBCBlockCipher cbcDes = new CBCBlockCipher(new DESEngine());
+        CBCModeCipher cbcDes = CBCBlockCipher.newInstance(new DESEngine());
         ParametersWithIV cbcDesParams = new ParametersWithIV(new DESParameters(clientReadKey), iv);
         cbcDes.init(false, cbcDesParams);
 
@@ -159,7 +159,7 @@ public class ServerVerifyChecker {
         System.arraycopy(keyMaterial1, 0, clientReadKey, keyMaterial0.length, 8);
         byte[] iv = context.getSSL2Iv();
 
-        CBCBlockCipher cbcDesEde = new CBCBlockCipher(new DESedeEngine());
+        CBCModeCipher cbcDesEde = CBCBlockCipher.newInstance(new DESedeEngine());
         ParametersWithIV params = new ParametersWithIV(new KeyParameter(clientReadKey), iv);
         cbcDesEde.init(false, params);
 
@@ -213,7 +213,7 @@ public class ServerVerifyChecker {
     }
 
     private static byte[] processEncryptedBlocks(
-            BlockCipher cipher, byte[] encrypted, int paddingLength) {
+            CBCModeCipher cipher, byte[] encrypted, int paddingLength) {
         if (encrypted.length % cipher.getBlockSize() != 0) {
             LOGGER.warn("Server-Verify payload has invalid length");
             return new byte[0];

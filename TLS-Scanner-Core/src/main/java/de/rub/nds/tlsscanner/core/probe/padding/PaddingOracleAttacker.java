@@ -9,7 +9,6 @@
 package de.rub.nds.tlsscanner.core.probe.padding;
 
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
@@ -191,8 +190,7 @@ public class PaddingOracleAttacker {
     private void prepareConfig() {
         tlsConfig.setHighestProtocolVersion(testedVersion);
         tlsConfig.setDefaultClientSupportedCipherSuites(testedSuite);
-        KeyExchangeAlgorithm keyExchangeAlgorithm =
-                AlgorithmResolver.getKeyExchangeAlgorithm(testedSuite);
+        KeyExchangeAlgorithm keyExchangeAlgorithm = testedSuite.getKeyExchangeAlgorithm();
         if (keyExchangeAlgorithm != null
                 && keyExchangeAlgorithm.name().toUpperCase().contains("EC")) {
             tlsConfig.setAddEllipticCurveExtension(true);

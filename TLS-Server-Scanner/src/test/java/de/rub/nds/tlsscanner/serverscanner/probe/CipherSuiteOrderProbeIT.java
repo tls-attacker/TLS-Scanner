@@ -31,6 +31,8 @@ public class CipherSuiteOrderProbeIT extends AbstractProbeIT {
 
     @Override
     protected boolean executedAsPlanned() {
-        return verifyProperty(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, TestResults.TRUE);
+        return verifyProperty(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, TestResults.TRUE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325, TestResults.TRUE);
     }
 }

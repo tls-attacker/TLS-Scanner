@@ -61,10 +61,8 @@ import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import javax.xml.stream.XMLStreamException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -190,6 +188,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new RawPublicKeyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ProtocolVersionProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new TlsLatencyProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new DirectRaccoonProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new CipherSuiteOrderProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new ExtensionProbe(configSelector, parallelExecutor));
@@ -286,19 +285,29 @@ public final class TlsServerScanner
 
         if (isConnectable()) {
             isConnectable = true;
-            LOGGER.debug(config.getClientDelegate().getHost() + " is connectable");
+            LOGGER.debug("{} is connectable", config.getClientDelegate().getHost());
             configSelector.findWorkingConfigs();
             report.setConfigProfileIdentifier(configSelector.getConfigProfileIdentifier());
             report.setConfigProfileIdentifierTls13(
                     configSelector.getConfigProfileIdentifierTls13());
             if (configSelector.isSpeaksProtocol()) {
                 speaksProtocol = true;
-                LOGGER.debug(config.getClientDelegate().getHost() + " speaks " + getProtocolType());
+                LOGGER.debug(
+                        "{} speaks {}", config.getClientDelegate().getHost(), getProtocolType());
                 if (configSelector.isIsHandshaking()) {
                     isHandshaking = true;
-                    LOGGER.debug(config.getClientDelegate().getHost() + " is handshaking");
+                    LOGGER.debug("{} is handshaking", config.getClientDelegate().getHost());
+                } else {
+                    LOGGER.error("{} is not handshaking", config.getClientDelegate().getHost());
                 }
+            } else {
+                LOGGER.error(
+                        "{} does not speak {}",
+                        config.getClientDelegate().getHost(),
+                        getProtocolType());
             }
+        } else {
+            LOGGER.error("{} is not connectable", config.getClientDelegate().getHost());
         }
 
         report.setServerIsAlive(isConnectable);
@@ -320,13 +329,12 @@ public final class TlsServerScanner
     }
 
     @Override
-    protected List<Guideline<ServerReport>> getGuidelines() {
+    protected List<Guideline> getGuidelines() {
         if (getProtocolType() == ProtocolType.DTLS) {
             return List.of();
         }
 
         LOGGER.debug("Loading guidelines from files...");
-        List<String> guidelineFiles = Arrays.asList("bsi.xml", "nist.xml");
         GuidelineIO guidelineIO;
         try {
             guidelineIO = new GuidelineIO(TlsAnalyzedProperty.class);
@@ -334,18 +342,7 @@ public final class TlsServerScanner
             LOGGER.error("Unable to initialize JAXB context while reading guidelines", e);
             return null;
         }
-        List<Guideline<ServerReport>> guidelines = new ArrayList<>();
-        for (String guidelineName : guidelineFiles) {
-            try {
-                InputStream guideLineStream =
-                        TlsServerScanner.class.getResourceAsStream("/guideline/" + guidelineName);
-                guidelines.add((Guideline<ServerReport>) guidelineIO.read(guideLineStream));
-            } catch (JAXBException | XMLStreamException ex) {
-                LOGGER.error("Unable to read guideline {} from file", guidelineName, ex);
-                return null;
-            }
-        }
-        return guidelines;
+        return guidelineIO.readGuidelines(getClass().getClassLoader(), "server-guidelines");
     }
 
     /**

@@ -9,6 +9,8 @@
 package de.rub.nds.tlsscanner.clientscanner.report;
 
 import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
+import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.AnsiColor;
@@ -43,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
@@ -89,6 +92,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             rootContainer.add(createDtlsBugsContainer(report));
         }
         rootContainer.add(createProbePerformanceContainer(report));
+        rootContainer.add(createGuidelinesContainer(report));
         return rootContainer;
     }
 
@@ -428,7 +432,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 report.getIntegerResult(TlsAnalyzedProperty.LOWEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (lowestPossibleDheModulusSize != null) {
             String containerKey = "Lowest accepted modulus (>= 2 bits)";
-            String containerValue = lowestPossibleDheModulusSize + " bits";
+            String containerValue = lowestPossibleDheModulusSize.getValue() + " bits";
             container.add(
                     new KeyValueContainer(
                             containerKey,
@@ -440,7 +444,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 report.getIntegerResult(TlsAnalyzedProperty.HIGHEST_POSSIBLE_DHE_MODULUS_SIZE);
         if (highestPossibleDheModulusSize != null) {
             String containerKey = "Highest accepted modulus (<= 8192 bits)";
-            String containerValue = highestPossibleDheModulusSize + " bits";
+            String containerValue = highestPossibleDheModulusSize.getValue() + " bits";
             container.add(
                     new KeyValueContainer(
                             containerKey,
@@ -697,6 +701,95 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 }
             } catch (Exception e) {
                 container.add(createDefaultTextContainer("Error: " + e.getMessage()));
+            }
+        }
+        return container;
+    }
+
+    private ReportContainer createGuidelinesContainer(ClientReport report) {
+        ListContainer container = new ListContainer();
+        List<GuidelineReport> guidelineReports = report.getGuidelineReports();
+        if (guidelineReports != null && !guidelineReports.isEmpty()) {
+            container.add(new HeadlineContainer("Guidelines"));
+            for (GuidelineReport guidelineReport : guidelineReports) {
+                container.add(createGuidelineContainer(guidelineReport));
+            }
+        }
+        return container;
+    }
+
+    private ReportContainer createGuidelineContainer(GuidelineReport guidelineReport) {
+        ListContainer container = new ListContainer(1);
+        container.add(
+                new HeadlineContainer("Guideline " + StringUtils.trim(guidelineReport.getName())));
+        container.add(
+                new KeyValueContainer(
+                        "Adhered",
+                        AnsiColor.GREEN,
+                        String.valueOf(guidelineReport.getAdhered().size()),
+                        AnsiColor.GREEN));
+        container.add(
+                new KeyValueContainer(
+                        "Violated",
+                        AnsiColor.RED,
+                        String.valueOf(guidelineReport.getViolated().size()),
+                        AnsiColor.RED));
+        container.add(
+                new KeyValueContainer(
+                        "Failed",
+                        AnsiColor.YELLOW,
+                        String.valueOf(guidelineReport.getFailedChecks().size()),
+                        AnsiColor.YELLOW));
+        container.add(
+                createDefaultKeyValueContainer(
+                        "Condition Not Met: ",
+                        String.valueOf(guidelineReport.getConditionNotMet().size())));
+
+        if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
+            container.add(
+                    new TextContainer(StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE));
+            ListContainer detailContainer = new ListContainer(1);
+            container.add(detailContainer);
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                detailContainer.add(new HeadlineContainer("Passed Checks:"));
+                for (GuidelineCheckResult result : guidelineReport.getAdhered()) {
+                    detailContainer.add(
+                            new TextContainer(
+                                    StringUtils.trim(result.getCheckName()), AnsiColor.GREEN));
+                    detailContainer.add(
+                            createDefaultTextContainer(
+                                    "\t"
+                                            + StringUtils.trim(result.toString())
+                                                    .replace("\n", "\n\t")));
+                }
+            }
+
+            detailContainer.add(new HeadlineContainer("Violated Checks:"));
+            for (GuidelineCheckResult result : guidelineReport.getViolated()) {
+                detailContainer.add(
+                        new TextContainer(StringUtils.trim(result.getCheckName()), AnsiColor.RED));
+                detailContainer.add(
+                        createDefaultTextContainer(
+                                "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
+            }
+
+            detailContainer.add(new HeadlineContainer("Failed Checks:"));
+            for (GuidelineCheckResult result : guidelineReport.getFailedChecks()) {
+                detailContainer.add(
+                        new TextContainer(
+                                StringUtils.trim(result.getCheckName()), AnsiColor.YELLOW));
+                detailContainer.add(
+                        createDefaultTextContainer(
+                                "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
+            }
+
+            if (this.detail.isGreaterEqualTo(ScannerDetail.ALL)) {
+                detailContainer.add(new HeadlineContainer("Condition Not Met Checks:"));
+                for (GuidelineCheckResult result : guidelineReport.getConditionNotMet()) {
+                    detailContainer.add(
+                            createDefaultTextContainer(StringUtils.trim(result.getCheckName())));
+                }
             }
         }
         return container;

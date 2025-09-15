@@ -30,15 +30,11 @@ public class CbcIvExtractor extends StatExtractor<State, ComparableByteArray> {
             WorkflowTrace trace = state.getWorkflowTrace();
             List<Record> allReceivedRecords = WorkflowTraceResultUtil.getAllReceivedRecords(trace);
             for (Record receivedRecord : allReceivedRecords) {
-                if (receivedRecord instanceof Record) {
-                    if (((Record) receivedRecord).getComputations() != null) {
-                        ModifiableByteArray cbcInitialisationVector =
-                                ((Record) receivedRecord)
-                                        .getComputations()
-                                        .getCbcInitialisationVector();
-                        if (cbcInitialisationVector != null) {
-                            put(new ComparableByteArray(cbcInitialisationVector.getValue()));
-                        }
+                if (receivedRecord.getComputations() != null) {
+                    ModifiableByteArray cbcInitialisationVector =
+                            receivedRecord.getComputations().getCbcInitialisationVector();
+                    if (cbcInitialisationVector != null) {
+                        put(new ComparableByteArray(cbcInitialisationVector.getValue()));
                     }
                 }
             }

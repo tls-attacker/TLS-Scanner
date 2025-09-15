@@ -21,6 +21,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     CLOSED_AFTER_FINISHED_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
     CLOSED_AFTER_APP_DATA_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
     KNOWN_PADDING_ORACLE_VULNERABILITY(TlsAnalyzedPropertyCategory.ATTACKS),
+    TLS_LATENCY_HELLO(TlsAnalyzedPropertyCategory.CONNECTION),
+    TLS_LATENCY_KEY_EXCHANGE(TlsAnalyzedPropertyCategory.CONNECTION),
     SUPPORTED_APPLICATIONS(TlsAnalyzedPropertyCategory.APPLICATION_LAYER),
     BLEICHENBACHER_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
     PADDING_ORACLE_TEST_RESULT(TlsAnalyzedPropertyCategory.ATTACKS),
@@ -69,6 +71,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     CLIENT_ADVERTISED_CIPHERSUITES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     CLIENT_ADVERTISED_COMPRESSIONS(TlsAnalyzedPropertyCategory.COMPRESSION),
     CLIENT_ADVERTISED_SIGNATURE_AND_HASH_ALGORITHMS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
+    CLIENT_ADVERTISED_CERT_SIGNATURE_AND_HASH_ALGORITHMS(
+            TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
     CLIENT_ADVERTISED_EXTENSIONS(TlsAnalyzedPropertyCategory.EXTENSIONS),
     CLIENT_ADVERTISED_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
     CLIENT_ADVERTISED_KEYSHARE_NAMED_GROUPS(TlsAnalyzedPropertyCategory.CLIENT_ADVERTISED),
@@ -172,6 +176,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_PSK_EXCHANGE_MODES(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
+    SELECTS_TLS13_PSK_DHE(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_TLS13_0_RTT(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_ID_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
     SUPPORTS_SESSION_TICKET_RESUMPTION(TlsAnalyzedPropertyCategory.SESSION_RESUMPTION),
@@ -190,6 +195,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_TLS_COMPRESSION(TlsAnalyzedPropertyCategory.COMPRESSION),
     SUPPORTS_INSECURE_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_RENEGOTIATION(TlsAnalyzedPropertyCategory.RENEGOTIATION),
+    ENFORCES_RENEGOTIATION_INFO_FROM_SERVER(TlsAnalyzedPropertyCategory.RENEGOTIATION),
     SUPPORTS_HTTPS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
     SUPPORTS_HSTS_PRELOADING(TlsAnalyzedPropertyCategory.HTTPS_HEADERS),
@@ -208,6 +214,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     PREFERS_PFS(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_PFS(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_CS_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
+    AVOIDS_WEAKER_CIPHER_SUITES_RFC9325(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_NAMED_GROUP_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     ENFORCES_SIGNATURE_HASH_ALGORITHM_ORDERING(TlsAnalyzedPropertyCategory.BEST_PRACTICES),
     STRICT_SNI(TlsAnalyzedPropertyCategory.SNI),
@@ -249,6 +256,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** does it handle a http false start */
     SUPPORTS_HTTP_FALSE_START(TlsAnalyzedPropertyCategory.QUIRKS),
     SUPPORTS_RECORD_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
+    MIN_RECORD_LENGTH(TlsAnalyzedPropertyCategory.QUIRKS),
     /** does it have a grease value intolerance? */
     HAS_GREASE_CIPHER_SUITE_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
     HAS_GREASE_NAMED_GROUP_INTOLERANCE(TlsAnalyzedPropertyCategory.QUIRKS),
@@ -325,6 +333,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_GENERATOR_ONE(TlsAnalyzedPropertyCategory.FFDHE),
     SUPPORTS_GENERATOR_ZERO(TlsAnalyzedPropertyCategory.FFDHE),
     WEAKEST_DH_STRENGTH(TlsAnalyzedPropertyCategory.FFDHE),
+    WEAKEST_ECDH_STRENGTH(TlsAnalyzedPropertyCategory.FFDHE),
     /** DTLS */
     SUPPORTS_DTLS_FRAGMENTATION(TlsAnalyzedPropertyCategory.QUIRKS),
     DTLS_FRAGMENTATION_REQUIRES_EXTENSION(TlsAnalyzedPropertyCategory.QUIRKS),

@@ -22,7 +22,7 @@ public class LongRecordPaddingGenerator extends PaddingVectorGenerator {
         // Total plaintext size is not allowed to be bigger than 16384
         // MAC + Plaintext
         List<PaddingVector> vectorList = new LinkedList<>();
-        int blockSize = AlgorithmResolver.getCipher(suite).getBlocksize();
+        int blockSize = suite.getCipherAlgorithm().getBlocksize();
         int macSize = AlgorithmResolver.getMacAlgorithm(version, suite).getMacLength();
         vectorList.add(
                 new TripleVector(

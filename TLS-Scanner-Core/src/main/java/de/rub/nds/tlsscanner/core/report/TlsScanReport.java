@@ -15,7 +15,6 @@ import de.rub.nds.scanner.core.probe.result.ObjectResult;
 import de.rub.nds.scanner.core.probe.result.SetResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.scanner.core.report.ScanReport;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -80,6 +79,16 @@ public abstract class TlsScanReport extends ScanReport {
     public synchronized Integer getTotalReceivedRetransmissions() {
         IntegerResult integerResult =
                 getIntegerResult(TlsAnalyzedProperty.TOTAL_RECEIVED_RETRANSMISSIONS);
+        return integerResult == null ? null : integerResult.getValue();
+    }
+
+    /**
+     * Returns the minimum supported record length of the SUT.
+     *
+     * @return The lowest possible record length still supported.
+     */
+    public synchronized Integer getMinRecordLength() {
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.MIN_RECORD_LENGTH);
         return integerResult == null ? null : integerResult.getValue();
     }
 
@@ -418,8 +427,18 @@ public abstract class TlsScanReport extends ScanReport {
                     .filter(
                             cipherSuite ->
                                     matchingKeyExchangeAlgorithms.contains(
-                                            AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)))
+                                            cipherSuite.getKeyExchangeAlgorithm()))
                     .collect(Collectors.toList());
         }
+    }
+
+    public synchronized Integer getWeakestDhStrength() {
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
+        return integerResult == null ? null : integerResult.getValue();
+    }
+
+    public synchronized Integer getWeakestEcdhStrength() {
+        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_ECDH_STRENGTH);
+        return integerResult == null ? null : integerResult.getValue();
     }
 }

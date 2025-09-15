@@ -100,11 +100,11 @@ public class StatisticalTests {
             probSum1 =
                     probSum1
                             + dst.cumulativeProbability(
-                                    ((4 * i + 1) * z) / sqrt(bitString.length()));
+                                    ((4 * i + 1) * (double) z) / sqrt(bitString.length()));
             probSum1 =
                     probSum1
                             - dst.cumulativeProbability(
-                                    ((4 * i - 1) * z) / sqrt(bitString.length()));
+                                    ((4 * i - 1) * (double) z) / sqrt(bitString.length()));
         }
 
         sumStart = ((-bitString.length() / z) - 3) / 4;
@@ -114,11 +114,11 @@ public class StatisticalTests {
             probSum2 =
                     probSum2
                             + dst.cumulativeProbability(
-                                    ((4 * i + 3) * z) / sqrt(bitString.length()));
+                                    ((4 * i + 3) * (double) z) / sqrt(bitString.length()));
             probSum2 =
                     probSum2
                             - dst.cumulativeProbability(
-                                    ((4 * i + 1) * z) / sqrt(bitString.length()));
+                                    ((4 * i + 1) * (double) z) / sqrt(bitString.length()));
         }
 
         pValue = 1 - probSum1 + probSum2;

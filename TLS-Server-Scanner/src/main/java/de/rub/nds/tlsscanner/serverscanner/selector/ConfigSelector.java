@@ -8,13 +8,12 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.selector;
 
+import de.rub.nds.protocol.exception.ConfigurationException;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
-import de.rub.nds.tlsattacker.core.exceptions.ConfigurationException;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -277,8 +276,9 @@ public class ConfigSelector {
     }
 
     private void repairSni(Config config) {
-        if (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
-                || scannerConfig.getClientDelegate().getSniHostname() != null) {
+        if (!scannerConfig.isDoNotSendSNIExtension()
+                && (!IPAddress.isValid(config.getDefaultClientConnection().getHostname())
+                        || scannerConfig.getClientDelegate().getSniHostname() != null)) {
             config.setAddServerNameIndicationExtension(true);
         } else {
             config.setAddServerNameIndicationExtension(false);
@@ -316,10 +316,7 @@ public class ConfigSelector {
                 config.getDefaultClientSupportedCipherSuites().stream()
                         .filter(CipherSuite::isRealCipherSuite)
                         .filter(Predicate.not(CipherSuite::isTls13))
-                        .anyMatch(
-                                cipherSuite ->
-                                        AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite)
-                                                .isEC());
+                        .anyMatch(cipherSuite -> cipherSuite.getKeyExchangeAlgorithm().isEC());
         config.setAddEllipticCurveExtension(containsEc);
         config.setAddECPointFormatExtension(containsEc);
     }

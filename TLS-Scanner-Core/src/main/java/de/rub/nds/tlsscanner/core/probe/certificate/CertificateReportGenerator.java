@@ -73,6 +73,7 @@ public class CertificateReportGenerator {
         setSha256Hash(report, cert);
         setExtendedKeyUsage(report, cert);
         setVulnerableRoca(report, cert);
+        setVersion(report, cert);
 
         TrustAnchorManager anchorManger = TrustAnchorManager.getInstance();
         if (anchorManger.isInitialized()) {
@@ -87,6 +88,12 @@ public class CertificateReportGenerator {
             report.setSelfSigned(false);
         }
         return report;
+    }
+
+    private static void setVersion(CertificateReport report, X509Certificate cert) {
+        if (cert.getTbsCertificate().getVersion() != null) {
+            report.setVersion(cert.getX509Version());
+        }
     }
 
     private static void setPublicKeyType(CertificateReport report, X509Certificate cert) {
@@ -114,9 +121,12 @@ public class CertificateReportGenerator {
     }
 
     private static void setExtendedKeyUsage(CertificateReport report, X509Certificate cert) {
-        Extensions extensions = cert.getTbsCertificate().getExplicitExtensions().getInnerField();
-        for (Extension extension : extensions.getExtensionList()) {
-            // TODO
+        if (cert.getTbsCertificate().getExplicitExtensions() != null) {
+            Extensions extensions =
+                    cert.getTbsCertificate().getExplicitExtensions().getInnerField();
+            for (Extension extension : extensions.getExtensionList()) {
+                // TODO
+            }
         }
     }
 

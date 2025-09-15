@@ -12,7 +12,6 @@ import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.tlsattacker.core.config.Config;
-import de.rub.nds.tlsattacker.core.constants.AlgorithmResolver;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ClientCertificateType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -29,6 +28,7 @@ import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -93,8 +93,7 @@ public class CertificateProbe extends TlsClientProbe {
 
     private boolean isCipherSuiteSuitableForCertType(
             CipherSuite cipherSuite, ClientCertificateType clientCertType) {
-        KeyExchangeAlgorithm keyExchangeAlgorithm =
-                AlgorithmResolver.getKeyExchangeAlgorithm(cipherSuite);
+        KeyExchangeAlgorithm keyExchangeAlgorithm = cipherSuite.getKeyExchangeAlgorithm();
         switch (clientCertType) {
             case RSA_SIGN:
                 return keyExchangeAlgorithm == KeyExchangeAlgorithm.RSA
@@ -155,8 +154,12 @@ public class CertificateProbe extends TlsClientProbe {
 
     @Override
     protected void mergeData(ClientReport report) {
+        List<CertificateChainReport> certificateChainReports = new LinkedList<>();
         if (clientCertificates != null) {
-            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, new LinkedList<>(clientCertificates));
+            for (X509CertificateChain chain : clientCertificates) {
+                certificateChainReports.add(new CertificateChainReport(chain, ""));
+            }
+            put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, certificateChainReports);
         }
     }
 

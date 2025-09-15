@@ -22,6 +22,10 @@ import java.util.HashMap;
 
 public class DefaultPrintingScheme {
 
+    private DefaultPrintingScheme() {
+        // Private constructor to prevent instantiation of utility class
+    }
+
     /**
      * Creates and returns the default printing scheme for TLS scan reports.
      *

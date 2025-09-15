@@ -286,11 +286,6 @@ public class ServerReport extends TlsScanReport {
         return integerResult == null ? null : integerResult.getValue();
     }
 
-    public synchronized Integer getWeakestDhStrength() {
-        IntegerResult integerResult = getIntegerResult(TlsAnalyzedProperty.WEAKEST_DH_STRENGTH);
-        return integerResult == null ? null : integerResult.getValue();
-    }
-
     public synchronized List<InvalidCurveResponse> getInvalidCurveTestResultList() {
         ListResult<InvalidCurveResponse> listResult =
                 getListResult(
@@ -376,6 +371,12 @@ public class ServerReport extends TlsScanReport {
                         NamedGroup.class,
                         NamedGroupWitness.class);
         return mapResult == null ? null : mapResult.getMap();
+    }
+
+    public synchronized NamedGroup getHelloRetryRequestSelectedNamedGroup() {
+        ObjectResult<NamedGroup> objectResult =
+                getObjectResult(TlsAnalyzedProperty.HRR_SELECTED_GROUP, NamedGroup.class);
+        return objectResult == null ? null : objectResult.getValue();
     }
 
     public synchronized String getConfigProfileIdentifier() {

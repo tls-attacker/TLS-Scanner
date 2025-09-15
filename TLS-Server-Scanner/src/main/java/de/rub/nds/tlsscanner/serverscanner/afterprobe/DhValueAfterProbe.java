@@ -41,7 +41,7 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
         onlySafePrime = TestResults.TRUE;
         usesCommonDhPrimes = TestResults.NOT_TESTED_YET;
 
-        Integer shortestBitLength = Integer.MAX_VALUE;
+        int shortestBitLength = Integer.MAX_VALUE;
         if (publicKeyContainer != null && publicKeyContainer.getExtractedValueList().size() > 2) {
             if (!publicKeyContainer.areAllValuesDifferent()) {
                 reuse = TestResults.TRUE;
@@ -73,8 +73,8 @@ public class DhValueAfterProbe extends AfterProbe<ServerReport> {
                     }
                 }
 
-                if (shortestBitLength > ((BigInteger) publicKey.getModulus()).bitLength()) {
-                    shortestBitLength = ((BigInteger) publicKey.getModulus()).bitLength();
+                if (shortestBitLength > publicKey.getModulus().bitLength()) {
+                    shortestBitLength = publicKey.getModulus().bitLength();
                 }
             }
             if (usedCommonValues.size() > 0) {

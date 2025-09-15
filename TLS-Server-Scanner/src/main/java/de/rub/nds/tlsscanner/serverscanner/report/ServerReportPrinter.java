@@ -110,11 +110,11 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final String hsClientFormat = "%-28s";
-    private final String hsVersionFormat = "%-14s";
-    private final String hsCipherSuiteFormat = "%-52s";
-    private final String hsForwardSecrecyFormat = "%-19s";
-    private final String hsKeyLengthFormat = "%-17s";
+    private static final String hsClientFormat = "%-28s";
+    private static final String hsVersionFormat = "%-14s";
+    private static final String hsCipherSuiteFormat = "%-52s";
+    private static final String hsForwardSecrecyFormat = "%-19s";
+    private static final String hsKeyLengthFormat = "%-17s";
 
     /**
      * Constructs a new ServerReportPrinter for generating human-readable reports from server scan
@@ -1165,6 +1165,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Supports TLS 1.3 PSK", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK);
         prettyAppend(
                 builder, "Supports TLS 1.3 PSK-DHE", TlsAnalyzedProperty.SUPPORTS_TLS13_PSK_DHE);
+        prettyAppend(
+                builder,
+                "Selects TLS 1.3 PSK-DHE when also TLS 1.3 PSK is provided by client",
+                TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE);
         prettyAppend(builder, "Supports 0-RTT", TlsAnalyzedProperty.SUPPORTS_TLS13_0_RTT);
         return builder;
     }
@@ -1197,6 +1201,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Tickets resumable in different version",
                 TlsAnalyzedProperty.ALLOW_VERSION_CHANGE_TICKET);
+        builder.append("\n");
 
         prettyAppendSubheading(builder, "Details");
         // TODO use tables
@@ -1591,6 +1596,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 builder,
                 "Supports Record Fragmentation",
                 TlsAnalyzedProperty.SUPPORTS_RECORD_FRAGMENTATION);
+        prettyAppend(builder, "Mininum Record Length", "" + report.getMinRecordLength());
         return builder;
     }
 
@@ -2261,6 +2267,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     builder,
                     "Enforces CipherSuite ordering",
                     TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
+            prettyAppend(
+                    builder,
+                    "Avoids weaker CipherSuites (according to RFC 9325)",
+                    TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325);
         }
 
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
@@ -2744,7 +2754,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Violated: " + guidelineReport.getViolated().size(), AnsiColor.RED);
         prettyAppend(
                 builder, "Failed: " + guidelineReport.getFailedChecks().size(), AnsiColor.YELLOW);
-        prettyAppend(builder, "Condition Not Met: " + guidelineReport.getConditionNotMet().size());
+        prettyAppend(
+                builder,
+                "Condition Not Met: " + guidelineReport.getConditionNotMet().size() + "\n");
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             prettyAppend(builder, StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE);
 

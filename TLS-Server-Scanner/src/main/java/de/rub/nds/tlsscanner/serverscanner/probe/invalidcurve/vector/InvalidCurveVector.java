@@ -17,6 +17,7 @@ import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsscanner.core.vector.Vector;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /** */
 public class InvalidCurveVector implements Vector {
@@ -137,18 +138,34 @@ public class InvalidCurveVector implements Vector {
         return ecdsaRequiredGroups;
     }
 
-    public boolean equals(InvalidCurveVector toCompare) {
-        if (protocolVersion != toCompare.getProtocolVersion()
-                || cipherSuite != toCompare.getCipherSuite()
-                || namedGroup != toCompare.getNamedGroup()
-                || pointFormat != toCompare.getPointFormat()
-                || twistAttack != toCompare.isTwistAttack()
-                || attackInRenegotiation != toCompare.isAttackInRenegotiation()
-                || !ecdsaRequiredGroups.equals(toCompare.getEcdsaRequiredGroups())) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
+        InvalidCurveVector toCompare = (InvalidCurveVector) obj;
+        return protocolVersion == toCompare.getProtocolVersion()
+                && cipherSuite == toCompare.getCipherSuite()
+                && namedGroup == toCompare.getNamedGroup()
+                && pointFormat == toCompare.getPointFormat()
+                && twistAttack == toCompare.isTwistAttack()
+                && attackInRenegotiation == toCompare.isAttackInRenegotiation()
+                && Objects.equals(ecdsaRequiredGroups, toCompare.getEcdsaRequiredGroups());
+    }
 
-        return true;
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                protocolVersion,
+                cipherSuite,
+                namedGroup,
+                pointFormat,
+                twistAttack,
+                attackInRenegotiation,
+                ecdsaRequiredGroups);
     }
 
     public void setEcdsaRequiredGroups(List<NamedGroup> ecdsaRequiredGroups) {

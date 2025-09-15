@@ -45,7 +45,7 @@ import java.util.Arrays;
 
 public class DtlsHelloVerifyRequestProbe extends TlsServerProbe {
 
-    public static Integer COOKIE_LENGTH_ERROR_VALUE = -1;
+    public static final Integer COOKIE_LENGTH_ERROR_VALUE = -1;
 
     private TestResult supportsCookieExchange = TestResults.COULD_NOT_TEST;
     private TestResult hasHvrRetransmissions = TestResults.COULD_NOT_TEST;

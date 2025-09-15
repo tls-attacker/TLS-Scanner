@@ -15,8 +15,6 @@ import de.rub.nds.scanner.core.afterprobe.AfterProbe;
 import de.rub.nds.scanner.core.passive.ExtractedValueContainer;
 import de.rub.nds.tlsattacker.core.constants.HandshakeByteLength;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
-import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
-import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
 import de.rub.nds.tlsscanner.core.report.TlsScanReport;
 import de.rub.nds.tlsscanner.core.vector.statistics.StatisticalTests;
@@ -55,16 +53,16 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
 
     // Standard value for cryptographic applications (see NIST SP 800-22
     // Document)
-    private final double MINIMUM_P_VALUE = 0.01;
-    private final int MONOBIT_TEST_BLOCK_SIZE = 1;
-    private final int FREQUENCY_TEST_BLOCK_SIZE = 128;
-    private final int LONGEST_RUN_BLOCK_SIZE = 8;
-    private final int TEMPLATE_TEST_BLOCK_SIZE = 9;
-    private final int ENTROPY_TEST_BLOCK_SIZE = 10;
+    private static final double MINIMUM_P_VALUE = 0.01;
+    private static final int MONOBIT_TEST_BLOCK_SIZE = 1;
+    private static final int FREQUENCY_TEST_BLOCK_SIZE = 128;
+    private static final int LONGEST_RUN_BLOCK_SIZE = 8;
+    private static final int TEMPLATE_TEST_BLOCK_SIZE = 9;
+    private static final int ENTROPY_TEST_BLOCK_SIZE = 10;
 
     // How much the time is allowed to deviate between two handshakes when
     // viewed using UNIX time prefix
-    private final int UNIX_TIME_ALLOWED_DEVIATION = 31556926; // One year
+    private static final int UNIX_TIME_ALLOWED_DEVIATION = 31556926; // One year
 
     /**
      * Checks if the Host utilities Unix time or similar counters for Randoms.
@@ -91,46 +89,14 @@ public abstract class RandomnessAfterProbe<ReportT extends TlsScanReport>
     }
 
     /**
-     * Analyzes various random values extracted from TLS handshakes including server randoms,
-     * session IDs, cookies, and CBC IVs. Creates entropy reports for each type of random value and
-     * stores whether Unix timestamps are used in the random values.
+     * Analyzes various random values extracted from TLS handshakes. Subclasses should implement
+     * this method to analyze the specific types of random values relevant to their context (client
+     * or server).
      *
      * @param report the TLS scan report containing extracted random value data
      */
     @Override
-    public void analyze(ReportT report) {
-
-        ExtractedValueContainer<ComparableByteArray> cookieExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.COOKIE, ComparableByteArray.class);
-        ExtractedValueContainer<ComparableByteArray> randomExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.RANDOM, ComparableByteArray.class);
-        ExtractedValueContainer<ComparableByteArray> sessionIdExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.SESSION_ID, ComparableByteArray.class);
-        ExtractedValueContainer<ComparableByteArray> cbcIvExtractedValueContainer =
-                report.getExtractedValueContainer(
-                        TrackableValueType.CBC_IV, ComparableByteArray.class);
-        boolean usesUnixTime = checkForUnixTime(randomExtractedValueContainer);
-
-        List<ComparableByteArray> extractedCookieList =
-                cookieExtractedValueContainer.getExtractedValueList();
-        List<ComparableByteArray> extractedRandomList =
-                filterRandoms(randomExtractedValueContainer.getExtractedValueList(), usesUnixTime);
-        List<ComparableByteArray> extractedIvList =
-                cbcIvExtractedValueContainer.getExtractedValueList();
-        List<ComparableByteArray> extractedSessionIdList =
-                sessionIdExtractedValueContainer.getExtractedValueList();
-
-        List<EntropyReport> entropyReport = new LinkedList<>();
-        entropyReport.add(createEntropyReport(extractedRandomList, RandomType.RANDOM));
-        entropyReport.add(createEntropyReport(extractedSessionIdList, RandomType.SESSION_ID));
-        entropyReport.add(createEntropyReport(extractedCookieList, RandomType.COOKIE));
-        entropyReport.add(createEntropyReport(extractedIvList, RandomType.CBC_IV));
-        report.putResult(TlsAnalyzedProperty.USES_UNIX_TIMESTAMPS_IN_RANDOM, usesUnixTime);
-        report.putResult(TlsAnalyzedProperty.ENTROPY_REPORTS, entropyReport);
-    }
+    public abstract void analyze(ReportT report);
 
     /**
      * Creates an entropy report for a given list of random byte arrays by performing various

@@ -13,6 +13,7 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.CipherAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -25,14 +26,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CipherSuiteOrderProbe extends TlsServerProbe {
 
     private TestResult enforced = TestResults.COULD_NOT_TEST;
+    private TestResult avoidsWeakCipherSuites = TestResults.COULD_NOT_TEST;
 
     public CipherSuiteOrderProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.CIPHER_SUITE_ORDER, configSelector);
-        register(TlsAnalyzedProperty.ENFORCES_CS_ORDERING);
+        register(
+                TlsAnalyzedProperty.ENFORCES_CS_ORDERING,
+                TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325);
     }
 
     @Override
@@ -48,6 +53,39 @@ public class CipherSuiteOrderProbe extends TlsServerProbe {
                 (firstSelectedCipherSuite == secondSelectedCipherSuite)
                         ? TestResults.TRUE
                         : TestResults.FALSE;
+
+        // cipher suites that are allowed, but SHOULD NOT be used according to RFC 9325
+        List<CipherSuite> toTestListForWeakCS =
+                CipherSuite.getAllCipherSuites().stream()
+                        .filter(this::isWeakRfc9325)
+                        .collect(Collectors.toCollection(LinkedList::new));
+        // This cipher suite MUST be preferred by servers according to RFC 9325,
+        // even if it is not the first proposal:
+        toTestListForWeakCS.add(CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256);
+        CipherSuite selectedCipherSuiteWeak = getSelectedCipherSuite(toTestListForWeakCS);
+        avoidsWeakCipherSuites =
+                (selectedCipherSuiteWeak == CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256)
+                        ? TestResults.TRUE
+                        : TestResults.FALSE;
+    }
+
+    /**
+     * Checks if a cipher suite is weaker than TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 according to
+     * RFC 9325 as a reference
+     *
+     * @param cs the cipher suite in question
+     * @return true, if the provided cipher suite is weak
+     */
+    private boolean isWeakRfc9325(CipherSuite cs) {
+        return (cs.getCipherAlgorithm() != null
+                        && (cs.getCipherAlgorithm().getKeySize() <= 16
+                                || cs.getCipherAlgorithm() == CipherAlgorithm.DES_EDE_CBC))
+                || (cs.getKeyExchangeAlgorithm() != null
+                        && (cs.getKeyExchangeAlgorithm().isKeyExchangeRsa()
+                                || cs.getKeyExchangeAlgorithm().isKeyExchangeStaticDh()
+                                || cs.getKeyExchangeAlgorithm().isKeyExchangeStaticEcdh()
+                                || (cs.getKeyExchangeAlgorithm().isKeyExchangeDhe()
+                                        && !cs.isAEAD())));
     }
 
     public CipherSuite getSelectedCipherSuite(List<CipherSuite> toTestList) {
@@ -71,5 +109,6 @@ public class CipherSuiteOrderProbe extends TlsServerProbe {
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.ENFORCES_CS_ORDERING, enforced);
+        put(TlsAnalyzedProperty.AVOIDS_WEAKER_CIPHER_SUITES_RFC9325, avoidsWeakCipherSuites);
     }
 }

@@ -124,12 +124,7 @@ public class ResponseFingerprint {
     public String toHumanReadable() {
         StringBuilder resultString = new StringBuilder();
         for (ProtocolMessage msg : messageList) {
-            if (!(msg instanceof ProtocolMessage)) {
-                resultString.append("{").append(msg.getClass().getName()).append("} ");
-                continue;
-            }
-
-            ProtocolMessage message = (ProtocolMessage) msg;
+            ProtocolMessage message = msg;
 
             switch (message.getProtocolMessageType()) {
                 case ALERT:
@@ -181,11 +176,7 @@ public class ResponseFingerprint {
         if (recordList != null && recordList.size() > 0) {
             resultString.append(" [");
             for (Record record : recordList) {
-                if (record instanceof Record) {
-                    resultString.append("R(" + ((Record) record).getLength().getValue() + "),");
-                } else {
-                    resultString.append("B(" + ((Record) record).getLength().getValue() + "),");
-                }
+                resultString.append("R(" + record.getLength().getValue() + "),");
             }
             // remove last commas
             resultString.deleteCharAt(resultString.length() - 1);
