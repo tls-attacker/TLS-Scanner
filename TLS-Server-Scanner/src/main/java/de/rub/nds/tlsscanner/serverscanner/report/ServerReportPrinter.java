@@ -307,11 +307,9 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 "" + report.getTotalReceivedRetransmissions());
         if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)
                 && report.getRetransmissionCounters() != null) {
-            for (HandshakeMessageType type : report.getRetransmissionCounters().keySet()) {
-                prettyAppend(
-                        builder,
-                        "-" + type.getName(),
-                        "" + report.getRetransmissionCounters().get(type));
+            for (Map.Entry<HandshakeMessageType, Integer> entry :
+                    report.getRetransmissionCounters().entrySet()) {
+                prettyAppend(builder, "-" + entry.getKey().getName(), "" + entry.getValue());
             }
         }
 
