@@ -13,22 +13,16 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.List;
-import java.util.Set;
 
 public class TlsFallbackScsvAfterProbe extends AfterProbe<ClientReport> {
 
     @Override
     public void analyze(ClientReport report) {
-        // TODO The Supported Cipher Suites might not be useful?
-        Set<CipherSuite> supportedCipherSuites = report.getSupportedCipherSuites();
         List<CipherSuite> clientAdvertisedCipherSuites = report.getClientAdvertisedCipherSuites();
 
         boolean supported =
-                (supportedCipherSuites != null
-                                && supportedCipherSuites.contains(CipherSuite.TLS_FALLBACK_SCSV))
-                        || (clientAdvertisedCipherSuites != null
-                                && clientAdvertisedCipherSuites.contains(
-                                        CipherSuite.TLS_FALLBACK_SCSV));
+                clientAdvertisedCipherSuites != null
+                        && clientAdvertisedCipherSuites.contains(CipherSuite.TLS_FALLBACK_SCSV);
 
         report.putResult(TlsAnalyzedProperty.SUPPORTS_TLS_FALLBACK_SCSV, supported);
     }
