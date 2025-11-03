@@ -54,6 +54,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                         scanConfig.getReexecutions(),
                         new NamedThreadFactory(
                                 "TLS connection executor (bulk scan " + bulkScanId + ")"));
+        if (scanConfig.getExcludedProbes() != null) {
+            LOGGER.info("Excluding probes: {}", scanConfig.getExcludedProbes());
+        }
     }
 
     @Override
@@ -86,7 +89,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
         if (scanConfig.getExcludedProbes() != null) {
             config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
-            LOGGER.info("Excluding probes: {}", scanConfig.getExcludedProbes());
         }
 
         ServerReport report;
