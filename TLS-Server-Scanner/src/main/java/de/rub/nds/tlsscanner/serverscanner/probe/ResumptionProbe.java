@@ -204,6 +204,12 @@ public class ResumptionProbe extends TlsServerProbe {
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
+
+            if (!WorkflowTraceResultUtil.didReceiveMessage(
+                    state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
+                return TestResults.FALSE;
+            }
+
             return state.getWorkflowTrace().executedAsPlanned()
                     ? TestResults.TRUE
                     : TestResults.FALSE;
