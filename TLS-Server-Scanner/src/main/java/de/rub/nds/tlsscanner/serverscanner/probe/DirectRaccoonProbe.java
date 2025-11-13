@@ -8,17 +8,25 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.AlertDescription;
+import de.rub.nds.tlsattacker.core.constants.AlertLevel;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsattacker.core.workflow.task.TlsTask;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -33,10 +41,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.directraccoon.DirectRaccoonWork
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,6 +51,12 @@ public class DirectRaccoonProbe extends TlsServerProbe {
 
     private static final int ITERATIONS_PER_HANDSHAKE = 3;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
+    private static final int ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 1;
+    private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 20;
+
+    private final ScannerDetail scanDetail;
+    private final int numberOfIterations;
+    private final int numberOfAddtionalIterations;
 
     private final Random random = new Random();
 
@@ -57,22 +68,102 @@ public class DirectRaccoonProbe extends TlsServerProbe {
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);
+        scanDetail = configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
+        numberOfIterations =
+                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                        ? ITERATIONS_PER_HANDSHAKE
+                        : ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE;
+        numberOfAddtionalIterations =
+                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                        ? ADDITIONAL_ITERATIONS_PER_HANDSHAKE
+                        : ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE;
         register(
                 TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON,
                 TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT);
     }
 
+    private byte[] getServerDhPublicValue(Config config, WorkflowTrace trace) {
+        State state = new State(config, trace);
+        executeState(state);
+        ServerKeyExchangeMessage ske =
+                state.getWorkflowTrace().getLastReceivedMessage(ServerKeyExchangeMessage.class);
+        if (ske != null) {
+            if (ske.getPublicKey() != null) {
+                return ske.getPublicKey().getValue();
+            }
+        }
+
+        return null;
+    }
+
+    private void addAlertToTrace(WorkflowTrace trace) {
+        AlertMessage alert = new AlertMessage();
+        alert.setConfig(AlertLevel.WARNING, AlertDescription.CLOSE_NOTIFY);
+        trace.addTlsAction(new SendAction(alert));
+    }
+
+    private TestResult checkStaticDh(Config tlsConfig) {
+        WorkflowTrace trace1 =
+                new WorkflowConfigurationFactory(tlsConfig)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                tlsConfig.getDefaultRunningMode());
+        addAlertToTrace(trace1);
+
+        byte[] pub1 = getServerDhPublicValue(tlsConfig, trace1);
+        if (pub1 == null) {
+            return TestResults.COULD_NOT_TEST;
+        }
+
+        WorkflowTrace trace2 =
+                new WorkflowConfigurationFactory(tlsConfig)
+                        .createWorkflowTrace(
+                                WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                tlsConfig.getDefaultRunningMode());
+        addAlertToTrace(trace2);
+        byte[] pub2 = getServerDhPublicValue(tlsConfig, trace2);
+        if (pub2 == null) {
+            return TestResults.COULD_NOT_TEST;
+        }
+
+        if (Arrays.equals(pub1, pub2)) {
+            return TestResults.TRUE;
+        } else {
+            return TestResults.FALSE;
+        }
+    }
+
     @Override
     protected void executeTest() {
         testResultList = new LinkedList<>();
+        Map<String, TestResult> staticDhCache = new HashMap<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
-                        InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
-                                createDirectRaccoonInformationLeakTest(
-                                        pair.getVersion(), suite, DirectRaccoonWorkflowType.CKE);
-                        testResultList.add(informationLeakTest);
+                        boolean shouldTest = true;
+                        if (!scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
+                            String cacheKey = pair.getVersion().name() + "_" + suite.name();
+                            TestResult staticDhResult = staticDhCache.get(cacheKey);
+                            if (staticDhResult == null) {
+                                Config tlsConfig = configSelector.getBaseConfig();
+                                tlsConfig.setHighestProtocolVersion(pair.getVersion());
+                                tlsConfig.setDefaultClientSupportedCipherSuites(List.of(suite));
+                                staticDhResult = checkStaticDh(tlsConfig);
+                                staticDhCache.put(cacheKey, staticDhResult);
+                            }
+                            if (staticDhResult == TestResults.FALSE) {
+                                shouldTest = false;
+                            }
+                        }
+                        if (shouldTest) {
+                            InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
+                                    createDirectRaccoonInformationLeakTest(
+                                            pair.getVersion(),
+                                            suite,
+                                            DirectRaccoonWorkflowType.CKE);
+                            testResultList.add(informationLeakTest);
+                        }
                     }
                 }
             }
@@ -90,7 +181,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
             ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
         List<VectorResponse> responseMap =
-                createVectorResponseList(version, suite, workflowType, ITERATIONS_PER_HANDSHAKE);
+                createVectorResponseList(version, suite, workflowType, numberOfIterations);
         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
                 new InformationLeakTest<>(
                         new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
@@ -98,11 +189,11 @@ public class DirectRaccoonProbe extends TlsServerProbe {
         if (informationLeakTest.isDistinctAnswers()) {
             LOGGER.debug(
                     "Found non identical answers, performing "
-                            + ITERATIONS_PER_HANDSHAKE
+                            + numberOfIterations
                             + " additional tests");
             responseMap =
                     createVectorResponseList(
-                            version, suite, workflowType, ADDITIONAL_ITERATIONS_PER_HANDSHAKE);
+                            version, suite, workflowType, numberOfAddtionalIterations);
             informationLeakTest.extendTestWithVectorResponses(responseMap);
         }
         return informationLeakTest;
