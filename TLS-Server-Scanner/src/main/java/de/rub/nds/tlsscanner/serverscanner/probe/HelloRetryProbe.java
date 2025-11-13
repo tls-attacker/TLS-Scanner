@@ -17,11 +17,15 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
+import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
-import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
@@ -62,10 +66,16 @@ public class HelloRetryProbe extends TlsServerProbe {
 
     private void testHelloRetry() {
         Config tlsConfig = configSelector.getTls13BaseConfig();
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         // enforce HRR by sending empty key share
         tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
-        State state = new State(tlsConfig);
+
+        WorkflowTrace workflowTrace =
+                new WorkflowConfigurationFactory(tlsConfig)
+                        .createTlsEntryWorkflowTrace(tlsConfig.getDefaultClientConnection());
+        workflowTrace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
+        workflowTrace.addTlsAction(new ReceiveTillAction(new ServerHelloMessage(tlsConfig)));
+
+        State state = new State(tlsConfig, workflowTrace);
         executeState(state);
         sendsHelloRetryRequest = TestResults.FALSE;
         issuesCookie = TestResults.FALSE;
