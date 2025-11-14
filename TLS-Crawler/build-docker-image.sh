@@ -11,7 +11,7 @@ if [ "$1" = "run-with-credentials" ]; then
     # this script is passed as a secret file to the docker build
     # in there it is called to start install-dependencies
     # it's a bit of a hack, but it works
-    export GITHUB_TOKEN='TOKEN'
+    export GITHUB_TOKEN='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'
     shift;
     exec "$@"
 fi
@@ -24,8 +24,9 @@ export MODVAR_BRANCH='N/A'
 export ASN1_BRANCH='N/A'
 export X509_BRANCH='N/A'
 export ATTACKER_BRANCH='N/A'
-export SCANNER_BRANCH='N/A'
-export CRAWLER_CORE_BRANCH='main'
+export SCANNER_BRANCH='webapp_partial'
+export SCANNER_CORE_BRANCH='webapp_partial'
+export CRAWLER_CORE_BRANCH='webapp_partial'
 
 docker_args=()
 if [ "$1" != "use-cache" ]; then

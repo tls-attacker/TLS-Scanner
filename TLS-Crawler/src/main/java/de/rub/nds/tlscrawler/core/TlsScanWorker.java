@@ -82,13 +82,12 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         // Initialize MongoDB client for partial results persistence
         try {
             String mongoHost = System.getenv().getOrDefault("MONGODB_HOST", "mongodb");
-            int mongoPort =
-                    Integer.parseInt(System.getenv().getOrDefault("MONGODB_PORT", "27017"));
+            int mongoPort = Integer.parseInt(System.getenv().getOrDefault("MONGODB_PORT", "27017"));
             String mongoUser = System.getenv().getOrDefault("MONGODB_USER", "mongoadmin");
-            String mongoPassword =
-                    System.getenv().getOrDefault("MONGODB_PASSWORD", "mongoadminpw");
-            String mongoAuthSource =
-                    System.getenv().getOrDefault("MONGODB_AUTHSOURCE", "admin");
+            String mongoPassword = System.getenv().getOrDefault("MONGODB_PASSWORD", "mongoadminpw");
+            String mongoAuthSource = System.getenv().getOrDefault("MONGODB_AUTHSOURCE", "admin");
+            String mongoDbName = System.getenv().getOrDefault("MONGODB_DATABASE", "tlsscanner");
+            String mongoCollection = System.getenv().getOrDefault("MONGODB_COLLECTION", "scans");
 
             ConnectionString connectionString =
                     new ConnectionString("mongodb://" + mongoHost + ":" + mongoPort);
@@ -103,9 +102,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                             .build();
 
             mongoClient = MongoClients.create(settings);
-            // Use "default" database and collection to match WebApp expectations
-            mongoDatabase = mongoClient.getDatabase("default");
-            partialResultsCollection = mongoDatabase.getCollection("default");
+            // Use environment variables for database and collection to match WebApp expectations
+            mongoDatabase = mongoClient.getDatabase(mongoDbName);
+            partialResultsCollection = mongoDatabase.getCollection(mongoCollection);
 
             LOGGER.info(
                     "MongoDB client initialized for partial results persistence at {}:{}",
@@ -202,11 +201,13 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                             // Use UUID as document ID (same as final result will use)
                             Document partialResultDoc = new Document();
                             partialResultDoc.put("_id", jobDescription.getId().toString());
+                            partialResultDoc.put(
+                                    "scanJobDescription",
+                                    jobDescription.getId().toString()); // Required for webapp query
                             partialResultDoc.put("bulkScan", bulkScanId);
                             partialResultDoc.put("scanTarget", scanTargetDoc);
                             partialResultDoc.put(
-                                    "resultStatus",
-                                    JobStatus.RUNNING.name()); // Use RUNNING status
+                                    "resultStatus", JobStatus.RUNNING.name()); // Use RUNNING status
                             partialResultDoc.put("result", resultDoc);
 
                             // Upsert: replace if exists, insert if not
@@ -240,9 +241,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
         // After scan completes, delete the partial result document
         // The Worker will create the final result with the UUID as _id
-        if (mongoClient != null
-                && partialResultsCollection != null
-                && jobDescription != null) {
+        if (mongoClient != null && partialResultsCollection != null && jobDescription != null) {
             try {
                 partialResultsCollection.deleteOne(
                         new Document("_id", jobDescription.getId().toString()));
@@ -272,7 +271,15 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             return null;
         }
         Document document = new Document();
-        document.put("report", report);
+        // Serialize the report to JSON string (matching partial results format)
+        try {
+            String reportJson = mapper.toJsonString(report);
+            document.put("report", reportJson);
+        } catch (Exception e) {
+            LOGGER.error("Failed to serialize ServerReport to JSON", e);
+            // Fallback: put the object directly (may not work as expected)
+            document.put("report", report);
+        }
         return document;
     }
 }
