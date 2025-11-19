@@ -145,7 +145,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>x509-attacker</artifactId>
-            <version>4.3.6</version>
+            <version>4.3.7</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
