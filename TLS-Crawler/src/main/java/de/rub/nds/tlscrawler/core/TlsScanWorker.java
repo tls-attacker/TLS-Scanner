@@ -160,6 +160,15 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         config.getClientDelegate().setSniHostname(scanTarget.getHostname());
         config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
 
+        // Set excluded probes if configured
+        if (scanConfig.getExcludedProbes() != null && !scanConfig.getExcludedProbes().isEmpty()) {
+            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
+            LOGGER.info(
+                    "Excluding {} probes from scan: {}",
+                    scanConfig.getExcludedProbes().size(),
+                    scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
+        }
+
         // Get the current job description to access the UUID
         ScanJobDescription jobDescription = getCurrentJobDescription();
 
