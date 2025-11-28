@@ -142,6 +142,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     @Override
     public Document scan(ScanTarget scanTarget) {
+        // Reset throttle state for this new scan
+        lastPartialResultWrite = 0;
+
         // Ensure parallelExecutor is initialized before use
         synchronized (this) {
             if (parallelExecutor == null) {
@@ -207,7 +210,8 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                             scanTargetDoc.put("hostname", scanTarget.getHostname());
 
                             // Create main document matching ScanResult structure
-                            // Use UUID as document ID (same as final result will use)
+                            // Use job UUID as document ID for upsert (partial results overwrite
+                            // each other)
                             Document partialResultDoc = new Document();
                             partialResultDoc.put("_id", jobDescription.getId().toString());
                             partialResultDoc.put(
@@ -248,19 +252,8 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             report = scanner.scan();
         }
 
-        // After scan completes, delete the partial result document
-        // The Worker will create the final result with the UUID as _id
-        if (mongoClient != null && partialResultsCollection != null && jobDescription != null) {
-            try {
-                partialResultsCollection.deleteOne(
-                        new Document("_id", jobDescription.getId().toString()));
-                LOGGER.info(
-                        "Deleted partial result document for {}, final result will be created by Worker with UUID",
-                        scanTarget);
-            } catch (Exception e) {
-                LOGGER.warn("Failed to delete partial result from MongoDB", e);
-            }
-        }
+        // The final result (written by Worker/MongoPersistenceProvider) will overwrite
+        // the partial result using the same _id (job UUID).
 
         long scanDurationSeconds = (report.getScanEndTime() - report.getScanStartTime()) / 1000;
         LOGGER.info(
@@ -286,8 +279,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             document.put("report", reportJson);
         } catch (Exception e) {
             LOGGER.error("Failed to serialize ServerReport to JSON", e);
-            // Fallback: put the object directly (may not work as expected)
-            document.put("report", report);
+            throw new RuntimeException("Failed to serialize ServerReport to JSON", e);
         }
         return document;
     }
