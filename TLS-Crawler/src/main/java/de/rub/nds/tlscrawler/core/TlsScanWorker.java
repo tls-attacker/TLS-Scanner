@@ -8,16 +8,9 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCredential;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.ReplaceOptions;
 import de.rub.nds.crawler.constant.JobStatus;
 import de.rub.nds.crawler.core.BulkScanWorker;
+import de.rub.nds.crawler.core.ScheduledScan;
 import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanTarget;
 import de.rub.nds.scanner.core.execution.NamedThreadFactory;
@@ -46,11 +39,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     private final ServerReportJsonMapper mapper;
 
-    // MongoDB client for persisting partial results
-    private MongoClient mongoClient;
-    private MongoDatabase mongoDatabase;
-    private MongoCollection<Document> partialResultsCollection;
-
     // Throttling for partial result writes
     private long lastPartialResultWrite = 0;
 
@@ -78,44 +66,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                         scanConfig.getReexecutions(),
                         new NamedThreadFactory(
                                 "TLS connection executor (bulk scan " + bulkScanId + ")"));
-
-        // Initialize MongoDB client for partial results persistence
-        try {
-            String mongoHost = System.getenv().getOrDefault("MONGODB_HOST", "mongodb");
-            int mongoPort = Integer.parseInt(System.getenv().getOrDefault("MONGODB_PORT", "27017"));
-            String mongoUser = System.getenv().getOrDefault("MONGODB_USER", "mongoadmin");
-            String mongoPassword = System.getenv().getOrDefault("MONGODB_PASSWORD", "mongoadminpw");
-            String mongoAuthSource = System.getenv().getOrDefault("MONGODB_AUTHSOURCE", "admin");
-            String mongoDbName = System.getenv().getOrDefault("MONGODB_DATABASE", "tlsscanner");
-            String mongoCollection = System.getenv().getOrDefault("MONGODB_COLLECTION", "scans");
-
-            ConnectionString connectionString =
-                    new ConnectionString("mongodb://" + mongoHost + ":" + mongoPort);
-            MongoCredential credentials =
-                    MongoCredential.createCredential(
-                            mongoUser, mongoAuthSource, mongoPassword.toCharArray());
-
-            MongoClientSettings settings =
-                    MongoClientSettings.builder()
-                            .credential(credentials)
-                            .applyConnectionString(connectionString)
-                            .build();
-
-            mongoClient = MongoClients.create(settings);
-            // Use environment variables for database and collection to match WebApp expectations
-            mongoDatabase = mongoClient.getDatabase(mongoDbName);
-            partialResultsCollection = mongoDatabase.getCollection(mongoCollection);
-
-            LOGGER.info(
-                    "MongoDB client initialized for partial results persistence at {}:{}",
-                    mongoHost,
-                    mongoPort);
-        } catch (Exception e) {
-            LOGGER.warn(
-                    "Failed to initialize MongoDB client for partial results, will skip partial persistence",
-                    e);
-            mongoClient = null;
-        }
     }
 
     @Override
@@ -125,25 +75,14 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         }
         parallelExecutor.shutdown();
         parallelExecutor = null;
-
-        // Close MongoDB connection
-        if (mongoClient != null) {
-            try {
-                mongoClient.close();
-                LOGGER.info("MongoDB client closed");
-            } catch (Exception e) {
-                LOGGER.warn("Error closing MongoDB client", e);
-            }
-            mongoClient = null;
-            mongoDatabase = null;
-            partialResultsCollection = null;
-        }
     }
 
     @Override
-    public Document scan(ScanTarget scanTarget) {
+    public Document scan(ScanJobDescription jobDescription, ScheduledScan scheduledScan) {
         // Reset throttle state for this new scan
         lastPartialResultWrite = 0;
+
+        ScanTarget scanTarget = jobDescription.getScanTarget();
 
         // Ensure parallelExecutor is initialized before use
         synchronized (this) {
@@ -172,74 +111,63 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
         }
 
-        // Get the current job description to access the UUID
-        ScanJobDescription jobDescription = getCurrentJobDescription();
-
-        // Create progress callback to persist partial results to MongoDB
+        // Create progress callback to update ScheduledScan with partial results
         ProbeProgressCallback progressCallback =
                 (probe, report, completed, total) -> {
-                    // Throttle writes to MongoDB (max once per 5 seconds)
+                    // Throttle writes (max once per 5 seconds)
                     long currentTime = System.currentTimeMillis();
                     if (currentTime - lastPartialResultWrite < PARTIAL_RESULT_THROTTLE_MS) {
                         return; // Skip this update, too soon since last write
                     }
 
-                    if (mongoClient != null
-                            && partialResultsCollection != null
-                            && jobDescription != null) {
-                        try {
-                            // Cast ScanReport to ServerReport (it's a ServerReport at runtime)
-                            ServerReport serverReport = (ServerReport) report;
-                            String partialReportJson = mapper.toJsonString(serverReport);
+                    try {
+                        // Cast ScanReport to ServerReport (it's a ServerReport at runtime)
+                        ServerReport serverReport = (ServerReport) report;
+                        String partialReportJson = mapper.toJsonString(serverReport);
 
-                            // Create nested result document (matches ScanResult.result field)
-                            Document resultDoc = new Document();
-                            resultDoc.put("report", partialReportJson);
-                            // Add progress metadata in result document
-                            resultDoc.put("isPartial", true);
-                            resultDoc.put("completedProbes", completed);
-                            resultDoc.put("totalProbes", total);
-                            resultDoc.put("lastProbeName", probe.getType().getName());
-                            resultDoc.put("percentage", (completed * 100.0) / total);
-                            resultDoc.put("lastUpdateTime", currentTime);
+                        // Create nested result document (matches ScanResult.result field)
+                        Document resultDoc = new Document();
+                        resultDoc.put("report", partialReportJson);
+                        // Add progress metadata in result document
+                        resultDoc.put("isPartial", true);
+                        resultDoc.put("completedProbes", completed);
+                        resultDoc.put("totalProbes", total);
+                        resultDoc.put("lastProbeName", probe.getType().getName());
+                        resultDoc.put("percentage", (completed * 100.0) / total);
+                        resultDoc.put("lastUpdateTime", currentTime);
 
-                            // Create scanTarget document
-                            Document scanTargetDoc = new Document();
-                            scanTargetDoc.put("ip", scanTarget.getIp());
-                            scanTargetDoc.put("port", scanTarget.getPort());
-                            scanTargetDoc.put("hostname", scanTarget.getHostname());
+                        // Create scanTarget document
+                        Document scanTargetDoc = new Document();
+                        scanTargetDoc.put("ip", scanTarget.getIp());
+                        scanTargetDoc.put("port", scanTarget.getPort());
+                        scanTargetDoc.put("hostname", scanTarget.getHostname());
 
-                            // Create main document matching ScanResult structure
-                            // Use job UUID as document ID for upsert (partial results overwrite
-                            // each other)
-                            Document partialResultDoc = new Document();
-                            partialResultDoc.put("_id", jobDescription.getId().toString());
-                            partialResultDoc.put(
-                                    "scanJobDescription",
-                                    jobDescription.getId().toString()); // Required for webapp query
-                            partialResultDoc.put("bulkScan", bulkScanId);
-                            partialResultDoc.put("scanTarget", scanTargetDoc);
-                            partialResultDoc.put(
-                                    "resultStatus", JobStatus.RUNNING.name()); // Use RUNNING status
-                            partialResultDoc.put("result", resultDoc);
+                        // Create main document matching ScanResult structure
+                        Document partialResultDoc = new Document();
+                        partialResultDoc.put("_id", jobDescription.getId().toString());
+                        partialResultDoc.put(
+                                "scanJobDescription",
+                                jobDescription.getId().toString()); // Required for webapp query
+                        partialResultDoc.put("bulkScan", bulkScanId);
+                        partialResultDoc.put("scanTarget", scanTargetDoc);
+                        partialResultDoc.put(
+                                "resultStatus", JobStatus.RUNNING.name()); // Use RUNNING status
+                        partialResultDoc.put("result", resultDoc);
 
-                            // Upsert: replace if exists, insert if not
-                            partialResultsCollection.replaceOne(
-                                    new Document("_id", jobDescription.getId().toString()),
-                                    partialResultDoc,
-                                    new ReplaceOptions().upsert(true));
+                        // Update progress via ScheduledScan and persist directly
+                        scheduledScan.updateResult(partialResultDoc);
+                        persistPartialResult(jobDescription, partialResultDoc);
 
-                            lastPartialResultWrite = currentTime;
+                        lastPartialResultWrite = currentTime;
 
-                            LOGGER.debug(
-                                    "Persisted partial result to MongoDB: [{}/{}] {:.1f}% - {}",
-                                    completed,
-                                    total,
-                                    (completed * 100.0) / total,
-                                    probe.getType().getName());
-                        } catch (Exception e) {
-                            LOGGER.warn("Failed to persist partial result to MongoDB", e);
-                        }
+                        LOGGER.debug(
+                                "Persisted partial result: [{}/{}] {:.1f}% - {}",
+                                completed,
+                                total,
+                                (completed * 100.0) / total,
+                                probe.getType().getName());
+                    } catch (Exception e) {
+                        LOGGER.warn("Failed to persist partial result", e);
                     }
                 };
 
