@@ -10,9 +10,9 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.crawler.constant.JobStatus;
 import de.rub.nds.crawler.core.BulkScanWorker;
-import de.rub.nds.crawler.core.ScheduledScan;
 import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanTarget;
+import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.execution.NamedThreadFactory;
 import de.rub.nds.scanner.core.execution.ProbeProgressCallback;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
@@ -22,6 +22,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
+import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -39,15 +40,16 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     private final ServerReportJsonMapper mapper;
 
-    // Throttling for partial result writes
-    private long lastPartialResultWrite = 0;
+    // Throttling for partial result updates
+    private long lastPartialResultUpdate = 0;
 
     public TlsScanWorker(
             String bulkScanID,
             int parallelConnectionThreads,
             TlsScanConfig scanConfig,
-            int parallelScanThreads) {
-        super(bulkScanID, scanConfig, parallelScanThreads);
+            int parallelScanThreads,
+            IPersistenceProvider persistenceProvider) {
+        super(bulkScanID, scanConfig, parallelScanThreads, persistenceProvider);
         if (parallelConnectionThreads <= 0) {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
@@ -78,9 +80,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     }
 
     @Override
-    public Document scan(ScanJobDescription jobDescription, ScheduledScan scheduledScan) {
+    public Document scan(ScanJobDescription jobDescription, Consumer<Document> progressConsumer) {
         // Reset throttle state for this new scan
-        lastPartialResultWrite = 0;
+        lastPartialResultUpdate = 0;
 
         ScanTarget scanTarget = jobDescription.getScanTarget();
 
@@ -111,13 +113,13 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
         }
 
-        // Create progress callback to update ScheduledScan with partial results
+        // Create progress callback to notify the consumer with partial results
         ProbeProgressCallback progressCallback =
                 (probe, report, completed, total) -> {
-                    // Throttle writes (max once per 5 seconds)
+                    // Throttle updates (max once per 5 seconds)
                     long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastPartialResultWrite < PARTIAL_RESULT_THROTTLE_MS) {
-                        return; // Skip this update, too soon since last write
+                    if (currentTime - lastPartialResultUpdate < PARTIAL_RESULT_THROTTLE_MS) {
+                        return; // Skip this update, too soon since last one
                     }
 
                     try {
@@ -154,20 +156,19 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                                 "resultStatus", JobStatus.RUNNING.name()); // Use RUNNING status
                         partialResultDoc.put("result", resultDoc);
 
-                        // Update progress via ScheduledScan and persist directly
-                        scheduledScan.updateResult(partialResultDoc);
-                        persistPartialResult(jobDescription, partialResultDoc);
+                        // Notify progress consumer (handles both future update and persistence)
+                        progressConsumer.accept(partialResultDoc);
 
-                        lastPartialResultWrite = currentTime;
+                        lastPartialResultUpdate = currentTime;
 
                         LOGGER.debug(
-                                "Persisted partial result: [{}/{}] {:.1f}% - {}",
+                                "Progress update: [{}/{}] {:.1f}% - {}",
                                 completed,
                                 total,
                                 (completed * 100.0) / total,
                                 probe.getType().getName());
                     } catch (Exception e) {
-                        LOGGER.warn("Failed to persist partial result", e);
+                        LOGGER.warn("Failed to process partial result", e);
                     }
                 };
 
