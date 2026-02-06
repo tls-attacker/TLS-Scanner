@@ -29,7 +29,8 @@ public class TlsControllerCommandConfig extends ControllerCommandConfig {
                 getScanDetail(),
                 getReexecutions(),
                 getScannerTimeout(),
-                getStarttlsDelegate().getStarttlsType());
+                getStarttlsDelegate().getStarttlsType(),
+                getExcludedProbes());
     }
 
     @Override
