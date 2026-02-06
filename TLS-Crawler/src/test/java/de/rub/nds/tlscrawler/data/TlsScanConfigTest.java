@@ -67,8 +67,8 @@ public class TlsScanConfigTest {
         assertEquals(starttlsType, config.getStarttlsType());
         assertNotNull(config.getExcludedProbes());
         assertEquals(2, config.getExcludedProbes().size());
-        assertEquals("Cipher suite", config.getExcludedProbes().get(0).getName());
-        assertEquals("Heartbleed", config.getExcludedProbes().get(1).getName());
+        assertEquals(TlsProbeType.CIPHER_SUITE.getName(), config.getExcludedProbes().get(0).getName());
+        assertEquals(TlsProbeType.HEARTBLEED.getName(), config.getExcludedProbes().get(1).getName());
     }
 
     @Test
@@ -90,8 +90,8 @@ public class TlsScanConfigTest {
 
         assertNotNull(config.getExcludedProbes());
         assertEquals(3, config.getExcludedProbes().size());
-        assertEquals("Bleichenbacher", config.getExcludedProbes().get(0).getName());
-        assertEquals("Drown", config.getExcludedProbes().get(1).getName());
-        assertEquals("Early CCS", config.getExcludedProbes().get(2).getName());
+        assertEquals(TlsProbeType.BLEICHENBACHER.getName(), config.getExcludedProbes().get(0).getName());
+        assertEquals(TlsProbeType.DROWN.getName(), config.getExcludedProbes().get(1).getName());
+        assertEquals(TlsProbeType.EARLY_CCS.getName(), config.getExcludedProbes().get(2).getName());
     }
 }
