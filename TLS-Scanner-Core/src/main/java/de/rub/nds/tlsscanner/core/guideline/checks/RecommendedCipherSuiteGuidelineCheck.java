@@ -58,7 +58,8 @@ public class RecommendedCipherSuiteGuidelineCheck extends TlsGuidelineCheck {
 
     @Override
     public boolean passesCondition(TlsScanReport report) {
-        return this.versions.stream().anyMatch(report.getSupportedProtocolVersions()::contains)
+        return report.getSupportedProtocolVersions() != null
+                && this.versions.stream().anyMatch(report.getSupportedProtocolVersions()::contains)
                 && super.passesCondition(report);
     }
 
