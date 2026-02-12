@@ -21,7 +21,10 @@ import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,10 +41,12 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     private final int parallelConnectionThreads;
 
-    private final ServerReportJsonMapper mapper;
-
     // Throttling for partial result updates
     private long lastPartialResultUpdate = 0;
+    private ScheduledExecutorService throttleScheduler;
+    private ScheduledFuture<?> pendingPublishTask;
+    private Document pendingPartialResult;
+    private Consumer<Document> pendingProgressConsumer;
 
     public TlsScanWorker(
             String bulkScanID,
@@ -54,7 +59,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
         this.parallelConnectionThreads = parallelConnectionThreads;
-        this.mapper = new ServerReportJsonMapper();
     }
 
     @Override
@@ -68,6 +72,12 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                         scanConfig.getReexecutions(),
                         new NamedThreadFactory(
                                 "TLS connection executor (bulk scan " + bulkScanId + ")"));
+        // Initialize throttle scheduler for delayed partial result publishing
+        throttleScheduler =
+                new ScheduledThreadPoolExecutor(
+                        1,
+                        new NamedThreadFactory(
+                                "partial-result-throttle (bulk scan " + bulkScanId + ")"));
     }
 
     @Override
@@ -77,12 +87,26 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         }
         parallelExecutor.shutdown();
         parallelExecutor = null;
+        // Shutdown throttle scheduler
+        if (throttleScheduler != null) {
+            throttleScheduler.shutdownNow();
+            throttleScheduler = null;
+        }
+        pendingPartialResult = null;
+        pendingProgressConsumer = null;
+        pendingPublishTask = null;
     }
 
     @Override
     public Document scan(ScanJobDescription jobDescription, Consumer<Document> progressConsumer) {
         // Reset throttle state for this new scan
         lastPartialResultUpdate = 0;
+        pendingPartialResult = null;
+        pendingProgressConsumer = null;
+        if (pendingPublishTask != null) {
+            pendingPublishTask.cancel(false);
+            pendingPublishTask = null;
+        }
 
         ScanTarget scanTarget = jobDescription.getScanTarget();
 
@@ -115,62 +139,15 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
         // Create progress callback to notify the consumer with partial results
         ProbeProgressCallback progressCallback =
-                (probe, report, completed, total) -> {
-                    // Throttle updates (max once per 5 seconds)
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastPartialResultUpdate < PARTIAL_RESULT_THROTTLE_MS) {
-                        return; // Skip this update, too soon since last one
-                    }
-
-                    try {
-                        // Cast ScanReport to ServerReport (it's a ServerReport at runtime)
-                        ServerReport serverReport = (ServerReport) report;
-                        String partialReportJson = mapper.toJsonString(serverReport);
-
-                        // Create nested result document (matches ScanResult.result field)
-                        Document resultDoc = new Document();
-                        resultDoc.put("report", partialReportJson);
-                        // Add progress metadata in result document
-                        resultDoc.put("isPartial", true);
-                        resultDoc.put("completedProbes", completed);
-                        resultDoc.put("totalProbes", total);
-                        resultDoc.put("lastProbeName", probe.getType().getName());
-                        resultDoc.put("percentage", (completed * 100.0) / total);
-                        resultDoc.put("lastUpdateTime", currentTime);
-
-                        // Create scanTarget document
-                        Document scanTargetDoc = new Document();
-                        scanTargetDoc.put("ip", scanTarget.getIp());
-                        scanTargetDoc.put("port", scanTarget.getPort());
-                        scanTargetDoc.put("hostname", scanTarget.getHostname());
-
-                        // Create main document matching ScanResult structure
-                        Document partialResultDoc = new Document();
-                        partialResultDoc.put("_id", jobDescription.getId().toString());
-                        partialResultDoc.put(
-                                "scanJobDescription",
-                                jobDescription.getId().toString()); // Required for webapp query
-                        partialResultDoc.put("bulkScan", bulkScanId);
-                        partialResultDoc.put("scanTarget", scanTargetDoc);
-                        partialResultDoc.put(
-                                "resultStatus", JobStatus.RUNNING.name()); // Use RUNNING status
-                        partialResultDoc.put("result", resultDoc);
-
-                        // Notify progress consumer (handles both future update and persistence)
-                        progressConsumer.accept(partialResultDoc);
-
-                        lastPartialResultUpdate = currentTime;
-
-                        LOGGER.debug(
-                                "Progress update: [{}/{}] {:.1f}% - {}",
+                (probe, report, completed, total) ->
+                        handleProgressUpdate(
+                                probe,
+                                report,
                                 completed,
                                 total,
-                                (completed * 100.0) / total,
-                                probe.getType().getName());
-                    } catch (Exception e) {
-                        LOGGER.warn("Failed to process partial result", e);
-                    }
-                };
+                                scanTarget,
+                                jobDescription,
+                                progressConsumer);
 
         ServerReport report;
         try (TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor)) {
@@ -202,14 +179,144 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             return null;
         }
         Document document = new Document();
-        // Serialize the report to JSON string (matching partial results format)
-        try {
-            String reportJson = mapper.toJsonString(report);
-            document.put("report", reportJson);
-        } catch (Exception e) {
-            LOGGER.error("Failed to serialize ServerReport to JSON", e);
-            throw new RuntimeException("Failed to serialize ServerReport to JSON", e);
-        }
+        document.put("report", report);
         return document;
+    }
+
+    /**
+     * Handles progress updates from the scanner by creating a partial result document and notifying
+     * the progress consumer. Updates are throttled to avoid excessive overhead.
+     *
+     * <p>Throttling behavior: When an update arrives during the throttle period, it is saved as
+     * pending and scheduled to be published after the throttle period ends. If another update
+     * arrives before the scheduled publish, it replaces the pending update, ensuring the latest
+     * state is always published.
+     *
+     * @param probe The probe that just completed
+     * @param report The current scan report (partial)
+     * @param completed Number of completed probes
+     * @param total Total number of probes
+     * @param scanTarget The target being scanned
+     * @param jobDescription The job description for this scan
+     * @param progressConsumer Consumer to notify with the partial result
+     */
+    @SuppressWarnings("rawtypes")
+    private void handleProgressUpdate(
+            de.rub.nds.scanner.core.probe.ScannerProbe probe,
+            de.rub.nds.scanner.core.report.ScanReport report,
+            int completed,
+            int total,
+            ScanTarget scanTarget,
+            ScanJobDescription jobDescription,
+            Consumer<Document> progressConsumer) {
+        long currentTime = System.currentTimeMillis();
+
+        try {
+            Document partialResultDoc =
+                    buildPartialResultDocument(
+                            (ServerReport) report,
+                            completed,
+                            total,
+                            probe,
+                            scanTarget,
+                            jobDescription,
+                            currentTime);
+
+            synchronized (this) {
+                if (currentTime - lastPartialResultUpdate >= PARTIAL_RESULT_THROTTLE_MS) {
+                    // Can publish immediately
+                    publishPartialResult(partialResultDoc, progressConsumer, currentTime);
+                } else {
+                    // Throttled - save as pending and schedule publish after throttle period
+                    pendingPartialResult = partialResultDoc;
+                    pendingProgressConsumer = progressConsumer;
+
+                    // Cancel any existing scheduled task (we have a newer update)
+                    if (pendingPublishTask != null && !pendingPublishTask.isDone()) {
+                        pendingPublishTask.cancel(false);
+                    }
+
+                    // Schedule publish after remaining throttle time
+                    long delay =
+                            PARTIAL_RESULT_THROTTLE_MS - (currentTime - lastPartialResultUpdate);
+                    pendingPublishTask =
+                            throttleScheduler.schedule(
+                                    this::publishPendingUpdate, delay, TimeUnit.MILLISECONDS);
+
+                    LOGGER.debug(
+                            "Progress update throttled, scheduled for {}ms: [{}/{}] {:.1f}% - {}",
+                            delay,
+                            completed,
+                            total,
+                            (completed * 100.0) / total,
+                            probe.getType().getName());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Failed to process partial result", e);
+        }
+    }
+
+    /** Builds a partial result document from the current scan state. */
+    @SuppressWarnings("rawtypes")
+    private Document buildPartialResultDocument(
+            ServerReport serverReport,
+            int completed,
+            int total,
+            de.rub.nds.scanner.core.probe.ScannerProbe probe,
+            ScanTarget scanTarget,
+            ScanJobDescription jobDescription,
+            long currentTime) {
+        // Create nested result document (matches ScanResult.result field)
+        Document resultDoc = new Document();
+        resultDoc.put("report", serverReport);
+        resultDoc.put("isPartial", true);
+        resultDoc.put("completedProbes", completed);
+        resultDoc.put("totalProbes", total);
+        resultDoc.put("lastProbeName", probe.getType().getName());
+        resultDoc.put("percentage", (completed * 100.0) / total);
+        resultDoc.put("lastUpdateTime", currentTime);
+
+        // Create scanTarget document
+        Document scanTargetDoc = new Document();
+        scanTargetDoc.put("ip", scanTarget.getIp());
+        scanTargetDoc.put("port", scanTarget.getPort());
+        scanTargetDoc.put("hostname", scanTarget.getHostname());
+
+        // Create main document matching ScanResult structure
+        Document partialResultDoc = new Document();
+        partialResultDoc.put("_id", jobDescription.getId().toString());
+        partialResultDoc.put("scanJobDescription", jobDescription.getId().toString());
+        partialResultDoc.put("bulkScan", bulkScanId);
+        partialResultDoc.put("scanTarget", scanTargetDoc);
+        partialResultDoc.put("resultStatus", JobStatus.RUNNING.name());
+        partialResultDoc.put("result", resultDoc);
+
+        return partialResultDoc;
+    }
+
+    /** Publishes a partial result immediately and updates throttle state. */
+    private void publishPartialResult(
+            Document partialResultDoc, Consumer<Document> progressConsumer, long currentTime) {
+        progressConsumer.accept(partialResultDoc);
+        lastPartialResultUpdate = currentTime;
+        pendingPartialResult = null;
+        pendingProgressConsumer = null;
+
+        Document resultDoc = (Document) partialResultDoc.get("result");
+        LOGGER.debug(
+                "Progress update: [{}/{}] {:.1f}% - {}",
+                resultDoc.get("completedProbes"),
+                resultDoc.get("totalProbes"),
+                resultDoc.get("percentage"),
+                resultDoc.get("lastProbeName"));
+    }
+
+    /** Called by scheduler to publish the pending partial result after throttle period. */
+    private synchronized void publishPendingUpdate() {
+        if (pendingPartialResult != null && pendingProgressConsumer != null) {
+            publishPartialResult(
+                    pendingPartialResult, pendingProgressConsumer, System.currentTimeMillis());
+        }
     }
 }
