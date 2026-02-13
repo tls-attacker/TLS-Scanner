@@ -127,6 +127,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
         config.getClientDelegate().setSniHostname(scanTarget.getHostname());
         config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
+        if (scanConfig.getExcludedProbes() != null) {
+            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
+        }
 
         // Set excluded probes if configured
         if (scanConfig.getExcludedProbes() != null && !scanConfig.getExcludedProbes().isEmpty()) {
