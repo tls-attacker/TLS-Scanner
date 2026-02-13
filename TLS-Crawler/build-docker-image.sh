@@ -11,7 +11,7 @@ if [ "$1" = "run-with-credentials" ]; then
     # this script is passed as a secret file to the docker build
     # in there it is called to start install-dependencies
     # it's a bit of a hack, but it works
-    export GITHUB_TOKEN='add_token_here'
+    export GITHUB_TOKEN='TOKEN'
     shift;
     exec "$@"
 fi
@@ -20,13 +20,12 @@ fi
 # export ATTACKER_BRANCH='my_very_cool_feature_branch'
 # NB: The version of the dependency must match the version in the pom.xml, otherwise maven will again use a remote
 
-export MODVAR_BRANCH="${MODVAR_BRANCH:-N/A}"
-export ASN1_BRANCH="${ASN1_BRANCH:-N/A}"
-export X509_BRANCH="${X509_BRANCH:-N/A}"
-export SCANNER_CORE_BRANCH="${SCANNER_CORE_BRANCH:-N/A}"
-export SCANNER_BRANCH="${SCANNER_BRANCH:-N/A}"
-export CRAWLER_CORE_BRANCH="${CRAWLER_CORE_BRANCH:-main}"
-export ATTACKER_BRANCH="${ATTACKER_BRANCH:-N/A}"
+export MODVAR_BRANCH='N/A'
+export ASN1_BRANCH='N/A'
+export X509_BRANCH='N/A'
+export ATTACKER_BRANCH='N/A'
+export SCANNER_BRANCH='N/A'
+export CRAWLER_CORE_BRANCH='main'
 
 docker_args=()
 if [ "$1" != "use-cache" ]; then
