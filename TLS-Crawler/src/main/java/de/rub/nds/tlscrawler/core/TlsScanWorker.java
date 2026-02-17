@@ -21,6 +21,7 @@ import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -40,6 +41,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
+
+    // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage
+    private final ServerReportJsonMapper reportJsonMapper = new ServerReportJsonMapper();
 
     // Throttling for partial result updates
     private long lastPartialResultUpdate = 0;
@@ -267,9 +271,13 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             ScanTarget scanTarget,
             ScanJobDescription jobDescription,
             long currentTime) {
+        // Serialize ServerReport to JSON string so it can be stored via raw MongoCollection
+        // (which uses BSON codecs, not Jackson) and read back via getString("report")
+        String reportJson = reportJsonMapper.toJsonString(serverReport);
+
         // Create nested result document (matches ScanResult.result field)
         Document resultDoc = new Document();
-        resultDoc.put("report", serverReport);
+        resultDoc.put("report", reportJson);
         resultDoc.put("isPartial", true);
         resultDoc.put("completedProbes", completed);
         resultDoc.put("totalProbes", total);
