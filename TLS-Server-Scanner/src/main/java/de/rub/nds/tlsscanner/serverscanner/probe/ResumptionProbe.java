@@ -21,15 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
-import de.rub.nds.tlsattacker.core.protocol.message.AlertMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ChangeCipherSpecMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.EncryptedExtensionsMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.NewSessionTicketMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
@@ -41,10 +33,7 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ResumptionProbe extends TlsServerProbe {
 
@@ -134,6 +123,20 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
+    private boolean performedFullHandShakeDuringResumption(State state) {
+        ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
+
+        boolean receivedCertificate =
+                action.getReceivedMessages().stream()
+                        .anyMatch(CertificateMessage.class::isInstance);
+
+        if (receivedCertificate) {
+            LOGGER.debug("LastReceive Trace contains certificate.");
+            return true;
+        }
+        return false;
+    }
+
     private TestResult getSupportsSessionResumption() {
         try {
             if (configSelector.foundWorkingConfig()) {
@@ -156,6 +159,11 @@ public class ResumptionProbe extends TlsServerProbe {
                                 .getTlsActions());
                 State state = new State(tlsConfig, trace);
                 executeState(state);
+
+                if (performedFullHandShakeDuringResumption(state)) {
+                    return TestResults.FALSE;
+                }
+
                 return state.getWorkflowTrace().executedAsPlanned() == true
                         ? TestResults.TRUE
                         : TestResults.FALSE;
@@ -187,7 +195,7 @@ public class ResumptionProbe extends TlsServerProbe {
                     new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
             trace.addTlsAction(
                     new ReceiveAction(
-                            new NewSessionTicketMessage(),
+                            new NewSessionTicketMessage(false),
                             new ChangeCipherSpecMessage(),
                             new FinishedMessage()));
             addAlertToTrace(trace);
@@ -196,6 +204,12 @@ public class ResumptionProbe extends TlsServerProbe {
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             State state = new State(tlsConfig, trace);
             executeState(state);
+
+            if (!WorkflowTraceResultUtil.didReceiveMessage(
+                    state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
+                return TestResults.FALSE;
+            }
+
             return state.getWorkflowTrace().executedAsPlanned()
                     ? TestResults.TRUE
                     : TestResults.FALSE;
@@ -226,7 +240,7 @@ public class ResumptionProbe extends TlsServerProbe {
                         new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
                 trace.addTlsAction(
                         new ReceiveAction(
-                                new NewSessionTicketMessage(),
+                                new NewSessionTicketMessage(false),
                                 new ChangeCipherSpecMessage(),
                                 new FinishedMessage()));
                 addAlertToTrace(trace);
@@ -241,6 +255,16 @@ public class ResumptionProbe extends TlsServerProbe {
                                 .getTlsActions());
                 State state = new State(tlsConfig, trace);
                 executeState(state);
+
+                if (!WorkflowTraceResultUtil.didReceiveMessage(
+                        state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
+                    return TestResults.FALSE;
+                }
+
+                if (performedFullHandShakeDuringResumption(state)) {
+                    return TestResults.FALSE;
+                }
+
                 return state.getWorkflowTrace().executedAsPlanned() == true
                         ? TestResults.TRUE
                         : TestResults.FALSE;
@@ -294,6 +318,10 @@ public class ResumptionProbe extends TlsServerProbe {
         for (int i = 0; i < actionsToAdd.size(); i++) {
             trace.addTlsAction(resetIndex - 1 + i, actionsToAdd.get(i));
         }
+
+        // remove the ReceiveAction for the NewSessionTicket to avoid a timeout,
+        // the newly added actions should already capture one in with the received AppData.
+        trace.removeTlsAction(resetIndex + actionsToAdd.size() - 1);
     }
 
     private TestResult isKeyShareExtensionNegotiated(State state) {
@@ -325,6 +353,7 @@ public class ResumptionProbe extends TlsServerProbe {
                                 List.of(exchangeMode),
                                 WorkflowTraceType.FULL_TLS13_PSK,
                                 addApplicationData);
+                tlsConfig.setStopTraceAfterUnexpected(true);
 
                 State state = new State(tlsConfig);
 
@@ -337,7 +366,15 @@ public class ResumptionProbe extends TlsServerProbe {
                 MessageAction lastRcv =
                         (MessageAction) state.getWorkflowTrace().getLastReceivingAction();
                 if (lastRcv.executedAsPlanned()) {
-                    // Check PSK Modes
+
+                    if (!WorkflowTraceResultUtil.didReceiveMessage(
+                            state.getWorkflowTrace(), HandshakeMessageType.NEW_SESSION_TICKET)) {
+                        return TestResults.FALSE;
+                    }
+
+                    if (performedFullHandShakeDuringResumption(state)) {
+                        return TestResults.FALSE;
+                    }
                     TestResult keyShareExtensionNegotiated = isKeyShareExtensionNegotiated(state);
                     TestResult keyShareRequired =
                             TestResults.of(exchangeMode.equals(PskKeyExchangeMode.PSK_DHE_KE));
@@ -393,6 +430,17 @@ public class ResumptionProbe extends TlsServerProbe {
                 MessageAction lastRcv =
                         (MessageAction) firstState.getWorkflowTrace().getLastReceivingAction();
                 if (lastRcv.executedAsPlanned()) {
+
+                    if (!WorkflowTraceResultUtil.didReceiveMessage(
+                            firstState.getWorkflowTrace(),
+                            HandshakeMessageType.NEW_SESSION_TICKET)) {
+                        return TestResults.FALSE;
+                    }
+
+                    if (performedFullHandShakeDuringResumption(firstState)) {
+                        return TestResults.FALSE;
+                    }
+
                     // Check if the key_share extension is negotiated. This determines which key
                     // extension mode the server selected.
                     TestResult keyShareExtensionNegotiated =
@@ -408,6 +456,16 @@ public class ResumptionProbe extends TlsServerProbe {
                                 (MessageAction)
                                         secondState.getWorkflowTrace().getLastReceivingAction();
                         if (lastRcv.executedAsPlanned()) {
+
+                            if (!WorkflowTraceResultUtil.didReceiveMessage(
+                                    secondState.getWorkflowTrace(),
+                                    HandshakeMessageType.NEW_SESSION_TICKET)) {
+                                return TestResults.FALSE;
+                            }
+
+                            if (performedFullHandShakeDuringResumption(secondState)) {
+                                return TestResults.FALSE;
+                            }
                             // Check if the key_share extension is negotiated. This determines which
                             // key extension mode the server selected.
                             keyShareExtensionNegotiated =
@@ -486,14 +544,13 @@ public class ResumptionProbe extends TlsServerProbe {
                                             .getScannerConfig()
                                             .getApplicationProtocol()
                                             .createDummyActions(tlsConfig));
+                } else {
+                    state.getWorkflowTrace()
+                            .addTlsAction(
+                                    new ReceiveAction(
+                                            tlsConfig.getDefaultClientConnection().getAlias(),
+                                            new NewSessionTicketMessage(false)));
                 }
-
-                state.getWorkflowTrace()
-                        .addTlsAction(
-                                new ReceiveAction(
-                                        tlsConfig.getDefaultClientConnection().getAlias(),
-                                        new NewSessionTicketMessage()));
-
                 executeState(state);
 
                 if (WorkflowTraceResultUtil.didReceiveMessage(
