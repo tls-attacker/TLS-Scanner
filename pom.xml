@@ -4,12 +4,12 @@
     <parent>
         <groupId>de.rub.nds</groupId>
         <artifactId>protocol-toolkit-bom</artifactId>
-        <version>6.2.2</version>
+        <version>6.2.3</version>
     </parent>
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>7.2.3-SNAPSHOT</version>
+    <version>7.3.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
@@ -63,7 +63,7 @@
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
         <skip.failsafe.tests>${skipTests}</skip.failsafe.tests>
         <!-- Set TLS-Attacker version once -->
-        <toolkit.tls.attacker.version>7.5.3</toolkit.tls.attacker.version>
+        <toolkit.tls.attacker.version>7.7.0</toolkit.tls.attacker.version>
     </properties>
 
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>asn1-attacker</artifactId>
-            <version>4.2.2</version>
+            <version>4.2.3</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
@@ -140,12 +140,12 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>6.2.3</version>
+            <version>6.3.0</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>x509-attacker</artifactId>
-            <version>4.3.5</version>
+            <version>4.3.10</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
@@ -206,7 +206,7 @@
         <dependency>
             <groupId>de.rub.nds.tls.dockerlib</groupId>
             <artifactId>tls-docker-library</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
