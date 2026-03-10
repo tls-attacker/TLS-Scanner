@@ -163,13 +163,21 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         // The final result (written by Worker/MongoPersistenceProvider) will overwrite
         // the partial result using the same _id (job UUID).
 
-        long scanDurationSeconds = (report.getScanEndTime() - report.getScanStartTime()) / 1000;
-        LOGGER.info(
-                "Finished scanning '{}' ({}) in {} s (server alive: {})",
-                scanTarget,
-                scanConfig.getScannerDetail(),
-                scanDurationSeconds,
-                report.getServerIsAlive());
+        if (report.getScanEndTime() != null && report.getScanStartTime() != null) {
+            long scanDurationSeconds = (report.getScanEndTime() - report.getScanStartTime()) / 1000;
+            LOGGER.info(
+                    "Finished scanning '{}' ({}) in {} s (server alive: {})",
+                    scanTarget,
+                    scanConfig.getScannerDetail(),
+                    scanDurationSeconds,
+                    report.getServerIsAlive());
+        } else {
+            LOGGER.info(
+                    "Finished scanning '{}' ({}) (server alive: {})",
+                    scanTarget,
+                    scanConfig.getScannerDetail(),
+                    report.getServerIsAlive());
+        }
         return createDocumentFromSiteReport(report);
     }
 
@@ -292,13 +300,18 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             ScanTarget scanTarget,
             ScanJobDescription jobDescription,
             long currentTime) {
-        // Serialize ServerReport to JSON string so it can be stored via raw MongoCollection
-        // (which uses BSON codecs, not Jackson) and read back via getString("report")
-        String reportJson = reportJsonMapper.toJsonString(serverReport);
+        // Serialize ServerReport via Jackson to a Map, then wrap in a Document.
+        // We can't use Document.parse(json) because BSON's JSON parser overflows on BigInteger
+        // values (RSA moduli, DH parameters). We can't store the ServerReport object directly
+        // because the raw MongoCollection has no BSON codec for it. Jackson handles BigIntegers
+        // natively, and MongoDB's default codec registry encodes them as Decimal128.
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> reportMap =
+                reportJsonMapper.objectMapper.convertValue(serverReport, java.util.Map.class);
 
         // Create nested result document (matches ScanResult.result field)
         Document resultDoc = new Document();
-        resultDoc.put("report", Document.parse(reportJson));
+        resultDoc.put("report", new Document(reportMap));
         resultDoc.put("isPartial", true);
         resultDoc.put("completedProbes", completed);
         resultDoc.put("totalProbes", total);
