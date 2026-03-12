@@ -122,7 +122,7 @@ public class TlsScanWorkerTest {
             worker.submitThrottledUpdate(
                     createTestDocument("probe-1"),
                     received::add,
-                    TlsScanWorker.PARTIAL_RESULT_THROTTLE_MS);
+                    TlsScanWorker.DEFAULT_PARTIAL_RESULT_THROTTLE_MS);
 
             assertEquals(1, received.size());
             assertEquals("probe-1", getLastProbeName(received.get(0)));
@@ -165,7 +165,7 @@ public class TlsScanWorkerTest {
             assertEquals(1, received.size());
 
             // Update after throttle window - should publish immediately
-            long afterThrottle = baseTime + TlsScanWorker.PARTIAL_RESULT_THROTTLE_MS;
+            long afterThrottle = baseTime + TlsScanWorker.DEFAULT_PARTIAL_RESULT_THROTTLE_MS;
             worker.submitThrottledUpdate(
                     createTestDocument("probe-2"), received::add, afterThrottle);
             assertEquals(2, received.size());
@@ -194,7 +194,7 @@ public class TlsScanWorkerTest {
                         received.add(doc);
                         latch.countDown();
                     };
-            long nearEndOfWindow = baseTime + TlsScanWorker.PARTIAL_RESULT_THROTTLE_MS - 1;
+            long nearEndOfWindow = baseTime + TlsScanWorker.DEFAULT_PARTIAL_RESULT_THROTTLE_MS - 1;
             worker.submitThrottledUpdate(
                     createTestDocument("probe-2"), latchConsumer, nearEndOfWindow);
             assertEquals(1, received.size()); // not published yet
@@ -232,7 +232,7 @@ public class TlsScanWorkerTest {
                     createTestDocument("probe-2"), latchConsumer, baseTime + 2000);
 
             // Third update replaces second, near end of window (delay = 1ms)
-            long nearEnd = baseTime + TlsScanWorker.PARTIAL_RESULT_THROTTLE_MS - 1;
+            long nearEnd = baseTime + TlsScanWorker.DEFAULT_PARTIAL_RESULT_THROTTLE_MS - 1;
             worker.submitThrottledUpdate(createTestDocument("probe-3"), latchConsumer, nearEnd);
 
             // Wait for the scheduled publish

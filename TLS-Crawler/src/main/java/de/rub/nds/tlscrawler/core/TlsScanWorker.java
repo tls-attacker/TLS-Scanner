@@ -37,12 +37,13 @@ import org.bson.Document;
 public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    static final long PARTIAL_RESULT_THROTTLE_MS = 5000; // 5 seconds
+    static final long DEFAULT_PARTIAL_RESULT_THROTTLE_MS = 5000; // 5 seconds
 
     /** Executor passed to TLS-Scanner. It is used to execute the States, i.e. the connections. */
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
+    private final long partialResultThrottleMs;
 
     // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage
     private final ServerReportJsonMapper reportJsonMapper = new ServerReportJsonMapper();
@@ -65,6 +66,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
         this.parallelConnectionThreads = parallelConnectionThreads;
+        this.partialResultThrottleMs = scanConfig.getPartialResultThrottleMs();
     }
 
     @Override
@@ -259,7 +261,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     void submitThrottledUpdate(
             Document partialResultDoc, Consumer<Document> progressConsumer, long currentTime) {
         synchronized (this) {
-            if (currentTime - lastPartialResultUpdate >= PARTIAL_RESULT_THROTTLE_MS) {
+            if (currentTime - lastPartialResultUpdate >= partialResultThrottleMs) {
                 // Can publish immediately
                 publishPartialResult(partialResultDoc, progressConsumer, currentTime);
             } else {
@@ -273,7 +275,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                 }
 
                 // Schedule publish after remaining throttle time
-                long delay = PARTIAL_RESULT_THROTTLE_MS - (currentTime - lastPartialResultUpdate);
+                long delay = partialResultThrottleMs - (currentTime - lastPartialResultUpdate);
                 pendingPublishTask =
                         throttleScheduler.schedule(
                                 this::publishPendingUpdate, delay, TimeUnit.MILLISECONDS);
