@@ -248,6 +248,52 @@ public class TlsScanWorkerTest {
     }
 
     @Test
+    public void testFlushPublishesPendingUpdate() {
+        TlsScanWorker worker = createWorker();
+        worker.initInternal();
+        try {
+            List<Document> received = new ArrayList<>();
+            long baseTime = 10000L;
+
+            // First update - publishes immediately
+            worker.submitThrottledUpdate(createTestDocument("probe-1"), received::add, baseTime);
+            assertEquals(1, received.size());
+
+            // Second update within throttle window - deferred
+            worker.submitThrottledUpdate(
+                    createTestDocument("probe-2"), received::add, baseTime + 1000);
+            assertEquals(1, received.size());
+
+            // Flush should publish the deferred update immediately
+            worker.flushPendingUpdate();
+            assertEquals(2, received.size());
+            assertEquals("probe-2", getLastProbeName(received.get(1)));
+        } finally {
+            worker.cleanupInternal();
+        }
+    }
+
+    @Test
+    public void testFlushWithNoPendingUpdateIsNoOp() {
+        TlsScanWorker worker = createWorker();
+        worker.initInternal();
+        try {
+            List<Document> received = new ArrayList<>();
+            long baseTime = 10000L;
+
+            // Publish one update immediately
+            worker.submitThrottledUpdate(createTestDocument("probe-1"), received::add, baseTime);
+            assertEquals(1, received.size());
+
+            // Flush with nothing pending - should not add anything
+            worker.flushPendingUpdate();
+            assertEquals(1, received.size());
+        } finally {
+            worker.cleanupInternal();
+        }
+    }
+
+    @Test
     public void testResetAllowsImmediatePublishAgain() {
         TlsScanWorker worker = createWorker();
         worker.initInternal();

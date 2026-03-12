@@ -160,6 +160,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
             LOGGER.info("Started scanning '{}' ({})", scanTarget, scanConfig.getScannerDetail());
             report = scanner.scan();
+            flushPendingUpdate();
         }
 
         // The final result (written by Worker/MongoPersistenceProvider) will overwrite
@@ -361,6 +362,24 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         if (pendingPartialResult != null && pendingProgressConsumer != null) {
             publishPartialResult(
                     pendingPartialResult, pendingProgressConsumer, System.currentTimeMillis());
+        }
+    }
+
+    /**
+     * Flushes any pending throttled partial result update immediately. This should be called after
+     * the scan completes to ensure the last partial result is not lost when the throttle scheduler
+     * is shut down.
+     *
+     * <p>Package-private for testing.
+     */
+    synchronized void flushPendingUpdate() {
+        if (pendingPartialResult != null && pendingProgressConsumer != null) {
+            publishPartialResult(
+                    pendingPartialResult, pendingProgressConsumer, System.currentTimeMillis());
+        }
+        if (pendingPublishTask != null && !pendingPublishTask.isDone()) {
+            pendingPublishTask.cancel(false);
+            pendingPublishTask = null;
         }
     }
 }
