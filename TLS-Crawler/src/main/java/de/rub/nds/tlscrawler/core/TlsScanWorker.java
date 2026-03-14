@@ -24,12 +24,7 @@ import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -38,7 +33,6 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
-import org.bson.types.Decimal128;
 
 /** TLS scan that uses the TLS-Scanner. */
 public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
@@ -52,8 +46,20 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     private final int parallelConnectionThreads;
     private final long partialResultThrottleMs;
 
-    // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage
-    private final ServerReportJsonMapper reportJsonMapper = new ServerReportJsonMapper();
+    // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage.
+    // BigInteger values are serialized as strings to avoid BSON JSON parser overflow
+    // on cryptographic values (RSA moduli, DH parameters).
+    private final ServerReportJsonMapper reportJsonMapper;
+
+    {
+        reportJsonMapper = new ServerReportJsonMapper();
+        reportJsonMapper
+                .objectMapper
+                .configOverride(java.math.BigInteger.class)
+                .setFormat(
+                        com.fasterxml.jackson.annotation.JsonFormat.Value.forShape(
+                                com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING));
+    }
 
     // Throttling for partial result updates
     private long lastPartialResultUpdate = 0;
@@ -316,18 +322,20 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             ScanTarget scanTarget,
             ScanJobDescription jobDescription,
             long currentTime) {
-        // Serialize ServerReport via Jackson to a Map, then wrap in a Document.
-        // We can't use Document.parse(json) because BSON's JSON parser overflows on BigInteger
-        // values (RSA moduli, DH parameters). Jackson handles BigIntegers natively, but
-        // MongoDB's default codec registry has no BigInteger codec, so we convert them to
-        // Decimal128 before storing.
-        @SuppressWarnings("unchecked")
-        java.util.Map<String, Object> reportMap =
-                reportJsonMapper.objectMapper.convertValue(serverReport, java.util.Map.class);
+        // Serialize ServerReport to JSON string first (preserves polymorphic type info),
+        // then parse into a BSON Document. BigIntegers are serialized as strings by the
+        // mapper to avoid BSON JSON parser overflow on cryptographic values.
+        String reportJson;
+        try {
+            reportJson = reportJsonMapper.objectMapper.writeValueAsString(serverReport);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to serialize ServerReport to JSON", e);
+            return null;
+        }
 
         // Create nested result document (matches ScanResult.result field)
         Document resultDoc = new Document();
-        resultDoc.put("report", sanitizeBigIntegers(new Document(reportMap)));
+        resultDoc.put("report", Document.parse(reportJson));
         resultDoc.put("isPartial", true);
         resultDoc.put("completedProbes", completed);
         resultDoc.put("totalProbes", total);
@@ -394,36 +402,5 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             pendingPublishTask.cancel(false);
             pendingPublishTask = null;
         }
-    }
-
-    /**
-     * Recursively converts BigInteger values to Decimal128 within a Document tree so that MongoDB's
-     * default codec registry can encode the document without a BigInteger codec.
-     */
-    private static Document sanitizeBigIntegers(Document doc) {
-        Document result = new Document();
-        for (Map.Entry<String, Object> entry : doc.entrySet()) {
-            result.put(entry.getKey(), sanitizeValue(entry.getValue()));
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Object sanitizeValue(Object value) {
-        if (value instanceof BigInteger) {
-            return new Decimal128(new BigDecimal((BigInteger) value));
-        } else if (value instanceof Document) {
-            return sanitizeBigIntegers((Document) value);
-        } else if (value instanceof Map<?, ?>) {
-            Document doc = new Document((Map<String, Object>) value);
-            return sanitizeBigIntegers(doc);
-        } else if (value instanceof List<?> list) {
-            List<Object> sanitized = new ArrayList<>(list.size());
-            for (Object item : list) {
-                sanitized.add(sanitizeValue(item));
-            }
-            return sanitized;
-        }
-        return value;
     }
 }
