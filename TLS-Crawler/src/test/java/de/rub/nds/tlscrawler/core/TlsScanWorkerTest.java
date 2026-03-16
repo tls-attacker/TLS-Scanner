@@ -19,6 +19,9 @@ import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlscrawler.data.TlsScanConfig;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -291,6 +294,22 @@ public class TlsScanWorkerTest {
         } finally {
             worker.cleanupInternal();
         }
+    }
+
+    @Test
+    public void testWorkerMapperSerializesBigIntegerAsString() throws Exception {
+        TlsScanWorker worker = createWorker();
+        Field mapperField = TlsScanWorker.class.getDeclaredField("reportJsonMapper");
+        mapperField.setAccessible(true);
+        ServerReportJsonMapper mapper = (ServerReportJsonMapper) mapperField.get(worker);
+
+        // Value observed in worker logs while scanning clienttest.ssllabs.com.
+        BigInteger observedLargeValue =
+                new BigInteger(
+                        "23235777100339028574507373434737534188189874546573570036432855192765758503092839408957293810586392913395074915145388372631304509545500894205268368620243109886042646318342985032645427643221078914059961844626779845609240043230483960366203172941012033305287554568893003977421555284966569748066789990300437606269755615491939546831313531005766049307389996721809826202757265051298762923396623698974332631879654648687074788108819545935552538608212055960243589404409801008498939970653159130011011073853021358993499694192070137832671174622203054365737383150429680560081388147116798168776777134124082922813987221115677142448433");
+
+        String json = mapper.objectMapper.valueToTree(observedLargeValue).toString();
+        assertEquals('"' + observedLargeValue.toString() + '"', json);
     }
 
     @Test
