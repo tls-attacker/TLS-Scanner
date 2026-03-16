@@ -9,6 +9,7 @@
 package de.rub.nds.tlscrawler.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -69,6 +70,12 @@ public class TlsScanWorkerTest {
 
     private static TlsScanWorker createWorker() {
         TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        return new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
+    }
+
+    private static TlsScanWorker createWorkerWithPartialResultsDisabled() {
+        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        config.setPartialResultsEnabled(false);
         return new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
     }
 
@@ -337,6 +344,33 @@ public class TlsScanWorkerTest {
                     createTestDocument("probe-3"), received::add, baseTime + 200);
             assertEquals(2, received.size());
             assertEquals("probe-3", getLastProbeName(received.get(1)));
+        } finally {
+            worker.cleanupInternal();
+        }
+    }
+
+    // ---- Partial results enabled/disabled tests ----
+
+    @Test
+    public void testPartialResultsEnabledByDefault() {
+        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        assertTrue(config.isPartialResultsEnabled());
+    }
+
+    @Test
+    public void testPartialResultsCanBeDisabled() {
+        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        config.setPartialResultsEnabled(false);
+        assertFalse(config.isPartialResultsEnabled());
+    }
+
+    @Test
+    public void testDisabledPartialResultsWorkerStillInitializes() {
+        TlsScanWorker worker = createWorkerWithPartialResultsDisabled();
+        worker.initInternal();
+        try {
+            // Worker should initialize and clean up without issues even with
+            // partial results disabled
         } finally {
             worker.cleanupInternal();
         }

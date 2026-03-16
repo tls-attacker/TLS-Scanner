@@ -19,6 +19,7 @@ import java.util.List;
 
 public class TlsScanConfig extends ScanConfig {
     private StarttlsType starttlsType;
+    private boolean partialResultsEnabled = true;
     private long partialResultThrottleMs = 5000;
 
     public TlsScanConfig(
@@ -59,6 +60,14 @@ public class TlsScanConfig extends ScanConfig {
             throw new IllegalArgumentException("starttlsType cannot be null");
         }
         this.starttlsType = starttlsType;
+    }
+
+    public boolean isPartialResultsEnabled() {
+        return partialResultsEnabled;
+    }
+
+    public void setPartialResultsEnabled(boolean partialResultsEnabled) {
+        this.partialResultsEnabled = partialResultsEnabled;
     }
 
     public long getPartialResultThrottleMs() {

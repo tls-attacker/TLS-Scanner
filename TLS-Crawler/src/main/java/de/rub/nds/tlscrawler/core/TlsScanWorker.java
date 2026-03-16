@@ -160,22 +160,22 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
         }
 
-        // Create progress callback to notify the consumer with partial results
-        ProbeProgressCallback progressCallback =
-                (probe, report, completed, total) ->
-                        handleProgressUpdate(
-                                probe,
-                                report,
-                                completed,
-                                total,
-                                scanTarget,
-                                jobDescription,
-                                progressConsumer);
-
         ServerReport report;
         try (TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor)) {
-            // Set progress callback before scanning
-            scanner.setProgressCallback(progressCallback);
+            // Only set progress callback if partial results are enabled
+            if (scanConfig.isPartialResultsEnabled()) {
+                ProbeProgressCallback progressCallback =
+                        (probe, reportInProgress, completed, total) ->
+                                handleProgressUpdate(
+                                        probe,
+                                        reportInProgress,
+                                        completed,
+                                        total,
+                                        scanTarget,
+                                        jobDescription,
+                                        progressConsumer);
+                scanner.setProgressCallback(progressCallback);
+            }
 
             LOGGER.info("Started scanning '{}' ({})", scanTarget, scanConfig.getScannerDetail());
             report = scanner.scan();
