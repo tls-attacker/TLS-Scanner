@@ -41,9 +41,13 @@ These can be obtained by compiling the app yourself or by
 $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
-You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan you can use the -threads parameter (default=1).
+You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan, you can use the `-threads` parameter (default=1).
 
-In order to see more details about the Guidelines, use "-reportDetail ALL".
+In order to see more details about the Guidelines, use `-reportDetail ALL`.
+
+By default, the results are written to the console only. If you want to have machine-readable output, you can use `-outputFile output.json` to automatically write the results in a JSON file.
+
+For more details about possible parameters, you can use the `-help` flag.
 
 # Docker
 
