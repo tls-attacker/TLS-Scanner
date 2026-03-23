@@ -147,11 +147,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
         config.getClientDelegate().setSniHostname(scanTarget.getHostname());
         config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
-        if (scanConfig.getExcludedProbes() != null) {
-            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
-        }
-
-        // Set excluded probes if configured
         if (scanConfig.getExcludedProbes() != null && !scanConfig.getExcludedProbes().isEmpty()) {
             config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
             LOGGER.info(
@@ -302,11 +297,11 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
                 Document resultDoc = (Document) partialResultDoc.get("result");
                 LOGGER.debug(
-                        "Progress update throttled, scheduled for {}ms: [{}/{}] {:.1f}% - {}",
+                        "Progress update throttled, scheduled for {}ms: [{}/{}] {}% - {}",
                         delay,
                         resultDoc.get("completedProbes"),
                         resultDoc.get("totalProbes"),
-                        resultDoc.get("percentage"),
+                        String.format("%.1f", resultDoc.get("percentage")),
                         resultDoc.get("lastProbeName"));
             }
         }
@@ -371,10 +366,10 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
         Document resultDoc = (Document) partialResultDoc.get("result");
         LOGGER.debug(
-                "Progress update: [{}/{}] {:.1f}% - {}",
+                "Progress update: [{}/{}] {}% - {}",
                 resultDoc.get("completedProbes"),
                 resultDoc.get("totalProbes"),
-                resultDoc.get("percentage"),
+                String.format("%.1f", resultDoc.get("percentage")),
                 resultDoc.get("lastProbeName"));
     }
 
