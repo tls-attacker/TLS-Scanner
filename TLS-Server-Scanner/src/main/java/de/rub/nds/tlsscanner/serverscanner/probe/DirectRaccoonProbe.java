@@ -51,7 +51,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
 
     private static final int ITERATIONS_PER_HANDSHAKE = 3;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
-    private static final int ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 1;
+    private static final int ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 2;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 20;
 
     private final ScannerDetail scanDetail;
@@ -136,22 +136,16 @@ public class DirectRaccoonProbe extends TlsServerProbe {
     @Override
     protected void executeTest() {
         testResultList = new LinkedList<>();
-        Map<String, TestResult> staticDhCache = new HashMap<>();
         for (VersionSuiteListPair pair : serverSupportedSuites) {
             if (!pair.getVersion().isTLS13() && pair.getVersion() != ProtocolVersion.SSL2) {
                 for (CipherSuite suite : pair.getCipherSuiteList()) {
                     if (suite.usesDH() && CipherSuite.getImplemented().contains(suite)) {
                         boolean shouldTest = true;
                         if (!scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)) {
-                            String cacheKey = pair.getVersion().name() + "_" + suite.name();
-                            TestResult staticDhResult = staticDhCache.get(cacheKey);
-                            if (staticDhResult == null) {
-                                Config tlsConfig = configSelector.getBaseConfig();
-                                tlsConfig.setHighestProtocolVersion(pair.getVersion());
-                                tlsConfig.setDefaultClientSupportedCipherSuites(List.of(suite));
-                                staticDhResult = checkStaticDh(tlsConfig);
-                                staticDhCache.put(cacheKey, staticDhResult);
-                            }
+                            Config tlsConfig = configSelector.getBaseConfig();
+                            tlsConfig.setHighestProtocolVersion(pair.getVersion());
+                            tlsConfig.setDefaultClientSupportedCipherSuites(List.of(suite));
+                            TestResult staticDhResult = checkStaticDh(tlsConfig);
                             if (staticDhResult == TestResults.FALSE) {
                                 shouldTest = false;
                             }
@@ -189,7 +183,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
         if (informationLeakTest.isDistinctAnswers()) {
             LOGGER.debug(
                     "Found non identical answers, performing "
-                            + numberOfIterations
+                            + numberOfAddtionalIterations
                             + " additional tests");
             responseMap =
                     createVectorResponseList(
