@@ -206,7 +206,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             return null;
         }
         Document document = new Document();
-        document.put("report", report);
+        document.put("report", Document.parse(reportJsonMapper.toJsonString(report)));
         return document;
     }
 
@@ -320,13 +320,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         // Serialize ServerReport to JSON string first (preserves polymorphic type info),
         // then parse into a BSON Document. BigIntegers are serialized as strings by the
         // mapper to avoid BSON JSON parser overflow on cryptographic values.
-        String reportJson;
-        try {
-            reportJson = reportJsonMapper.objectMapper.writeValueAsString(serverReport);
-        } catch (Exception e) {
-            LOGGER.warn("Failed to serialize ServerReport to JSON", e);
-            return null;
-        }
+        String reportJson = reportJsonMapper.toJsonString(serverReport);
 
         // Create nested result document (matches ScanResult.result field)
         Document resultDoc = new Document();
