@@ -87,11 +87,11 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         if (parallelExecutor != null) {
             throw new IllegalStateException("Parallel executor already initialized");
         }
-        // Disable default URL connection caching to prevent concurrent scans from
-        // closing a shared JarFile handle (GuidelineIO.listXmlFiles uses
-        // JarURLConnection.getJarFile() which returns the cached instance).
-        // Without this, closing one scan's TlsServerScanner can cause
-        // "zip file closed" errors in concurrent scans reading guideline XML files.
+        // Temporary workaround: disable JAR URL connection caching globally to prevent
+        // concurrent scans from closing a shared JarFile handle. GuidelineIO.listXmlFiles()
+        // uses JarURLConnection.getJarFile() which returns a cached instance; closing one
+        // scan's TlsServerScanner causes "zip file closed" errors in concurrent scans.
+        // Tracked upstream: https://github.com/tls-attacker/TLS-Scanner-Development/issues/772
         URLConnection.setDefaultUseCaches("jar", false);
         parallelExecutor =
                 ParallelExecutor.create(
