@@ -44,7 +44,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
-    private final long partialResultThrottleMs;
 
     // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage.
     // BigInteger values are serialized as strings to avoid BSON JSON parser overflow
@@ -79,7 +78,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
         this.parallelConnectionThreads = parallelConnectionThreads;
-        this.partialResultThrottleMs = scanConfig.getPartialResultThrottleMs();
     }
 
     @Override
@@ -276,7 +274,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     void submitThrottledUpdate(
             Document partialResultDoc, Consumer<Document> progressConsumer, long currentTime) {
         synchronized (this) {
-            if (currentTime - lastPartialResultUpdate >= partialResultThrottleMs) {
+            if (currentTime - lastPartialResultUpdate >= scanConfig.getPartialResultThrottleMs()) {
                 // Can publish immediately
                 publishPartialResult(partialResultDoc, progressConsumer, currentTime);
             } else {
@@ -290,7 +288,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                 }
 
                 // Schedule publish after remaining throttle time
-                long delay = partialResultThrottleMs - (currentTime - lastPartialResultUpdate);
+                long delay =
+                        scanConfig.getPartialResultThrottleMs()
+                                - (currentTime - lastPartialResultUpdate);
                 pendingPublishTask =
                         throttleScheduler.schedule(
                                 this::publishPendingUpdate, delay, TimeUnit.MILLISECONDS);
