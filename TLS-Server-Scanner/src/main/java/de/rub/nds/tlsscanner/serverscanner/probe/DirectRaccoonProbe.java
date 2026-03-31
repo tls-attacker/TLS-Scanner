@@ -52,7 +52,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
     private static final int ITERATIONS_PER_HANDSHAKE = 3;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
     private static final int ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 2;
-    private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 20;
+    private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 18;
 
     private final ScannerDetail scanDetail;
     private final int numberOfIterations;
