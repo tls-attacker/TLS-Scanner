@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.crawler.constant.JobStatus;
 import de.rub.nds.crawler.core.BulkScanWorker;
+import de.rub.nds.crawler.core.ProgressThrottler;
 import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanTarget;
 import de.rub.nds.crawler.persistence.IPersistenceProvider;
@@ -25,10 +26,6 @@ import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
 import java.net.URLConnection;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,13 +35,12 @@ import org.bson.Document;
 public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    static final long DEFAULT_PARTIAL_RESULT_THROTTLE_MS = 5000; // 5 seconds
 
     /** Executor passed to TLS-Scanner. It is used to execute the States, i.e. the connections. */
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
-    private final long partialResultThrottleMs;
+    private final ProgressThrottler<Document> progressThrottler;
 
     // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage.
     // BigInteger values are serialized as strings to avoid BSON JSON parser overflow
@@ -61,13 +57,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                                 com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING));
     }
 
-    // Throttling for partial result updates
-    private long lastPartialResultUpdate = 0;
-    private ScheduledExecutorService throttleScheduler;
-    private ScheduledFuture<?> pendingPublishTask;
-    private Document pendingPartialResult;
-    private Consumer<Document> pendingProgressConsumer;
-
     public TlsScanWorker(
             String bulkScanID,
             int parallelConnectionThreads,
@@ -79,7 +68,10 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
         this.parallelConnectionThreads = parallelConnectionThreads;
-        this.partialResultThrottleMs = scanConfig.getPartialResultThrottleMs();
+        this.progressThrottler =
+                new ProgressThrottler<>(
+                        scanConfig.getPartialResultThrottleMs(),
+                        "partial-result-throttle (bulk scan " + bulkScanID + ")");
     }
 
     @Override
@@ -99,12 +91,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                         scanConfig.getReexecutions(),
                         new NamedThreadFactory(
                                 "TLS connection executor (bulk scan " + bulkScanId + ")"));
-        // Initialize throttle scheduler for delayed partial result publishing
-        throttleScheduler =
-                new ScheduledThreadPoolExecutor(
-                        1,
-                        new NamedThreadFactory(
-                                "partial-result-throttle (bulk scan " + bulkScanId + ")"));
+        progressThrottler.init();
     }
 
     @Override
@@ -114,19 +101,12 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         }
         parallelExecutor.shutdown();
         parallelExecutor = null;
-        // Shutdown throttle scheduler
-        if (throttleScheduler != null) {
-            throttleScheduler.shutdownNow();
-            throttleScheduler = null;
-        }
-        pendingPartialResult = null;
-        pendingProgressConsumer = null;
-        pendingPublishTask = null;
+        progressThrottler.shutdown();
     }
 
     @Override
     public Document scan(ScanJobDescription jobDescription, Consumer<Document> progressConsumer) {
-        resetThrottleState();
+        progressThrottler.reset();
 
         ScanTarget scanTarget = jobDescription.getScanTarget();
 
@@ -174,7 +154,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
             LOGGER.info("Started scanning '{}' ({})", scanTarget, scanConfig.getScannerDetail());
             report = scanner.scan();
-            flushPendingUpdate();
+            progressThrottler.flush();
         }
 
         // The final result (written by Worker/MongoPersistenceProvider) will overwrite
@@ -210,33 +190,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         return document;
     }
 
-    /** Resets throttle state between scans. Package-private for testing. */
-    void resetThrottleState() {
-        lastPartialResultUpdate = 0;
-        pendingPartialResult = null;
-        pendingProgressConsumer = null;
-        if (pendingPublishTask != null) {
-            pendingPublishTask.cancel(false);
-            pendingPublishTask = null;
-        }
-    }
-
     /**
-     * Handles progress updates from the scanner by creating a partial result document and notifying
-     * the progress consumer. Updates are throttled to avoid excessive overhead.
-     *
-     * <p>Throttling behavior: When an update arrives during the throttle period, it is saved as
-     * pending and scheduled to be published after the throttle period ends. If another update
-     * arrives before the scheduled publish, it replaces the pending update, ensuring the latest
-     * state is always published.
-     *
-     * @param probe The probe that just completed
-     * @param report The current scan report (partial)
-     * @param completed Number of completed probes
-     * @param total Total number of probes
-     * @param scanTarget The target being scanned
-     * @param jobDescription The job description for this scan
-     * @param progressConsumer Consumer to notify with the partial result
+     * Handles progress updates from the scanner by creating a partial result document and
+     * submitting it through the throttler.
      */
     @SuppressWarnings("rawtypes")
     private void handleProgressUpdate(
@@ -260,50 +216,16 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                             jobDescription,
                             currentTime);
 
-            submitThrottledUpdate(partialResultDoc, progressConsumer, currentTime);
+            LOGGER.debug(
+                    "Progress update: [{}/{}] {}% - {}",
+                    completed,
+                    total,
+                    String.format("%.1f", (completed * 100.0) / total),
+                    probe.getType().getName());
+
+            progressThrottler.submit(partialResultDoc, progressConsumer, currentTime);
         } catch (Exception e) {
             LOGGER.warn("Failed to process partial result", e);
-        }
-    }
-
-    /**
-     * Submits a partial result through the throttle mechanism. If enough time has elapsed since the
-     * last update, publishes immediately. Otherwise, saves as pending and schedules publication
-     * after the throttle period.
-     *
-     * <p>Package-private for testing.
-     */
-    void submitThrottledUpdate(
-            Document partialResultDoc, Consumer<Document> progressConsumer, long currentTime) {
-        synchronized (this) {
-            if (currentTime - lastPartialResultUpdate >= partialResultThrottleMs) {
-                // Can publish immediately
-                publishPartialResult(partialResultDoc, progressConsumer, currentTime);
-            } else {
-                // Throttled - save as pending and schedule publish after throttle period
-                pendingPartialResult = partialResultDoc;
-                pendingProgressConsumer = progressConsumer;
-
-                // Cancel any existing scheduled task (we have a newer update)
-                if (pendingPublishTask != null && !pendingPublishTask.isDone()) {
-                    pendingPublishTask.cancel(false);
-                }
-
-                // Schedule publish after remaining throttle time
-                long delay = partialResultThrottleMs - (currentTime - lastPartialResultUpdate);
-                pendingPublishTask =
-                        throttleScheduler.schedule(
-                                this::publishPendingUpdate, delay, TimeUnit.MILLISECONDS);
-
-                Document resultDoc = (Document) partialResultDoc.get("result");
-                LOGGER.debug(
-                        "Progress update throttled, scheduled for {}ms: [{}/{}] {}% - {}",
-                        delay,
-                        resultDoc.get("completedProbes"),
-                        resultDoc.get("totalProbes"),
-                        String.format("%.1f", resultDoc.get("percentage")),
-                        resultDoc.get("lastProbeName"));
-            }
         }
     }
 
@@ -354,48 +276,5 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         partialResultDoc.put("result", resultDoc);
 
         return partialResultDoc;
-    }
-
-    /** Publishes a partial result immediately and updates throttle state. */
-    private void publishPartialResult(
-            Document partialResultDoc, Consumer<Document> progressConsumer, long currentTime) {
-        progressConsumer.accept(partialResultDoc);
-        lastPartialResultUpdate = currentTime;
-        pendingPartialResult = null;
-        pendingProgressConsumer = null;
-
-        Document resultDoc = (Document) partialResultDoc.get("result");
-        LOGGER.debug(
-                "Progress update: [{}/{}] {}% - {}",
-                resultDoc.get("completedProbes"),
-                resultDoc.get("totalProbes"),
-                String.format("%.1f", resultDoc.get("percentage")),
-                resultDoc.get("lastProbeName"));
-    }
-
-    /** Called by scheduler to publish the pending partial result after throttle period. */
-    private synchronized void publishPendingUpdate() {
-        if (pendingPartialResult != null && pendingProgressConsumer != null) {
-            publishPartialResult(
-                    pendingPartialResult, pendingProgressConsumer, System.currentTimeMillis());
-        }
-    }
-
-    /**
-     * Flushes any pending throttled partial result update immediately. This should be called after
-     * the scan completes to ensure the last partial result is not lost when the throttle scheduler
-     * is shut down.
-     *
-     * <p>Package-private for testing.
-     */
-    synchronized void flushPendingUpdate() {
-        if (pendingPartialResult != null && pendingProgressConsumer != null) {
-            publishPartialResult(
-                    pendingPartialResult, pendingProgressConsumer, System.currentTimeMillis());
-        }
-        if (pendingPublishTask != null && !pendingPublishTask.isDone()) {
-            pendingPublishTask.cancel(false);
-            pendingPublishTask = null;
-        }
     }
 }

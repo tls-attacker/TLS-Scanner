@@ -9,6 +9,7 @@
 package de.rub.nds.tlscrawler.data;
 
 import de.rub.nds.crawler.core.BulkScanWorker;
+import de.rub.nds.crawler.core.ProgressThrottler;
 import de.rub.nds.crawler.data.ScanConfig;
 import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.config.ScannerDetail;
@@ -20,7 +21,7 @@ import java.util.List;
 public class TlsScanConfig extends ScanConfig {
     private StarttlsType starttlsType;
     private boolean partialResultsEnabled = true;
-    private long partialResultThrottleMs = 5000;
+    private long partialResultThrottleMs = ProgressThrottler.DEFAULT_THROTTLE_MS;
 
     public TlsScanConfig(
             ScannerDetail scannerDetail, int reexecutions, int timeout, StarttlsType starttlsType) {
