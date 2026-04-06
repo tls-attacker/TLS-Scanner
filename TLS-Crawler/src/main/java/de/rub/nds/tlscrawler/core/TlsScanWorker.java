@@ -10,7 +10,6 @@ package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.crawler.constant.JobStatus;
 import de.rub.nds.crawler.core.BulkScanWorker;
-import de.rub.nds.crawler.core.ProgressThrottler;
 import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanTarget;
 import de.rub.nds.crawler.persistence.IPersistenceProvider;
@@ -40,7 +39,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
-    private final ProgressThrottler<Document> progressThrottler;
 
     // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage.
     // BigInteger values are serialized as strings to avoid BSON JSON parser overflow
@@ -68,10 +66,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
         this.parallelConnectionThreads = parallelConnectionThreads;
-        this.progressThrottler =
-                new ProgressThrottler<>(
-                        scanConfig.getPartialResultThrottleMs(),
-                        "partial-result-throttle (bulk scan " + bulkScanID + ")");
     }
 
     @Override
@@ -91,7 +85,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                         scanConfig.getReexecutions(),
                         new NamedThreadFactory(
                                 "TLS connection executor (bulk scan " + bulkScanId + ")"));
-        progressThrottler.init();
     }
 
     @Override
@@ -101,13 +94,10 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         }
         parallelExecutor.shutdown();
         parallelExecutor = null;
-        progressThrottler.shutdown();
     }
 
     @Override
     public Document scan(ScanJobDescription jobDescription, Consumer<Document> progressConsumer) {
-        progressThrottler.reset();
-
         ScanTarget scanTarget = jobDescription.getScanTarget();
 
         // Ensure parallelExecutor is initialized before use
@@ -137,24 +127,20 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
         ServerReport report;
         try (TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor)) {
-            // Only set progress callback if partial results are enabled
-            if (scanConfig.isPartialResultsEnabled()) {
-                ProbeProgressCallback progressCallback =
-                        (probe, reportInProgress, completed, total) ->
-                                handleProgressUpdate(
-                                        probe,
-                                        reportInProgress,
-                                        completed,
-                                        total,
-                                        scanTarget,
-                                        jobDescription,
-                                        progressConsumer);
-                scanner.setProgressCallback(progressCallback);
-            }
+            ProbeProgressCallback progressCallback =
+                    (probe, reportInProgress, completed, total) ->
+                            handleProgressUpdate(
+                                    probe,
+                                    reportInProgress,
+                                    completed,
+                                    total,
+                                    scanTarget,
+                                    jobDescription,
+                                    progressConsumer);
+            scanner.setProgressCallback(progressCallback);
 
             LOGGER.info("Started scanning '{}' ({})", scanTarget, scanConfig.getScannerDetail());
             report = scanner.scan();
-            progressThrottler.flush();
         }
 
         // The final result (written by Worker/MongoPersistenceProvider) will overwrite
@@ -191,8 +177,8 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     }
 
     /**
-     * Handles progress updates from the scanner by creating a partial result document and
-     * submitting it through the throttler.
+     * Handles progress updates from the scanner by creating a partial result document and passing
+     * it to the progress consumer. Throttling is handled transparently by BulkScanWorker.
      */
     @SuppressWarnings("rawtypes")
     private void handleProgressUpdate(
@@ -203,8 +189,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             ScanTarget scanTarget,
             ScanJobDescription jobDescription,
             Consumer<Document> progressConsumer) {
-        long currentTime = System.currentTimeMillis();
-
         try {
             Document partialResultDoc =
                     buildPartialResultDocument(
@@ -214,7 +198,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                             probe,
                             scanTarget,
                             jobDescription,
-                            currentTime);
+                            System.currentTimeMillis());
 
             LOGGER.debug(
                     "Progress update: [{}/{}] {}% - {}",
@@ -223,7 +207,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     String.format("%.1f", (completed * 100.0) / total),
                     probe.getType().getName());
 
-            progressThrottler.submit(partialResultDoc, progressConsumer, currentTime);
+            progressConsumer.accept(partialResultDoc);
         } catch (Exception e) {
             LOGGER.warn("Failed to process partial result", e);
         }

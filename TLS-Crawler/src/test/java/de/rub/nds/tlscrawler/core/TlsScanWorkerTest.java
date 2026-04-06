@@ -9,9 +9,7 @@
 package de.rub.nds.tlscrawler.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.rub.nds.crawler.data.BulkScan;
 import de.rub.nds.crawler.data.ScanJobDescription;
@@ -68,12 +66,6 @@ public class TlsScanWorkerTest {
         return new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
     }
 
-    private static TlsScanWorker createWorkerWithPartialResultsDisabled() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
-        config.setPartialResultsEnabled(false);
-        return new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
-    }
-
     // ---- Init / cleanup tests ----
 
     @Test
@@ -106,32 +98,5 @@ public class TlsScanWorkerTest {
 
         String json = mapper.objectMapper.valueToTree(observedLargeValue).toString();
         assertEquals('"' + observedLargeValue.toString() + '"', json);
-    }
-
-    // ---- Partial results enabled/disabled tests ----
-
-    @Test
-    public void testPartialResultsEnabledByDefault() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
-        assertTrue(config.isPartialResultsEnabled());
-    }
-
-    @Test
-    public void testPartialResultsCanBeDisabled() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
-        config.setPartialResultsEnabled(false);
-        assertFalse(config.isPartialResultsEnabled());
-    }
-
-    @Test
-    public void testDisabledPartialResultsWorkerStillInitializes() {
-        TlsScanWorker worker = createWorkerWithPartialResultsDisabled();
-        worker.initInternal();
-        try {
-            // Worker should initialize and clean up without issues even with
-            // partial results disabled
-        } finally {
-            worker.cleanupInternal();
-        }
     }
 }
