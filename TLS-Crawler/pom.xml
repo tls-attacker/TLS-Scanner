@@ -93,22 +93,22 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>crawler-core</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>6.3.0</version>
+            <version>6.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.scanner</groupId>
             <artifactId>tls-scanner-core</artifactId>
-            <version>7.3.1</version>
+            <version>7.2.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.scanner</groupId>
             <artifactId>tls-server-scanner</artifactId>
-            <version>7.3.1</version>
+            <version>7.2.3-SNAPSHOT</version>
         </dependency>
 
         <!-- Test dependencies -->
