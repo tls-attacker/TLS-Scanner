@@ -125,20 +125,20 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
         }
 
-        ServerReport report;
-        try (TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor)) {
-            ProbeProgressCallback progressCallback =
-                    (probe, reportInProgress, completed, total) ->
-                            handleProgressUpdate(
-                                    probe,
-                                    reportInProgress,
-                                    completed,
-                                    total,
-                                    scanTarget,
-                                    jobDescription,
-                                    progressConsumer);
-            scanner.setProgressCallback(progressCallback);
+        ProbeProgressCallback progressCallback =
+                (probe, reportInProgress, completed, total) ->
+                        handleProgressUpdate(
+                                probe,
+                                reportInProgress,
+                                completed,
+                                total,
+                                scanTarget,
+                                jobDescription,
+                                progressConsumer);
 
+        ServerReport report;
+        try (TlsServerScanner scanner =
+                new TlsServerScanner(config, parallelExecutor, progressCallback)) {
             LOGGER.info("Started scanning '{}' ({})", scanTarget, scanConfig.getScannerDetail());
             report = scanner.scan();
         }
