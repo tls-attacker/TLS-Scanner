@@ -35,6 +35,26 @@ public class TlsScanConfigTest {
         assertEquals(scannerDetail, config.getScannerDetail());
         assertEquals(reexecutions, config.getReexecutions());
         assertEquals(timeout, config.getTimeout());
+        assertEquals(1, config.getParallelProbes());
+        assertEquals(starttlsType, config.getStarttlsType());
+    }
+
+    @Test
+    public void testTlsScanConfigInitializationWithParallelProbes() {
+        ScannerDetail scannerDetail = ScannerDetail.NORMAL;
+        int reexecutions = 2;
+        int timeout = 1000;
+        int parallelProbes = 3;
+        StarttlsType starttlsType = StarttlsType.NONE;
+
+        TlsScanConfig config =
+                new TlsScanConfig(
+                        scannerDetail, reexecutions, timeout, parallelProbes, starttlsType);
+
+        assertEquals(scannerDetail, config.getScannerDetail());
+        assertEquals(reexecutions, config.getReexecutions());
+        assertEquals(timeout, config.getTimeout());
+        assertEquals(parallelProbes, config.getParallelProbes());
         assertEquals(starttlsType, config.getStarttlsType());
     }
 
@@ -64,6 +84,7 @@ public class TlsScanConfigTest {
         assertEquals(scannerDetail, config.getScannerDetail());
         assertEquals(reexecutions, config.getReexecutions());
         assertEquals(timeout, config.getTimeout());
+        assertEquals(1, config.getParallelProbes());
         assertEquals(starttlsType, config.getStarttlsType());
         assertNotNull(config.getExcludedProbes());
         assertEquals(2, config.getExcludedProbes().size());
@@ -78,6 +99,22 @@ public class TlsScanConfigTest {
         TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
 
         assertNull(config.getExcludedProbes());
+    }
+
+    @Test
+    public void testTlsScanConfigWithParallelProbesAndExcludedProbes() {
+        TlsScanConfig config =
+                new TlsScanConfig(
+                        ScannerDetail.DETAILED,
+                        3,
+                        2000,
+                        3,
+                        StarttlsType.IMAP,
+                        Arrays.asList(TlsProbeType.CIPHER_SUITE));
+
+        assertEquals(3, config.getParallelProbes());
+        assertNotNull(config.getExcludedProbes());
+        assertEquals(1, config.getExcludedProbes().size());
     }
 
     @Test
