@@ -106,7 +106,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
         ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
         config.getExecutorConfig().setScanDetail(scanConfig.getScannerDetail());
-        config.getExecutorConfig().setParallelProbes(getSafeParallelProbes());
+        config.getExecutorConfig().setParallelProbes(scanConfig.getParallelProbes());
         config.setTimeout(scanConfig.getTimeout());
         config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
         config.getClientDelegate().setSniHostname(scanTarget.getHostname());
@@ -115,11 +115,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
         }
         return config;
-    }
-
-    int getSafeParallelProbes() {
-        int configuredParallelProbes = scanConfig.getParallelProbes();
-        return configuredParallelProbes <= 0 ? 1 : configuredParallelProbes;
     }
 
     private Document createDocumentFromSiteReport(ServerReport report) {

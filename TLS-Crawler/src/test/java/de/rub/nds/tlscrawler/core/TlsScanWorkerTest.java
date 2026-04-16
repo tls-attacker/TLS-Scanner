@@ -27,7 +27,8 @@ public class TlsScanWorkerTest {
 
     @Test
     public void testCleanupWithoutInit() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
         TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
 
         // Should throw IllegalStateException since parallelExecutor is null
@@ -36,7 +37,8 @@ public class TlsScanWorkerTest {
 
     @Test
     public void testInitAfterInit() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
         TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
 
         // Initialize once
@@ -52,7 +54,7 @@ public class TlsScanWorkerTest {
     @Test
     public void testCreateServerScannerConfigPropagatesParallelProbes() {
         TlsScanConfig config =
-                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 4, StarttlsType.NONE);
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 4, StarttlsType.NONE, null);
         TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
 
         ScanTarget scanTarget = createScanTarget();
@@ -65,15 +67,15 @@ public class TlsScanWorkerTest {
     }
 
     @Test
-    public void testCreateServerScannerConfigUsesFallbackParallelProbes() {
+    public void testCreateServerScannerConfigPropagatesZeroParallelProbes() {
         TlsScanConfig config =
-                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 0, StarttlsType.NONE);
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 0, StarttlsType.NONE, null);
         TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
 
         ScanTarget scanTarget = createScanTarget();
 
         assertEquals(
-                1,
+                0,
                 worker.createServerScannerConfig(scanTarget)
                         .getExecutorConfig()
                         .getParallelProbes());

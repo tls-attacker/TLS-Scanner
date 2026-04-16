@@ -21,29 +21,6 @@ public class TlsScanConfig extends ScanConfig {
     private StarttlsType starttlsType;
 
     public TlsScanConfig(
-            ScannerDetail scannerDetail, int reexecutions, int timeout, StarttlsType starttlsType) {
-        this(scannerDetail, reexecutions, timeout, 1, starttlsType, null);
-    }
-
-    public TlsScanConfig(
-            ScannerDetail scannerDetail,
-            int reexecutions,
-            int timeout,
-            int parallelProbes,
-            StarttlsType starttlsType) {
-        this(scannerDetail, reexecutions, timeout, parallelProbes, starttlsType, null);
-    }
-
-    public TlsScanConfig(
-            ScannerDetail scannerDetail,
-            int reexecutions,
-            int timeout,
-            StarttlsType starttlsType,
-            List<ProbeType> excludedProbes) {
-        this(scannerDetail, reexecutions, timeout, 1, starttlsType, excludedProbes);
-    }
-
-    public TlsScanConfig(
             ScannerDetail scannerDetail,
             int reexecutions,
             int timeout,
