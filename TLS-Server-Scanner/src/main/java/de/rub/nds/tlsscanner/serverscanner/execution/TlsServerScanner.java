@@ -9,6 +9,7 @@
 package de.rub.nds.tlsscanner.serverscanner.execution;
 
 import de.rub.nds.scanner.core.afterprobe.AfterProbe;
+import de.rub.nds.scanner.core.execution.ProbeProgressCallback;
 import de.rub.nds.scanner.core.execution.Scanner;
 import de.rub.nds.scanner.core.guideline.Guideline;
 import de.rub.nds.scanner.core.guideline.GuidelineIO;
@@ -84,7 +85,20 @@ public final class TlsServerScanner
      * @param config the server scanner configuration to use
      */
     public TlsServerScanner(ServerScannerConfig config) {
-        super(config.getExecutorConfig());
+        this(config, (ProbeProgressCallback<ServerReport, State>) null);
+    }
+
+    /**
+     * Constructs a new TlsServerScanner with the specified configuration and progress callback.
+     * Creates a new ParallelExecutor for executing probes.
+     *
+     * @param config the server scanner configuration to use
+     * @param progressCallback the callback to invoke on probe completion, or null for no callbacks
+     */
+    public TlsServerScanner(
+            ServerScannerConfig config,
+            ProbeProgressCallback<ServerReport, State> progressCallback) {
+        super(config.getExecutorConfig(), progressCallback);
         this.config = config;
         closeAfterFinishParallel = true;
         parallelExecutor =
@@ -104,7 +118,22 @@ public final class TlsServerScanner
      * @param parallelExecutor the parallel executor to use for probe execution
      */
     public TlsServerScanner(ServerScannerConfig config, ParallelExecutor parallelExecutor) {
-        super(config.getExecutorConfig());
+        this(config, parallelExecutor, (ProbeProgressCallback<ServerReport, State>) null);
+    }
+
+    /**
+     * Constructs a new TlsServerScanner with the specified configuration, parallel executor, and
+     * progress callback. The parallel executor will not be shut down when the scanner is closed.
+     *
+     * @param config the server scanner configuration to use
+     * @param parallelExecutor the parallel executor to use for probe execution
+     * @param progressCallback the callback to invoke on probe completion, or null for no callbacks
+     */
+    public TlsServerScanner(
+            ServerScannerConfig config,
+            ParallelExecutor parallelExecutor,
+            ProbeProgressCallback<ServerReport, State> progressCallback) {
+        super(config.getExecutorConfig(), progressCallback);
         this.config = config;
         this.configSelector = new ConfigSelector(config, parallelExecutor);
         this.parallelExecutor = parallelExecutor;
@@ -126,7 +155,26 @@ public final class TlsServerScanner
             ParallelExecutor parallelExecutor,
             List<TlsServerProbe> probeList,
             List<AfterProbe<ServerReport>> afterList) {
-        super(config.getExecutorConfig(), probeList, afterList);
+        this(config, parallelExecutor, probeList, afterList, null);
+    }
+
+    /**
+     * Constructs a new TlsServerScanner with custom probe and after-probe lists and a progress
+     * callback. The parallel executor will not be shut down when the scanner is closed.
+     *
+     * @param config the server scanner configuration to use
+     * @param parallelExecutor the parallel executor to use for probe execution
+     * @param probeList the list of probes to execute
+     * @param afterList the list of after-probes to execute
+     * @param progressCallback the callback to invoke on probe completion, or null for no callbacks
+     */
+    public TlsServerScanner(
+            ServerScannerConfig config,
+            ParallelExecutor parallelExecutor,
+            List<TlsServerProbe> probeList,
+            List<AfterProbe<ServerReport>> afterList,
+            ProbeProgressCallback<ServerReport, State> progressCallback) {
+        super(config.getExecutorConfig(), probeList, afterList, progressCallback);
         this.parallelExecutor = parallelExecutor;
         this.config = config;
         this.configSelector = new ConfigSelector(config, parallelExecutor);
