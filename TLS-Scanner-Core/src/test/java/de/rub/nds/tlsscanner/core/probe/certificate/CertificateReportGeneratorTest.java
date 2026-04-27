@@ -15,8 +15,9 @@ import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.filesystem.CertificateIo;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.X509Certificate;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,22 @@ import org.junit.jupiter.api.Test;
 
 class CertificateReportGeneratorTest {
 
-    private static final String EC_CERT_PATH = "certificates/ecrootv3.pem";
+    private static final String EC_CERT_PEM =
+            """
+            -----BEGIN CERTIFICATE-----
+            MIIB+TCCAX2gAwIBAgIBAzALBgcqhkjOPQQBBQAwQzELMAkGA1UEBhMCREUxDDAK
+            BgNVBAoMA1JVQjEmMCQGA1UECwwdVExTLVNjYW5uZXIgQ0NBIEVDIFJPT1QtQ0Eg
+            djMwHhcNMTkxMjEyMDAwMDAwWhcNMjAxMjE5MDAwMDAwWjBDMQswCQYDVQQGEwJE
+            RTEMMAoGA1UECgwDUlVCMSYwJAYDVQQLDB1UTFMtU2Nhbm5lciBDQ0EgRUMgUk9P
+            VC1DQSB2MzB2MBAGByqGSM49AgEGBSuBBAAiA2IABLTerq2BEf6vMtd+0TDlRRX3
+            Zd5g7rkfVEh14ruE+7viaX3GftqvYADqYfQJ+w039kDypJjaF/nxdF9MXFEtxqoi
+            a4hBUPPpNG8pZ4x5esCdceXrSfCJu2EQ783CvaY+FaNEMEIwCgYDVR0OBAMEAQEw
+            DwYDVR0jAQEABAUwA4ABATAPBgNVHQ8BAf8EBQMDBwQAMBIGA1UdEwEB/wQIMAYB
+            Af8CAQUwCwYHKoZIzj0EAQUAA2kAMGYCMQCH/EVdv5XufeWKBgggQoRkmGxuT7gl
+            RICHwsTciIzE5YgjoL36wEHNET7m9YDyTJcCMQDE1KyPbkl27jrYWFaDHBIVqVXz
+            /JBphRdLImHpK5dCF1MrwW5FEhMvo1/z3J549cY=
+            -----END CERTIFICATE-----
+            """;
 
     @BeforeEach
     void setUp() {
@@ -33,11 +49,8 @@ class CertificateReportGeneratorTest {
 
     @Test
     void generateReport_ecCertificate_setsNamedCurve() throws IOException {
-        InputStream certStream =
-                CertificateReportGeneratorTest.class
-                        .getClassLoader()
-                        .getResourceAsStream(EC_CERT_PATH);
-        assertNotNull(certStream, "EC certificate test resource not found: " + EC_CERT_PATH);
+        ByteArrayInputStream certStream =
+                new ByteArrayInputStream(EC_CERT_PEM.getBytes(StandardCharsets.US_ASCII));
 
         X509CertificateChain chain = CertificateIo.readPemChain(certStream);
         assertNotNull(chain, "Certificate chain should not be null");
