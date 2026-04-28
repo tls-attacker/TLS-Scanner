@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe;
 
+import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
@@ -46,6 +47,11 @@ public class DirectRaccoonProbe extends TlsServerProbe {
 
     private static final int ITERATIONS_PER_HANDSHAKE = 3;
     private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE = 97;
+    private static final int ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 2;
+    private static final int ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE = 18;
+
+    private final int numberOfIterations;
+    private final int numberOfAdditionalIterations;
 
     private final Random random = new Random();
 
@@ -57,6 +63,16 @@ public class DirectRaccoonProbe extends TlsServerProbe {
 
     public DirectRaccoonProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.DIRECT_RACCOON, configSelector);
+        ScannerDetail scanDetail =
+                configSelector.getScannerConfig().getExecutorConfig().getScanDetail();
+        numberOfIterations =
+                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                        ? ITERATIONS_PER_HANDSHAKE
+                        : ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE;
+        numberOfAdditionalIterations =
+                scanDetail.isGreaterEqualTo(ScannerDetail.NORMAL)
+                        ? ADDITIONAL_ITERATIONS_PER_HANDSHAKE
+                        : ADDITIONAL_ITERATIONS_PER_HANDSHAKE_IN_QUICK_MODE;
         register(
                 TlsAnalyzedProperty.VULNERABLE_TO_DIRECT_RACCOON,
                 TlsAnalyzedProperty.DIRECT_RACCOON_TEST_RESULT);
@@ -90,7 +106,7 @@ public class DirectRaccoonProbe extends TlsServerProbe {
             ProtocolVersion version, CipherSuite suite, DirectRaccoonWorkflowType workflowType) {
 
         List<VectorResponse> responseMap =
-                createVectorResponseList(version, suite, workflowType, ITERATIONS_PER_HANDSHAKE);
+                createVectorResponseList(version, suite, workflowType, numberOfIterations);
         InformationLeakTest<DirectRaccoonOracleTestInfo> informationLeakTest =
                 new InformationLeakTest<>(
                         new DirectRaccoonOracleTestInfo(suite, version, workflowType), responseMap);
@@ -98,11 +114,11 @@ public class DirectRaccoonProbe extends TlsServerProbe {
         if (informationLeakTest.isDistinctAnswers()) {
             LOGGER.debug(
                     "Found non identical answers, performing "
-                            + ITERATIONS_PER_HANDSHAKE
+                            + numberOfAdditionalIterations
                             + " additional tests");
             responseMap =
                     createVectorResponseList(
-                            version, suite, workflowType, ADDITIONAL_ITERATIONS_PER_HANDSHAKE);
+                            version, suite, workflowType, numberOfAdditionalIterations);
             informationLeakTest.extendTestWithVectorResponses(responseMap);
         }
         return informationLeakTest;
