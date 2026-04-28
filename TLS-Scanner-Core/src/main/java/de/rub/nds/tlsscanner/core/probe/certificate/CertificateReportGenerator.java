@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.core.probe.certificate;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.roca.RocaBrokenKey;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
+import de.rub.nds.x509attacker.constants.X509NamedCurve;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.Extension;
 import de.rub.nds.x509attacker.x509.model.Extensions;
@@ -59,6 +60,7 @@ public class CertificateReportGenerator {
         setWeakDebianKey(report, cert);
         setIssuer(report, cert);
         setPublicKeyType(report, cert);
+        setNamedCurve(report, cert);
         setSignatureAlgorithm(report, cert);
         setHashAlgorithm(report, cert);
         setX509SignatureAlgorithm(cert, report);
@@ -98,6 +100,12 @@ public class CertificateReportGenerator {
 
     private static void setPublicKeyType(CertificateReport report, X509Certificate cert) {
         report.setPublicKeyType(cert.getCertificateKeyType());
+    }
+
+    private static void setNamedCurve(CertificateReport report, X509Certificate cert) {
+        if (cert.getEllipticCurve() != null) {
+            report.setNamedCurve(X509NamedCurve.getX509NamedCurve(cert.getEllipticCurve()));
+        }
     }
 
     private static void setSignatureAlgorithmOid(X509Certificate cert, CertificateReport report) {
