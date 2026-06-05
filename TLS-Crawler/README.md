@@ -21,7 +21,7 @@ Additionally, for distributing the work and persisting results two more componen
 
 Controller
 
-        java -jar tls-crawler.jar controller -tranco 1000 -denylist resources/denylist.txt -portToBeScanned 443 -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672 -scanName scanResults -monitorScan
+        java -jar tls-crawler.jar controller -tranco 1000 -denylist resources/denylist.txt -portToBeScanned 443 -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin -rabbitMqHost rabbitmq -rabbitMqPort 5672 -scanName scanResults -monitorScan -parallelProbes 1 
 
 Worker
 
@@ -33,6 +33,7 @@ Scanner specific Configuration:
 - `-portToBeScanned` the port that should be scanned
 - `-timeout` the timeout to use inside the TLS-Scanner
 - `-reexecutions` the number of reexecutions to use in the TLS-Scanner
+- `-parallelProbes` number of TLS-Scanner probes that may run in parallel per scan target (default: 1) WARNING: For large scale scans, this should be kept at 1 to avoid excessive resource consumption and potential instability.
 - `-starttls` which start tls protocol should be used (required when scanning email servers)
 - `-scanDetail` detail for the scanner (ALL, DETAILED, NORMAL, QUICK)
 

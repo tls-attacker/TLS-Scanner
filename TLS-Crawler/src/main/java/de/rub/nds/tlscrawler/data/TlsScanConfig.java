@@ -10,6 +10,7 @@ package de.rub.nds.tlscrawler.data;
 
 import de.rub.nds.crawler.core.BulkScanWorker;
 import de.rub.nds.crawler.data.ScanConfig;
+import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
@@ -20,24 +21,28 @@ public class TlsScanConfig extends ScanConfig {
     private StarttlsType starttlsType;
 
     public TlsScanConfig(
-            ScannerDetail scannerDetail, int reexecutions, int timeout, StarttlsType starttlsType) {
-        this(scannerDetail, reexecutions, timeout, starttlsType, null);
-    }
-
-    public TlsScanConfig(
             ScannerDetail scannerDetail,
             int reexecutions,
             int timeout,
+            int parallelProbes,
             StarttlsType starttlsType,
             List<ProbeType> excludedProbes) {
-        super(scannerDetail, reexecutions, timeout, excludedProbes);
+        super(scannerDetail, reexecutions, timeout, parallelProbes, excludedProbes);
         this.starttlsType = starttlsType;
     }
 
     @Override
     public BulkScanWorker<TlsScanConfig> createWorker(
-            String bulkScanID, int parallelConnectionThreads, int parallelScanThreads) {
-        return new TlsScanWorker(bulkScanID, parallelConnectionThreads, this, parallelScanThreads);
+            String bulkScanID,
+            int parallelConnectionThreads,
+            int parallelScanThreads,
+            IPersistenceProvider persistenceProvider) {
+        return new TlsScanWorker(
+                bulkScanID,
+                parallelConnectionThreads,
+                this,
+                parallelScanThreads,
+                persistenceProvider);
     }
 
     public StarttlsType getStarttlsType() {
