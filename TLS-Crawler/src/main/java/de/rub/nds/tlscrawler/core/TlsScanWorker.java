@@ -9,7 +9,9 @@
 package de.rub.nds.tlscrawler.core;
 
 import de.rub.nds.crawler.core.BulkScanWorker;
+import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanTarget;
+import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.execution.NamedThreadFactory;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -17,6 +19,7 @@ import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -35,8 +38,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             String bulkScanID,
             int parallelConnectionThreads,
             TlsScanConfig scanConfig,
-            int parallelScanThreads) {
-        super(bulkScanID, scanConfig, parallelScanThreads);
+            int parallelScanThreads,
+            IPersistenceProvider persistenceProvider) {
+        super(bulkScanID, scanConfig, parallelScanThreads, persistenceProvider);
         if (parallelConnectionThreads <= 0) {
             throw new IllegalArgumentException("parallelConnectionThreads must be positive");
         }
@@ -69,7 +73,8 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     }
 
     @Override
-    public Document scan(ScanTarget scanTarget) {
+    public Document scan(ScanJobDescription jobDescription, Consumer<Document> progressConsumer) {
+        ScanTarget scanTarget = jobDescription.getScanTarget();
         // Ensure parallelExecutor is initialized before use
         synchronized (this) {
             if (parallelExecutor == null) {
@@ -78,18 +83,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             }
         }
 
-        GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setQuiet(true);
-
-        ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
-        config.getExecutorConfig().setScanDetail(scanConfig.getScannerDetail());
-        config.setTimeout(scanConfig.getTimeout());
-        config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
-        config.getClientDelegate().setSniHostname(scanTarget.getHostname());
-        config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
-        if (scanConfig.getExcludedProbes() != null) {
-            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
-        }
+        ServerScannerConfig config = createServerScannerConfig(scanTarget);
 
         ServerReport report;
         try (TlsServerScanner scanner = new TlsServerScanner(config, parallelExecutor)) {
@@ -104,6 +98,23 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                 scanDurationSeconds,
                 report.getServerIsAlive());
         return createDocumentFromSiteReport(report);
+    }
+
+    ServerScannerConfig createServerScannerConfig(ScanTarget scanTarget) {
+        GeneralDelegate generalDelegate = new GeneralDelegate();
+        generalDelegate.setQuiet(true);
+
+        ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
+        config.getExecutorConfig().setScanDetail(scanConfig.getScannerDetail());
+        config.getExecutorConfig().setParallelProbes(scanConfig.getParallelProbes());
+        config.setTimeout(scanConfig.getTimeout());
+        config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
+        config.getClientDelegate().setSniHostname(scanTarget.getHostname());
+        config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
+        if (scanConfig.getExcludedProbes() != null) {
+            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
+        }
+        return config;
     }
 
     private Document createDocumentFromSiteReport(ServerReport report) {

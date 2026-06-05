@@ -27,20 +27,24 @@ public class TlsScanConfigTest {
         ScannerDetail scannerDetail = ScannerDetail.NORMAL;
         int reexecutions = 2;
         int timeout = 1000;
+        int parallelProbes = 1;
         StarttlsType starttlsType = StarttlsType.NONE;
 
         TlsScanConfig config =
-                new TlsScanConfig(scannerDetail, reexecutions, timeout, starttlsType);
+                new TlsScanConfig(
+                        scannerDetail, reexecutions, timeout, parallelProbes, starttlsType, null);
 
         assertEquals(scannerDetail, config.getScannerDetail());
         assertEquals(reexecutions, config.getReexecutions());
         assertEquals(timeout, config.getTimeout());
+        assertEquals(parallelProbes, config.getParallelProbes());
         assertEquals(starttlsType, config.getStarttlsType());
     }
 
     @Test
     public void testStarttlsTypeSetter() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
 
         assertEquals(StarttlsType.NONE, config.getStarttlsType());
 
@@ -59,11 +63,12 @@ public class TlsScanConfigTest {
 
         TlsScanConfig config =
                 new TlsScanConfig(
-                        scannerDetail, reexecutions, timeout, starttlsType, excludedProbes);
+                        scannerDetail, reexecutions, timeout, 1, starttlsType, excludedProbes);
 
         assertEquals(scannerDetail, config.getScannerDetail());
         assertEquals(reexecutions, config.getReexecutions());
         assertEquals(timeout, config.getTimeout());
+        assertEquals(1, config.getParallelProbes());
         assertEquals(starttlsType, config.getStarttlsType());
         assertNotNull(config.getExcludedProbes());
         assertEquals(2, config.getExcludedProbes().size());
@@ -75,14 +80,16 @@ public class TlsScanConfigTest {
 
     @Test
     public void testTlsScanConfigWithoutExcludedProbes() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
 
         assertNull(config.getExcludedProbes());
     }
 
     @Test
     public void testExcludedProbesSetterOnTlsScanConfig() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
         assertNull(config.getExcludedProbes());
 
         List<ProbeType> excludedProbes =
