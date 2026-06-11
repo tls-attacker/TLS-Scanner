@@ -69,8 +69,8 @@ public class BasicProbe extends TlsClientProbe {
         trace.addTlsAction(new ReceiveAction(new ClientHelloMessage()));
         State state = new State(config, trace);
         executeState(state);
-        LOGGER.info("Client connected");
         if (state.getWorkflowTrace().executedAsPlanned()) {
+            LOGGER.info("Client connected");
             TlsContext traceContext = state.getTlsContext();
             clientAdvertisedCipherSuites = traceContext.getClientSupportedCipherSuites();
             clientAdvertisedCompressions = traceContext.getClientSupportedCompressions();
@@ -87,6 +87,10 @@ public class BasicProbe extends TlsClientProbe {
                             WorkflowTraceResultUtil.getFirstReceivedMessage(
                                     state.getWorkflowTrace(), HandshakeMessageType.CLIENT_HELLO);
             clientKeyShareNamedGroupsList = getKeyShareGroups(receivedClientHello);
+        } else {
+            throw new RuntimeException(
+                    "Basic probe execution failed! WorkflowTrace did not execute as planned. Details: "
+                            + state.getWorkflowTrace());
         }
     }
 
