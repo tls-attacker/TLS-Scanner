@@ -43,9 +43,9 @@ $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 
 ## Important Parameters
 
-You must specify a host you want to scan with the -connect parameter. 
+You must specify a host you want to scan with the -connect parameter.
 
-If you want to improve the performance of the scan, you can use the `-threads` parameter to increase the number of used threads. 
+If you want to improve the performance of the scan, you can use the `-threads` parameter to increase the number of used threads.
 
 Another important parameter for performance reasons is the `-scanDetail` parameter, which can be used to configure how detailed you want to scan. Possible values ranging from fast to very detailed are: QUICK, NORMAL, DETAILED, ALL.
 
