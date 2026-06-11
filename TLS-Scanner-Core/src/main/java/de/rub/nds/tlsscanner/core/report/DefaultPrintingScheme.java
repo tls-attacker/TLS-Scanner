@@ -37,7 +37,7 @@ public class DefaultPrintingScheme {
         textEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test");
         textEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
         textEncodingMap.put(TestResults.FALSE, "false");
-        textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        textEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet (WIP)");
         textEncodingMap.put(TestResults.TIMEOUT, "timeout");
         textEncodingMap.put(TestResults.TRUE, "true");
         textEncodingMap.put(TestResults.UNCERTAIN, "uncertain");
@@ -59,7 +59,7 @@ public class DefaultPrintingScheme {
         attackEncodingMap.put(TestResults.COULD_NOT_TEST, "could not test (not vulnerable)");
         attackEncodingMap.put(TestResults.ERROR_DURING_TEST, "error");
         attackEncodingMap.put(TestResults.FALSE, "not vulnerable");
-        attackEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        attackEncodingMap.put(TestResults.NOT_TESTED_YET, "not tested yet (WIP)");
         attackEncodingMap.put(TestResults.TIMEOUT, "timeout");
         attackEncodingMap.put(TestResults.TRUE, "vulnerable");
         attackEncodingMap.put(TestResults.UNCERTAIN, "uncertain - requires manual testing");
@@ -69,7 +69,7 @@ public class DefaultPrintingScheme {
         freshnessMap.put(TestResults.COULD_NOT_TEST, "could not test (no)");
         freshnessMap.put(TestResults.ERROR_DURING_TEST, "error");
         freshnessMap.put(TestResults.FALSE, "false");
-        freshnessMap.put(TestResults.NOT_TESTED_YET, "not tested yet");
+        freshnessMap.put(TestResults.NOT_TESTED_YET, "not tested yet (WIP)");
         freshnessMap.put(TestResults.TIMEOUT, "timeout");
         freshnessMap.put(TestResults.TRUE, "true");
         freshnessMap.put(TestResults.UNCERTAIN, "uncertain - requires manual testing");
