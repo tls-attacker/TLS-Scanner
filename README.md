@@ -144,7 +144,7 @@ If you use Windows or don't want colored text.
 Default: false
 
 -outputFile
-Specify a file to write the site report in JSON to
+Specify a file to write the site report in JSON to.
 
 -parallelProbes
 Defines the number of threads responsible for different probes. If set to 1, only one specific probe can be run in time.
@@ -161,8 +161,8 @@ Default: 1800000
 
 -quic
 Scan the QUIC protocol.
-
 Default: false
+
 -quiet
 No output (sets logLevel to NONE)
 Default: false
