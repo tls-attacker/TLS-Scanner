@@ -40,7 +40,9 @@ public class Main {
             // Cmd was parsable
             try (TlsClientScanner scanner = new TlsClientScanner(config)) {
                 long time = System.currentTimeMillis();
-                LOGGER.info("Performing Scan, this may take some time...");
+                LOGGER.info(
+                        "Performing scan with scan detail set to "
+                                + config.getExecutorConfig().getScanDetail());
                 ClientReport report = scanner.scan();
 
                 // TODO: Implement ClientReportPrinter and use them.
