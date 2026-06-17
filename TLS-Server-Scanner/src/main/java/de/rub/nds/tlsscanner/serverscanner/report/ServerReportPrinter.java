@@ -162,6 +162,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         appendProtocolVersions(builder);
         appendCipherSuites(builder);
+        appendClientAuth(builder);
         appendExtensions(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
@@ -198,6 +199,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendMissingProbesRequirements(builder);
 
         return builder.toString();
+    }
+
+    private void appendClientAuth(StringBuilder builder) {
+        prettyAppendHeading(builder, "Client Authentication");
+
+        prettyAppend(builder, "Supported", report.getCcaSupported());
+        prettyAppend(builder, "Required", report.getCcaRequired());
     }
 
     private void appendMissingProbesRequirements(StringBuilder builder) {
