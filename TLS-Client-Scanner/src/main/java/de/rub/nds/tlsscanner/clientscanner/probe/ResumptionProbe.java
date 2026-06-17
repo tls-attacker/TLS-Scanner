@@ -67,11 +67,11 @@ public class ResumptionProbe extends TlsClientProbe {
         supportsDtlsCookieExchangeInResumption =
                 scannerConfig.getDtlsDelegate().isDTLS()
                         ? getSupportsDtlsCookieExchangeInIdResumption()
-                        : TestResults.NOT_TESTED_YET;
+                        : TestResults.COULD_NOT_TEST;
         supportsDtlsCookieExchangeInSessionTicketResumption =
                 scannerConfig.getDtlsDelegate().isDTLS()
                         ? getSupportsDtlsCookieExchangeInTicketResumption()
-                        : TestResults.NOT_TESTED_YET;
+                        : TestResults.COULD_NOT_TEST;
         supportsResumption = getSupportsIdResumption();
         supportsSessionTicketResumption = getSupportsTicketResumption();
 

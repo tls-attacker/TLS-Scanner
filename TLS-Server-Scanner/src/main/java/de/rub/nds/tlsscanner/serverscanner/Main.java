@@ -41,7 +41,9 @@ public class Main {
             // Cmd was parsable
             try (TlsServerScanner scanner = new TlsServerScanner(config)) {
                 long time = System.currentTimeMillis();
-                LOGGER.info("Performing Scan, this may take some time...");
+                LOGGER.info(
+                        "Performing scan with scan detail set to "
+                                + config.getExecutorConfig().getScanDetail());
                 ServerReport report = scanner.scan();
                 if (report.getIsHandshaking()) {
                     LOGGER.info(

@@ -41,13 +41,37 @@ These can be obtained by compiling the app yourself or by
 $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
-You can specify a host you want to scan with the -connect parameter. If you want to improve the performance of the scan, you can use the `-threads` parameter (default=1).
+## Important Parameters
 
-In order to see more details about the Guidelines, use `-reportDetail ALL`.
+You must specify a host you want to scan with the -connect parameter.
+
+If you want to improve the performance of the scan, you can use the `-threads` parameter to increase the number of used threads.
+
+Another important parameter for performance reasons is the `-scanDetail` parameter, which can be used to configure how detailed you want to scan. Possible values ranging from fast to very detailed are: QUICK, NORMAL, DETAILED, ALL.
+
+The detail of the output can be configured with the `-reportDetail` parameter. In order to see more details about the Guidelines, use `-reportDetail ALL`.
 
 By default, the results are written to the console only. If you want to have machine-readable output, you can use `-outputFile output.json` to automatically write the results in a JSON file.
 
-For more details about possible parameters, you can use the `-help` flag.
+## Use Cases
+
+The most important parameters to change are `-scanDetail` and `-reportDetail`. In the following, we explain some use cases for these parameters.
+
+### Default Scan
+
+For most cases, our default parameter settings are sufficient. This performs a scan with both detail levels set to `NORMAL`.
+
+### Fast Scan
+
+If you want to perform a fast scan and get a quick overview over your system, we recommend to use both detail levels set to `QUICK`. This limits the extend of some executed probes to lower the runtime and limits the report detail to not include very detailed and technical information.
+
+### Detailed Scan
+
+If you want to fully evaluate your system and execute everything that we have, we recommend to use both detail levels set to `ALL`. This executes all existing probes fully and prints very detailed information for further analysis and evaluation.
+
+## All Parameters
+
+To get detailed information about all possible parameters, use the `-help` parameter or execute the jar without any parameters set.
 
 # Docker
 
