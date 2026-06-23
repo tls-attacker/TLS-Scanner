@@ -25,6 +25,7 @@ import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
 import java.net.URLConnection;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -125,6 +126,12 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
         }
 
+        // Per-target write throttle: limit how often partial results are pushed to MongoDB.
+        // State is local to this scan() invocation, so each scan target is throttled
+        // independently and there is no shared state across concurrently scanned targets.
+        long throttleMs = scanConfig.getPartialResultThrottleMs();
+        AtomicLong lastPartialWrite = new AtomicLong(0L);
+
         ProbeProgressCallback progressCallback =
                 (probe, reportInProgress, completed, total) ->
                         handleProgressUpdate(
@@ -134,7 +141,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                                 total,
                                 scanTarget,
                                 jobDescription,
-                                progressConsumer);
+                                progressConsumer,
+                                throttleMs,
+                                lastPartialWrite);
 
         ServerReport report;
         try (TlsServerScanner scanner =
@@ -178,7 +187,13 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
 
     /**
      * Handles progress updates from the scanner by creating a partial result document and passing
-     * it to the progress consumer. Throttling is handled transparently by BulkScanWorker.
+     * it to the progress consumer.
+     *
+     * <p>Writes are throttled per scan target: at most one partial result is forwarded per {@code
+     * throttleMs} window. Updates that fall inside an open window are skipped entirely, avoiding
+     * both the MongoDB write and the (expensive) report serialization. The first update of a scan
+     * always goes through, and the final complete result is written separately by the worker, so
+     * the end-state is never lost.
      */
     @SuppressWarnings("rawtypes")
     private void handleProgressUpdate(
@@ -188,7 +203,18 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             int total,
             ScanTarget scanTarget,
             ScanJobDescription jobDescription,
-            Consumer<Document> progressConsumer) {
+            Consumer<Document> progressConsumer,
+            long throttleMs,
+            AtomicLong lastPartialWrite) {
+        if (!allowWrite(throttleMs, lastPartialWrite, System.currentTimeMillis())) {
+            LOGGER.debug(
+                    "Partial result throttled (within {}ms window): [{}/{}] {}",
+                    throttleMs,
+                    completed,
+                    total,
+                    probe.getType().getName());
+            return;
+        }
         try {
             Document partialResultDoc =
                     buildPartialResultDocument(
@@ -211,6 +237,24 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         } catch (Exception e) {
             LOGGER.warn("Failed to process partial result", e);
         }
+    }
+
+    /**
+     * Leading-edge throttle gate. Returns {@code true} (and records {@code now} as the last write
+     * time) when a write is allowed, i.e. either throttling is disabled ({@code throttleMs <= 0}),
+     * this is the first write, or at least {@code throttleMs} has elapsed since the last write.
+     * Thread-safe: when multiple probe callbacks fire concurrently for the same scan, only one wins
+     * the window edge via {@link AtomicLong#compareAndSet}.
+     */
+    static boolean allowWrite(long throttleMs, AtomicLong lastPartialWrite, long now) {
+        if (throttleMs <= 0) {
+            return true;
+        }
+        long last = lastPartialWrite.get();
+        if (last != 0L && now - last < throttleMs) {
+            return false;
+        }
+        return lastPartialWrite.compareAndSet(last, now);
     }
 
     /** Builds a partial result document from the current scan state. */

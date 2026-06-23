@@ -62,7 +62,8 @@ public class TlsScanWorkerTest {
             };
 
     private static TlsScanWorker createWorker() {
-        TlsScanConfig config = new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, StarttlsType.NONE);
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, List.of());
         return new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
     }
 
