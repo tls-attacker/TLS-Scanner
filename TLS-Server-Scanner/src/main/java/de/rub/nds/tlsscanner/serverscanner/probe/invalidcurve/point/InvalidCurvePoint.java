@@ -125,6 +125,7 @@ public class InvalidCurvePoint {
                         new BigInteger("5"),
                         NamedGroup.SECP521R1);
             case BRAINPOOLP256R1:
+            case BRAINPOOLP256R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "475638180469F3128FCEACFF3D1B2A7052021FABE168456E724C82CE647A0B38",
@@ -135,6 +136,7 @@ public class InvalidCurvePoint {
                         new BigInteger("5"),
                         NamedGroup.BRAINPOOLP256R1);
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "7A15487AF637530E2BECC85585C2E36C21447AB4C786F08EF75A1EFBE7785016855AB3B6EFBB9F80517C23C1438A3F18",
@@ -145,6 +147,7 @@ public class InvalidCurvePoint {
                         new BigInteger("5"),
                         NamedGroup.BRAINPOOLP384R1);
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "3A52E57C2D5BE39BB3F97C4CF90D81BEE7123CACBC6B7FF6EB03A164CCF0253FDF1AACF7C4AC6B820E6D48145D7854C67DEF4CADAB555D4609E279956450A610",
@@ -265,6 +268,7 @@ public class InvalidCurvePoint {
                         new BigInteger("7"),
                         NamedGroup.SECP521R1);
             case BRAINPOOLP256R1:
+            case BRAINPOOLP256R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "93FAAAB2FC3E9515421D057483FA4F825BFF94631A3D56C3BDBAF73AA1984134",
@@ -275,6 +279,7 @@ public class InvalidCurvePoint {
                         new BigInteger("7"),
                         NamedGroup.BRAINPOOLP256R1);
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "210FAB064A624CC3A4F32F703084784B5102D10B34DE8C9284331957466A2C98F01B2DDD90A9F3D1770BF7F133DE6091",
@@ -285,6 +290,7 @@ public class InvalidCurvePoint {
                         new BigInteger("7"),
                         NamedGroup.BRAINPOOLP384R1);
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "1D94C4D096486452083C1D7862EC13B34291643A81B4BA1E1F9A05C5D28697DD2B5B5527608590A9B5702AC1486071E6E2C3793570E10868F1BFA017AC6CB99D",
@@ -395,6 +401,7 @@ public class InvalidCurvePoint {
                         new BigInteger("92987"),
                         NamedGroup.SECP521R1);
             case BRAINPOOLP256R1:
+            case BRAINPOOLP256R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "268FEFC699BFA00D2F6ED0EC0011414D83042E3240D14829369BA07B2B88EB81",
@@ -405,6 +412,7 @@ public class InvalidCurvePoint {
                         new BigInteger("18990711710621799596999906783"),
                         NamedGroup.BRAINPOOLP256R1);
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "7D82BD045242FE9D69B4051BF57C4B77FD6E4DC980DF8B11AA6024C9BE7371AB609FE4C0F310A7ECEAFAACE74998FD11",
@@ -415,6 +423,7 @@ public class InvalidCurvePoint {
                         new BigInteger("86531"),
                         NamedGroup.BRAINPOOLP384R1);
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
                 return new InvalidCurvePoint(
                         new BigInteger(
                                 "99291D9A7F2D0FDBF4127F97A505EA1CF59EAF17305C55AC78CB1AFF3CB51F1FD88EDDA2C0DB05E3785A0BA0E39D72215FAE8DC5D6CA6DCDF7ADF6183D1CA2F7",

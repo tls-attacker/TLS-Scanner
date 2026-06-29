@@ -149,6 +149,7 @@ public class TwistedCurvePoint {
                                 "191E30E8841160C9FFC64D162A21DCA0B0620A8DB76AD93D2047BB3E2251379C447DFC7F4D715DBE3D04BB051013CA8F0AF79BB45B27BAAFC5AF287A54FE462C1EE",
                                 16));
             case BRAINPOOLP256R1:
+            case BRAINPOOLP256R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "A8944F96DE0FE0D82489CBC7E71F2F529CFCFEA03CA593D91462278731E19A5",
@@ -162,6 +163,7 @@ public class TwistedCurvePoint {
                                 "39248080291B8C5F9CE754E6045DA628B0B795AB3396C637844E48C4BC40FE54",
                                 16));
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "6CFE5AB49B37D0798AA4265B02F40E9060764FAF2B96E9475CD58FB0A6E8B6D16A1A540430076E0E67D9399AA29B0084",
@@ -175,6 +177,7 @@ public class TwistedCurvePoint {
                                 "494C3442B50BD2543CBCE52C1C2210B8312667155D1E26262F45FFB85D216F2C6987B0D7DDB991156B4B3D473ECF81FA",
                                 16));
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "8A519BAFACCA8DAF51E22C6E9768534B5355C6806ADEE36E8F9A39D2DC4A3F3EF397C32EA6243A6E9676472EA5AF79C394BF08D62EDDAA8BD9ACCCAB8DBE50F3",
@@ -334,6 +337,7 @@ public class TwistedCurvePoint {
                                 "8810FB26DC36BF7385485F8D129F7F7A1661455F92354A45438DE2B4BA08D95E3621852DB0E483E4FEA999DB9C27C309BF3A96E6BA4820E1B7B34F1DFF8965C6AA",
                                 16));
             case BRAINPOOLP256R1:
+            case BRAINPOOLP256R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "8643A0E19EF6464FBB8E413E15BCBD01DD18C98AAA58E1EF99F99D2345311B67",
@@ -347,6 +351,7 @@ public class TwistedCurvePoint {
                                 "4773FB4A1F84DA9B330E4992FA1198A05AB82CA45C4755DC25D1F7B6B7957A",
                                 16));
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "3FEB2F8902206DE9BE1350BABE014D492BCE4B803B6EA18799819A784FCE766A86D00648BF3920F1C49EA18B76F93D8C",
@@ -360,6 +365,7 @@ public class TwistedCurvePoint {
                                 "4F5A014EE3B0DC4EBE349B6F04D71B28D27C731EBD1889486E7731E5153DC98141B855B86E528C0253B3943E134CC75D",
                                 16));
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "5D9F8E359B4BD2F4E88CFF1C658B1EDAEE73B7A16DB0A597F9818E22D599E81EBF376507BD8BC62047717550EE552237488E02B32B4E983F2E7B0DD05B7AE7D2",
@@ -484,6 +490,7 @@ public class TwistedCurvePoint {
                                 "F118ECBC0BFDB3676FBBC6F9A70ABDE9863FCEB57341FB7422CDCE9A5676778639D2D00F97511CBCF73DCAB505B92B5D9338B924D13FA44FF99959439CABC9EB6A",
                                 16));
             case BRAINPOOLP256R1:
+            case BRAINPOOLP256R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "A908140B237E3C712E36E02AC5872FB71215CF93D789EF01549AE274832A49F3",
@@ -497,6 +504,7 @@ public class TwistedCurvePoint {
                                 "828F4D0007339B5DB9AEDBB74FF7DC5E8B6B13681F38CB71394FFF06BAD2B1C5",
                                 16));
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "45FE036614DA18CC0145E6D9935F11DA1C754FC168F8035886EF30DBD2ACFC21A2E43C72D1A1C8E3D68E15B296A55AC7",
@@ -510,6 +518,7 @@ public class TwistedCurvePoint {
                                 "41F93DD138A6F7BF59A02048B03A8C15E385439AFA1960E5E3EC0714931CDD06042D2521E37652AD352B3D8BFFDCD162",
                                 16));
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
                 return new TwistedCurvePoint(
                         new BigInteger(
                                 "46B8D7C23CBBA9130A85AC798A7064DA181BC10DBCD91D33E3D5A9605B53F32780BF258EEF84B6D2E915C490C2BCE6E353D7309E4A673EF87ACDC7AA78B38BA8",
@@ -534,7 +543,9 @@ public class TwistedCurvePoint {
             case SECP384R1:
             case SECP521R1:
             case BRAINPOOLP384R1:
+            case BRAINPOOLP384R1TLS13:
             case BRAINPOOLP512R1:
+            case BRAINPOOLP512R1TLS13:
             case ECDH_X25519:
             case ECDH_X448:
                 return false; // attack complexity > 2^100
