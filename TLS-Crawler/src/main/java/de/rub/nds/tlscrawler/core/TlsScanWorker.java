@@ -109,22 +109,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             }
         }
 
-        GeneralDelegate generalDelegate = new GeneralDelegate();
-        generalDelegate.setQuiet(true);
-
-        ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
-        config.getExecutorConfig().setScanDetail(scanConfig.getScannerDetail());
-        config.setTimeout(scanConfig.getTimeout());
-        config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
-        config.getClientDelegate().setSniHostname(scanTarget.getHostname());
-        config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
-        if (scanConfig.getExcludedProbes() != null && !scanConfig.getExcludedProbes().isEmpty()) {
-            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
-            LOGGER.info(
-                    "Excluding {} probes from scan: {}",
-                    scanConfig.getExcludedProbes().size(),
-                    scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
-        }
+        ServerScannerConfig config = createServerScannerConfig(scanTarget);
 
         // Per-target write throttle: limit how often partial results are pushed to MongoDB.
         // State is local to this scan() invocation, so each scan target is throttled
@@ -171,6 +156,28 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
                     report.getServerIsAlive());
         }
         return createDocumentFromSiteReport(report);
+    }
+
+    /** Builds the {@link ServerScannerConfig} for a scan target from the {@link TlsScanConfig}. */
+    ServerScannerConfig createServerScannerConfig(ScanTarget scanTarget) {
+        GeneralDelegate generalDelegate = new GeneralDelegate();
+        generalDelegate.setQuiet(true);
+
+        ServerScannerConfig config = new ServerScannerConfig(generalDelegate);
+        config.getExecutorConfig().setScanDetail(scanConfig.getScannerDetail());
+        config.getExecutorConfig().setParallelProbes(scanConfig.getParallelProbes());
+        config.setTimeout(scanConfig.getTimeout());
+        config.getClientDelegate().setHost(scanTarget.getIp() + ":" + scanTarget.getPort());
+        config.getClientDelegate().setSniHostname(scanTarget.getHostname());
+        config.getStartTlsDelegate().setStarttlsType(scanConfig.getStarttlsType());
+        if (scanConfig.getExcludedProbes() != null && !scanConfig.getExcludedProbes().isEmpty()) {
+            config.getExecutorConfig().setExcludedProbes(scanConfig.getExcludedProbes());
+            LOGGER.info(
+                    "Excluding {} probes from scan: {}",
+                    scanConfig.getExcludedProbes().size(),
+                    scanConfig.getExcludedProbes().stream().map(p -> p.getName()).toList());
+        }
+        return config;
     }
 
     private Document createDocumentFromSiteReport(ServerReport report) {

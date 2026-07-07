@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import de.rub.nds.crawler.data.BulkScan;
 import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanResult;
+import de.rub.nds.crawler.data.ScanTarget;
 import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
@@ -99,5 +100,43 @@ public class TlsScanWorkerTest {
 
         String json = mapper.objectMapper.valueToTree(observedLargeValue).toString();
         assertEquals('"' + observedLargeValue.toString() + '"', json);
+    }
+
+    // ---- ServerScannerConfig parallelProbes propagation ----
+
+    @Test
+    public void testCreateServerScannerConfigPropagatesParallelProbes() {
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 4, StarttlsType.NONE, List.of());
+        TlsScanWorker worker =
+                new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
+
+        assertEquals(
+                4,
+                worker.createServerScannerConfig(createScanTarget())
+                        .getExecutorConfig()
+                        .getParallelProbes());
+    }
+
+    @Test
+    public void testCreateServerScannerConfigPropagatesZeroParallelProbes() {
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 0, StarttlsType.NONE, List.of());
+        TlsScanWorker worker =
+                new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
+
+        assertEquals(
+                0,
+                worker.createServerScannerConfig(createScanTarget())
+                        .getExecutorConfig()
+                        .getParallelProbes());
+    }
+
+    private static ScanTarget createScanTarget() {
+        ScanTarget scanTarget = new ScanTarget();
+        scanTarget.setIp("127.0.0.1");
+        scanTarget.setPort(443);
+        scanTarget.setHostname("localhost");
+        return scanTarget;
     }
 }
