@@ -5,7 +5,9 @@ standardPipeline(
         testTimeout: 900,
 
         extraStages: {
-            gitHubRelease()
+            gitHubRelease(
+                    nameApp: 'TLS-Scanner'
+            )
             dockerBuild()
         }
 )
