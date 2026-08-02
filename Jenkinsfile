@@ -8,6 +8,9 @@ standardPipeline(
             gitHubRelease(
                     nameApp: 'TLS-Scanner'
             )
-            dockerBuild()
+            dockerBuild(
+                    nameApp: 'tlsscanner',
+                    dockerfile: 'Dockerfile_Jenkins'
+            )
         }
 )
