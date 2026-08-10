@@ -18,22 +18,28 @@ import de.rub.nds.tlscrawler.core.TlsScanWorker;
 import java.util.List;
 
 public class TlsScanConfig extends ScanConfig {
-    private StarttlsType starttlsType;
-    private boolean partialResultsEnabled = true;
-    private long partialResultThrottleMs = 5000;
 
-    public TlsScanConfig(
-            ScannerDetail scannerDetail, int reexecutions, int timeout, StarttlsType starttlsType) {
-        this(scannerDetail, reexecutions, timeout, starttlsType, null);
-    }
+    /** Default minimum interval between partial-result writes to MongoDB, in milliseconds. */
+    public static final long DEFAULT_PARTIAL_RESULT_THROTTLE_MS = 5000;
+
+    private StarttlsType starttlsType;
+
+    /**
+     * Minimum interval in milliseconds between partial-result writes to MongoDB for a single scan
+     * target. A value {@code <= 0} disables throttling, causing every progress update to be
+     * written. Throttling is applied per scan target inside the worker (see {@link
+     * de.rub.nds.tlscrawler.core.TlsScanWorker}).
+     */
+    private long partialResultThrottleMs = DEFAULT_PARTIAL_RESULT_THROTTLE_MS;
 
     public TlsScanConfig(
             ScannerDetail scannerDetail,
             int reexecutions,
             int timeout,
+            int parallelProbes,
             StarttlsType starttlsType,
             List<ProbeType> excludedProbes) {
-        super(scannerDetail, reexecutions, timeout, excludedProbes);
+        super(scannerDetail, reexecutions, timeout, parallelProbes, excludedProbes);
         this.starttlsType = starttlsType;
     }
 
@@ -60,14 +66,6 @@ public class TlsScanConfig extends ScanConfig {
             throw new IllegalArgumentException("starttlsType cannot be null");
         }
         this.starttlsType = starttlsType;
-    }
-
-    public boolean isPartialResultsEnabled() {
-        return partialResultsEnabled;
-    }
-
-    public void setPartialResultsEnabled(boolean partialResultsEnabled) {
-        this.partialResultsEnabled = partialResultsEnabled;
     }
 
     public long getPartialResultThrottleMs() {
