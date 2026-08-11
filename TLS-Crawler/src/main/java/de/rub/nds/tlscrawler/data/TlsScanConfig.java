@@ -32,6 +32,14 @@ public class TlsScanConfig extends ScanConfig {
      */
     private long partialResultThrottleMs = DEFAULT_PARTIAL_RESULT_THROTTLE_MS;
 
+    /**
+     * Whether to emit partial (in-progress) results during a scan. Defaults to {@code false}: the
+     * primary bulk-crawl use case does not need live progress, and enabling it adds per-step report
+     * serialization and MongoDB write load. Consumers that want live updates (e.g. the web UI) must
+     * opt in by setting this to {@code true}.
+     */
+    private boolean partialResultsEnabled = false;
+
     public TlsScanConfig(
             ScannerDetail scannerDetail,
             int reexecutions,
@@ -74,5 +82,13 @@ public class TlsScanConfig extends ScanConfig {
 
     public void setPartialResultThrottleMs(long partialResultThrottleMs) {
         this.partialResultThrottleMs = partialResultThrottleMs;
+    }
+
+    public boolean isPartialResultsEnabled() {
+        return partialResultsEnabled;
+    }
+
+    public void setPartialResultsEnabled(boolean partialResultsEnabled) {
+        this.partialResultsEnabled = partialResultsEnabled;
     }
 }

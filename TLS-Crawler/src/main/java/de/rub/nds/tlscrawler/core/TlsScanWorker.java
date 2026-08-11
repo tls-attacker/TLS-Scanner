@@ -8,7 +8,6 @@
  */
 package de.rub.nds.tlscrawler.core;
 
-import de.rub.nds.crawler.constant.JobStatus;
 import de.rub.nds.crawler.core.BulkScanWorker;
 import de.rub.nds.crawler.data.ScanJobDescription;
 import de.rub.nds.crawler.data.ScanTarget;
@@ -16,15 +15,13 @@ import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.execution.NamedThreadFactory;
 import de.rub.nds.scanner.core.execution.ProbeProgressCallback;
 import de.rub.nds.scanner.core.probe.ScannerProbe;
-import de.rub.nds.scanner.core.report.ScanReport;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
+import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
-import java.net.URLConnection;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
@@ -40,21 +37,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
-
-    // JSON mapper for serializing ServerReport to JSON strings for MongoDB storage.
-    // BigInteger values are serialized as strings to avoid BSON JSON parser overflow
-    // on cryptographic values (RSA moduli, DH parameters).
-    private final ServerReportJsonMapper reportJsonMapper;
-
-    {
-        reportJsonMapper = new ServerReportJsonMapper();
-        reportJsonMapper
-                .objectMapper
-                .configOverride(java.math.BigInteger.class)
-                .setFormat(
-                        com.fasterxml.jackson.annotation.JsonFormat.Value.forShape(
-                                com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING));
-    }
 
     public TlsScanWorker(
             String bulkScanID,
@@ -74,12 +56,6 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         if (parallelExecutor != null) {
             throw new IllegalStateException("Parallel executor already initialized");
         }
-        // Temporary workaround: disable JAR URL connection caching globally to prevent
-        // concurrent scans from closing a shared JarFile handle. GuidelineIO.listXmlFiles()
-        // uses JarURLConnection.getJarFile() which returns a cached instance; closing one
-        // scan's TlsServerScanner causes "zip file closed" errors in concurrent scans.
-        // Tracked upstream: https://github.com/tls-attacker/TLS-Scanner-Development/issues/772
-        URLConnection.setDefaultUseCaches("jar", false);
         parallelExecutor =
                 ParallelExecutor.create(
                         parallelConnectionThreads,
@@ -117,18 +93,18 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         long throttleMs = scanConfig.getPartialResultThrottleMs();
         AtomicLong lastPartialWrite = new AtomicLong(0L);
 
-        ProbeProgressCallback progressCallback =
-                (probe, reportInProgress, completed, total) ->
-                        handleProgressUpdate(
-                                probe,
-                                reportInProgress,
-                                completed,
-                                total,
-                                scanTarget,
-                                jobDescription,
-                                progressConsumer,
-                                throttleMs,
-                                lastPartialWrite);
+        ProbeProgressCallback<ServerReport, State> progressCallback =
+                scanConfig.isPartialResultsEnabled()
+                        ? (probe, reportInProgress, completed, total) ->
+                                handleProgressUpdate(
+                                        probe,
+                                        reportInProgress,
+                                        completed,
+                                        total,
+                                        progressConsumer,
+                                        throttleMs,
+                                        lastPartialWrite)
+                        : null;
 
         ServerReport report;
         try (TlsServerScanner scanner =
@@ -140,6 +116,9 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         // The final result (written by Worker/MongoPersistenceProvider) will overwrite
         // the partial result using the same _id (job UUID).
 
+        // Scan times are null when the scan prerequisites fail (target unreachable, does not
+        // speak the protocol, or does not complete a handshake): Scanner.scan() then returns
+        // before scanStartTime/scanEndTime are ever set.
         if (report.getScanEndTime() != null && report.getScanStartTime() != null) {
             long scanDurationSeconds = (report.getScanEndTime() - report.getScanStartTime()) / 1000;
             LOGGER.info(
@@ -188,7 +167,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             return null;
         }
         Document document = new Document();
-        document.put("report", Document.parse(reportJsonMapper.toJsonString(report)));
+        document.put("report", report);
         return document;
     }
 
@@ -202,18 +181,15 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
      * always goes through, and the final complete result is written separately by the worker, so
      * the end-state is never lost.
      */
-    @SuppressWarnings("rawtypes")
     private void handleProgressUpdate(
-            ScannerProbe probe,
-            ScanReport report,
+            ScannerProbe<ServerReport, State> probe,
+            ServerReport report,
             int completed,
             int total,
-            ScanTarget scanTarget,
-            ScanJobDescription jobDescription,
             Consumer<Document> progressConsumer,
             long throttleMs,
             AtomicLong lastPartialWrite) {
-        if (!allowWrite(throttleMs, lastPartialWrite, System.currentTimeMillis())) {
+        if (!isUpdateAllowed(throttleMs, lastPartialWrite, System.currentTimeMillis())) {
             LOGGER.debug(
                     "Partial result throttled (within {}ms window): [{}/{}] {}",
                     throttleMs,
@@ -225,13 +201,10 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         try {
             Document partialResultDoc =
                     buildPartialResultDocument(
-                            (ServerReport) report,
-                            completed,
-                            total,
-                            probe,
-                            scanTarget,
-                            jobDescription,
-                            System.currentTimeMillis());
+                            report, completed, total, probe, System.currentTimeMillis());
+            if (partialResultDoc == null) {
+                return;
+            }
 
             LOGGER.debug(
                     "Progress update: [{}/{}] {}% - {}",
@@ -253,7 +226,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
      * Thread-safe: when multiple probe callbacks fire concurrently for the same scan, only one wins
      * the window edge via {@link AtomicLong#compareAndSet}.
      */
-    static boolean allowWrite(long throttleMs, AtomicLong lastPartialWrite, long now) {
+    static boolean isUpdateAllowed(long throttleMs, AtomicLong lastPartialWrite, long now) {
         if (throttleMs <= 0) {
             return true;
         }
@@ -264,46 +237,32 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         return lastPartialWrite.compareAndSet(last, now);
     }
 
-    /** Builds a partial result document from the current scan state. */
-    @SuppressWarnings("rawtypes")
+    /**
+     * Builds the partial result content for the current scan state. The document has the same shape
+     * as the final result content (see {@link #createDocumentFromSiteReport}) plus progress
+     * metadata. The crawler wraps it into a {@link de.rub.nds.crawler.data.ScanResult} and persists
+     * it through the same {@code JacksonMongoCollection<ScanResult>} path as the final result, so
+     * the {@link ServerReport} is stored as a raw object and serialized once, consistently with the
+     * final result. Returns {@code null} if there is no report to persist yet.
+     */
     private Document buildPartialResultDocument(
             ServerReport serverReport,
             int completed,
             int total,
-            ScannerProbe probe,
-            ScanTarget scanTarget,
-            ScanJobDescription jobDescription,
+            ScannerProbe<ServerReport, State> probe,
             long currentTime) {
-        // Serialize ServerReport to JSON string first (preserves polymorphic type info),
-        // then parse into a BSON Document. BigIntegers are serialized as strings by the
-        // mapper to avoid BSON JSON parser overflow on cryptographic values.
-        String reportJson = reportJsonMapper.toJsonString(serverReport);
-
-        // Create nested result document (matches ScanResult.result field)
-        Document resultDoc = new Document();
-        resultDoc.put("report", Document.parse(reportJson));
+        // Reuse the final-result serialization: store the raw ServerReport and let the crawler's
+        // JacksonMongoCollection serialize it, instead of a second, divergent JSON mapper.
+        Document resultDoc = createDocumentFromSiteReport(serverReport);
+        if (resultDoc == null) {
+            return null;
+        }
         resultDoc.put("isPartial", true);
         resultDoc.put("completedProbes", completed);
         resultDoc.put("totalProbes", total);
         resultDoc.put("lastProbeName", probe.getType().getName());
         resultDoc.put("percentage", (completed * 100.0) / total);
         resultDoc.put("lastUpdateTime", currentTime);
-
-        // Create scanTarget document
-        Document scanTargetDoc = new Document();
-        scanTargetDoc.put("ip", scanTarget.getIp());
-        scanTargetDoc.put("port", scanTarget.getPort());
-        scanTargetDoc.put("hostname", scanTarget.getHostname());
-
-        // Create main document matching ScanResult structure
-        Document partialResultDoc = new Document();
-        partialResultDoc.put("_id", jobDescription.getId().toString());
-        partialResultDoc.put("scanJobDescription", jobDescription.getId().toString());
-        partialResultDoc.put("bulkScan", bulkScanId);
-        partialResultDoc.put("scanTarget", scanTargetDoc);
-        partialResultDoc.put("resultStatus", JobStatus.RUNNING.name());
-        partialResultDoc.put("result", resultDoc);
-
-        return partialResultDoc;
+        return resultDoc;
     }
 }
