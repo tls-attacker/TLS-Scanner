@@ -41,6 +41,9 @@ These can be obtained by compiling the app yourself or by
 $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
+TLS-Scanner will evaluate the specified server (here `localhost` on port `4433`), and in the end print a report.
+The report sometimes uses colors to highlight severe issues (red), less severe issues (yellow), or good configurations (green).
+
 ## Important Parameters
 
 You must specify a host you want to scan with the -connect parameter.

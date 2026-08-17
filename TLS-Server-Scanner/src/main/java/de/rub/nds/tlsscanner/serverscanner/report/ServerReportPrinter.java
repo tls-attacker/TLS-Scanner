@@ -204,8 +204,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
     private void appendClientAuth(StringBuilder builder) {
         prettyAppendHeading(builder, "Client Authentication");
 
-        prettyAppend(builder, "Supported", report.getCcaSupported());
-        prettyAppend(builder, "Required", report.getCcaRequired());
+        prettyAppend(builder, "Supported", TlsAnalyzedProperty.SUPPORTS_CCA);
+        prettyAppend(builder, "Required", TlsAnalyzedProperty.REQUIRES_CCA);
     }
 
     private void appendMissingProbesRequirements(StringBuilder builder) {
@@ -2604,13 +2604,13 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                             builder,
                             "Bytes total",
                             "" + bytesTotal + " (not enough data collected)",
-                            AnsiColor.RED);
+                            AnsiColor.BLUE);
                 } else {
                     prettyAppend(
                             builder,
                             "Bytes total",
                             "" + bytesTotal + " (not siginificant)",
-                            AnsiColor.YELLOW);
+                            AnsiColor.BLUE);
                 }
 
                 prettyAppend(builder, "Duplicates", entropyReport.isDuplicates());

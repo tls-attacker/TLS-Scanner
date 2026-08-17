@@ -46,7 +46,7 @@ public class DefaultPrintingScheme {
 
         HashMap<TestResult, AnsiColor> ansiColorMap = new HashMap<>();
         ansiColorMap.put(TestResults.COULD_NOT_TEST, AnsiColor.BLUE);
-        ansiColorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.RED_BACKGROUND);
+        ansiColorMap.put(TestResults.ERROR_DURING_TEST, AnsiColor.PURPLE_BACKGROUND);
         ansiColorMap.put(TestResults.UNASSIGNED_ERROR, AnsiColor.RED_BACKGROUND);
         ansiColorMap.put(TestResults.FALSE, AnsiColor.DEFAULT_COLOR);
         ansiColorMap.put(TestResults.NOT_TESTED_YET, AnsiColor.WHITE);
@@ -262,6 +262,9 @@ public class DefaultPrintingScheme {
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
                 TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST,
+                getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.SUPPORTS_CERTIFICATE_STATUS_REQUEST_V2,
                 getDefaultColorEncoding(AnsiColor.GREEN, AnsiColor.DEFAULT_COLOR));
         colorMap.put(
                 TlsAnalyzedProperty.SUPPORTS_MONTGOMERY_CURVES,
@@ -536,6 +539,22 @@ public class DefaultPrintingScheme {
         colorMap.put(
                 TlsAnalyzedProperty.HAS_GREASE_SIGNATURE_AND_HASH_ALGORITHM_INTOLERANCE,
                 getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
+
+        colorMap.put(
+                TlsAnalyzedProperty.UNENCRYPTED_TICKET,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.NO_MAC_CHECK_TICKET,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+        colorMap.put(
+                TlsAnalyzedProperty.PADDING_ORACLE_TICKET,
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
         HashMap<AnalyzedPropertyCategory, TestResultTextEncoder> textMap = new HashMap<>();
         textMap.put(
                 TlsAnalyzedPropertyCategory.ATTACKS, new TestResultTextEncoder(attackEncodingMap));
