@@ -304,8 +304,8 @@ public class DefaultPrintingScheme {
 
     private static TestResultTextEncoder getAlpacaTextEncoding() {
         HashMap<TestResult, String> map = getDefaultTextEncodings();
-        map.put(TestResults.FALSE, "not mitigated");
-        map.put(TestResults.TRUE, "mitigated");
+        map.put(TestResults.FALSE, "mitigated");
+        map.put(TestResults.TRUE, "vulnerable");
         return new TestResultTextEncoder(map);
     }
 
