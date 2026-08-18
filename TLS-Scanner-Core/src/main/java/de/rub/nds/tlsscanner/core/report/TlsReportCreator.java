@@ -18,7 +18,6 @@ import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.report.ReportCreator;
 import de.rub.nds.scanner.core.report.container.HeadlineContainer;
@@ -26,6 +25,7 @@ import de.rub.nds.scanner.core.report.container.KeyValueContainer;
 import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
+import de.rub.nds.scanner.core.report.markup.SemanticMarkup;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
@@ -311,28 +311,35 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
         container.add(
                 new KeyValueContainer(
                         "Chain ordered",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         String.valueOf(chain.getChainIsOrdered()),
-                        chain.getChainIsOrdered() ? AnsiColor.GREEN : AnsiColor.YELLOW));
+                        chain.getChainIsOrdered()
+                                ? SemanticMarkup.RESULT_GOOD
+                                : SemanticMarkup.RESULT_MEDIUM));
         container.add(
                 new KeyValueContainer(
                         "Contains Trust Anchor",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         String.valueOf(chain.getContainsTrustAnchor()),
-                        chain.getContainsTrustAnchor() ? AnsiColor.RED : AnsiColor.GREEN));
+                        chain.getContainsTrustAnchor()
+                                ? SemanticMarkup.RESULT_BAD
+                                : SemanticMarkup.RESULT_GOOD));
         if (chain.getGenerallyTrusted() != null) {
             container.add(
                     new KeyValueContainer(
                             "Generally Trusted",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             String.valueOf(chain.getGenerallyTrusted()),
-                            chain.getGenerallyTrusted() ? AnsiColor.GREEN : AnsiColor.RED));
+                            chain.getGenerallyTrusted()
+                                    ? SemanticMarkup.RESULT_GOOD
+                                    : SemanticMarkup.RESULT_BAD));
         }
         if (chain.getCertificateIssues().size() > 0) {
             ListContainer issuesContainer = new ListContainer(1);
             issuesContainer.add(new HeadlineContainer("Certificate Issues"));
             for (CertificateIssue issue : chain.getCertificateIssues()) {
-                issuesContainer.add(new TextContainer(issue.getHumanReadable(), AnsiColor.RED));
+                issuesContainer.add(
+                        new TextContainer(issue.getHumanReadable(), SemanticMarkup.RESULT_BAD));
             }
             container.add(issuesContainer);
         }
@@ -355,16 +362,16 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid From",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         certReport.getNotBefore().toString(),
-                                        AnsiColor.GREEN));
+                                        SemanticMarkup.RESULT_GOOD));
                     } else {
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid From",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         certReport.getNotBefore().toString() + " - NOT YET VALID",
-                                        AnsiColor.RED));
+                                        SemanticMarkup.RESULT_BAD));
                     }
                 }
                 if (certReport.getNotAfter() != null) {
@@ -372,16 +379,16 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid Till",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         certReport.getNotAfter().toString(),
-                                        AnsiColor.GREEN));
+                                        SemanticMarkup.RESULT_GOOD));
                     } else {
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Valid Till",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         certReport.getNotAfter().toString() + " - EXPIRED",
-                                        AnsiColor.RED));
+                                        SemanticMarkup.RESULT_BAD));
                     }
                 }
                 if (certReport.getNotBefore() != null
@@ -396,40 +403,42 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                         subCertificateContainer.add(
                                 new TextContainer(
                                         "Expires in <1 day! This certificate expires very soon",
-                                        AnsiColor.RED));
+                                        SemanticMarkup.RESULT_BAD));
                     } else if (days < 3) {
                         subCertificateContainer.add(
                                 new TextContainer(
                                         "Expires in "
                                                 + days
                                                 + " days! This certificate expires very soon",
-                                        AnsiColor.RED));
+                                        SemanticMarkup.RESULT_BAD));
                     } else if (days < 14) {
                         subCertificateContainer.add(
                                 new TextContainer(
                                         "Expires in "
                                                 + days
                                                 + " days! This certificate expires soon",
-                                        AnsiColor.YELLOW));
+                                        SemanticMarkup.RESULT_MEDIUM));
                     } else if (days < 31) {
                         subCertificateContainer.add(
                                 new TextContainer(
-                                        "Expires in " + days + " days.", AnsiColor.DEFAULT_COLOR));
+                                        "Expires in " + days + " days.", SemanticMarkup.NEUTRAL));
                     } else if (days < 730) {
                         subCertificateContainer.add(
                                 new TextContainer(
-                                        "Expires in " + days + " days.", AnsiColor.GREEN));
+                                        "Expires in " + days + " days.",
+                                        SemanticMarkup.RESULT_GOOD));
                     } else if (Objects.equals(certReport.getLeafCertificate(), Boolean.TRUE)) {
                         subCertificateContainer.add(
                                 new TextContainer(
                                         "Expires in "
                                                 + days
                                                 + " days. This is usually too long for a leaf certificate",
-                                        AnsiColor.RED));
+                                        SemanticMarkup.RESULT_BAD));
                     } else {
                         subCertificateContainer.add(
                                 new TextContainer(
-                                        "Expires in " + days / 365 + " years.", AnsiColor.GREEN));
+                                        "Expires in " + days / 365 + " years.",
+                                        SemanticMarkup.RESULT_GOOD));
                     }
                 }
                 if (certReport.getPublicKey() != null) {
@@ -439,11 +448,11 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "Weak Debian Key",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getWeakDebianKey()),
                                     certReport.getWeakDebianKey()
-                                            ? AnsiColor.RED
-                                            : AnsiColor.GREEN));
+                                            ? SemanticMarkup.RESULT_BAD
+                                            : SemanticMarkup.RESULT_GOOD));
                 }
                 if (certReport.getSignatureAlgorithm() != null) {
                     subCertificateContainer.add(
@@ -458,9 +467,9 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                             subCertificateContainer.add(
                                     new KeyValueContainer(
                                             "Hash Algorithm",
-                                            AnsiColor.DEFAULT_COLOR,
+                                            SemanticMarkup.NEUTRAL,
                                             certReport.getHashAlgorithm().name(),
-                                            AnsiColor.RED));
+                                            SemanticMarkup.RESULT_BAD));
                         } else {
                             subCertificateContainer.add(
                                     createDefaultKeyValueContainer(
@@ -472,51 +481,51 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                         subCertificateContainer.add(
                                 new KeyValueContainer(
                                         "Hash Algorithm",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         certReport.getHashAlgorithm().name(),
-                                        AnsiColor.GREEN));
+                                        SemanticMarkup.RESULT_GOOD));
                     }
                 }
                 if (certReport.getExtendedValidation() != null) {
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "Extended Validation",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getExtendedValidation()),
                                     certReport.getExtendedValidation()
-                                            ? AnsiColor.GREEN
-                                            : AnsiColor.DEFAULT_COLOR));
+                                            ? SemanticMarkup.RESULT_GOOD
+                                            : SemanticMarkup.NEUTRAL));
                 }
                 if (certReport.getCertificateTransparency() != null) {
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "Certificate Transparency",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getCertificateTransparency()),
                                     certReport.getCertificateTransparency()
-                                            ? AnsiColor.GREEN
-                                            : AnsiColor.YELLOW));
+                                            ? SemanticMarkup.RESULT_GOOD
+                                            : SemanticMarkup.RESULT_MEDIUM));
                 }
 
                 if (certReport.getCrlSupported() != null) {
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "CRL Supported",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getCrlSupported()),
                                     certReport.getCrlSupported()
-                                            ? AnsiColor.GREEN
-                                            : AnsiColor.DEFAULT_COLOR));
+                                            ? SemanticMarkup.RESULT_GOOD
+                                            : SemanticMarkup.NEUTRAL));
                 }
                 if (certReport.getOcspSupported() != null) {
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "OCSP Supported",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getOcspSupported()),
                                     certReport.getOcspSupported()
-                                            ? AnsiColor.GREEN
-                                            : AnsiColor.YELLOW));
+                                            ? SemanticMarkup.RESULT_GOOD
+                                            : SemanticMarkup.RESULT_MEDIUM));
                 }
                 if (certReport.getOcspMustStaple() != null) {
                     subCertificateContainer.add(
@@ -528,29 +537,31 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "RevocationStatus",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getRevoked()),
-                                    certReport.getRevoked() ? AnsiColor.RED : AnsiColor.GREEN));
+                                    certReport.getRevoked()
+                                            ? SemanticMarkup.RESULT_BAD
+                                            : SemanticMarkup.RESULT_GOOD));
                 }
                 if (certReport.getDnsCAA() != null) {
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "DNS CCA",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getDnsCAA()),
                                     certReport.getDnsCAA()
-                                            ? AnsiColor.GREEN
-                                            : AnsiColor.DEFAULT_COLOR));
+                                            ? SemanticMarkup.RESULT_GOOD
+                                            : SemanticMarkup.NEUTRAL));
                 }
                 if (certReport.getRocaVulnerable() != null) {
                     subCertificateContainer.add(
                             new KeyValueContainer(
                                     "ROCA (simple)",
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     String.valueOf(certReport.getRocaVulnerable()),
                                     certReport.getRocaVulnerable()
-                                            ? AnsiColor.RED
-                                            : AnsiColor.GREEN));
+                                            ? SemanticMarkup.RESULT_BAD
+                                            : SemanticMarkup.RESULT_GOOD));
                 } else {
                     subCertificateContainer.add(
                             createDefaultTextContainer("ROCA (simple) not tested"));
@@ -625,83 +636,81 @@ public class TlsReportCreator<ReportT extends TlsScanReport> extends ReportCreat
         }
     }
 
-    protected AnsiColor getColorForCipherSuite(CipherSuite suite) {
+    protected SemanticMarkup getColorForCipherSuite(CipherSuite suite) {
         if (suite == null) {
-            return AnsiColor.DEFAULT_COLOR;
+            return SemanticMarkup.NEUTRAL;
         }
         CipherSuiteGrade grade = CipherSuiteRater.getGrade(suite);
         switch (grade) {
             case GOOD:
-                return AnsiColor.GREEN;
+                return SemanticMarkup.RESULT_GOOD;
             case LOW:
-                return AnsiColor.RED;
+                return SemanticMarkup.RESULT_BAD;
             case MEDIUM:
-                return AnsiColor.YELLOW;
-            case NONE:
-                return AnsiColor.DEFAULT_COLOR;
+                return SemanticMarkup.RESULT_MEDIUM;
             default:
-                return AnsiColor.DEFAULT_COLOR;
+                return SemanticMarkup.NEUTRAL;
         }
     }
 
-    protected AnsiColor getColorForCompression(CompressionMethod compression) {
+    protected SemanticMarkup getColorForCompression(CompressionMethod compression) {
         if (compression == null) {
-            return AnsiColor.DEFAULT_COLOR;
+            return SemanticMarkup.NEUTRAL;
         }
         if (compression == CompressionMethod.NULL) {
-            return AnsiColor.GREEN;
+            return SemanticMarkup.RESULT_GOOD;
         } else {
-            return AnsiColor.RED;
+            return SemanticMarkup.RESULT_BAD;
         }
     }
 
-    protected AnsiColor getColorForProtocolVersion(ProtocolVersion version) {
+    protected SemanticMarkup getColorForProtocolVersion(ProtocolVersion version) {
         if (version == null) {
-            return AnsiColor.DEFAULT_COLOR;
+            return SemanticMarkup.NEUTRAL;
         }
         if (version.name().contains("13") || version.name().contains("12")) {
-            return AnsiColor.GREEN;
+            return SemanticMarkup.RESULT_GOOD;
         } else if (version.name().contains("11") || version.name().contains("10")) {
-            return AnsiColor.YELLOW;
+            return SemanticMarkup.RESULT_MEDIUM;
         } else if (version.name().contains("SSL")) {
-            return AnsiColor.RED;
+            return SemanticMarkup.RESULT_BAD;
         } else {
-            return AnsiColor.DEFAULT_COLOR;
+            return SemanticMarkup.NEUTRAL;
         }
     }
 
-    protected AnsiColor getColorForForwardSecrecy(Boolean forwardSecrecy) {
+    protected SemanticMarkup getColorForForwardSecrecy(Boolean forwardSecrecy) {
         if (forwardSecrecy == null) {
-            return AnsiColor.DEFAULT_COLOR;
+            return SemanticMarkup.NEUTRAL;
         }
         if (forwardSecrecy) {
-            return AnsiColor.GREEN;
+            return SemanticMarkup.RESULT_GOOD;
         } else {
-            return AnsiColor.RED;
+            return SemanticMarkup.RESULT_BAD;
         }
     }
 
-    protected AnsiColor getColorForDhModulusSize(Integer dhModulusSize) {
+    protected SemanticMarkup getColorForDhModulusSize(Integer dhModulusSize) {
         if (dhModulusSize == null) {
-            return AnsiColor.DEFAULT_COLOR;
+            return SemanticMarkup.NEUTRAL;
         }
         if (dhModulusSize < 1024) {
-            return AnsiColor.RED;
+            return SemanticMarkup.RESULT_BAD;
         }
         if (dhModulusSize < 2048) {
-            return AnsiColor.YELLOW;
+            return SemanticMarkup.RESULT_MEDIUM;
         }
-        return AnsiColor.GREEN;
+        return SemanticMarkup.RESULT_GOOD;
     }
 
-    protected AnsiColor getColorForRecommendation(PropertyResultRatingInfluencer influencer) {
+    protected SemanticMarkup getColorForRecommendation(PropertyResultRatingInfluencer influencer) {
         if (influencer.getInfluence() <= -200) {
-            return AnsiColor.RED;
+            return SemanticMarkup.RESULT_BAD;
         } else if (influencer.getInfluence() < 0) {
-            return AnsiColor.YELLOW;
+            return SemanticMarkup.RESULT_MEDIUM;
         } else if (influencer.getInfluence() > 0) {
-            return AnsiColor.GREEN;
+            return SemanticMarkup.RESULT_GOOD;
         }
-        return AnsiColor.DEFAULT_COLOR;
+        return SemanticMarkup.NEUTRAL;
     }
 }

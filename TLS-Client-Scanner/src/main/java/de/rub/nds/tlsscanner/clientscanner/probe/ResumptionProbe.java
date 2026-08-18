@@ -122,12 +122,12 @@ public class ResumptionProbe extends TlsClientProbe {
 
     private TestResult getSupportsDtlsCookieExchangeInTicketResumption() {
         // TODO
-        return TestResults.NOT_TESTED_YET;
+        return TestResults.NOT_IMPLEMENTED;
     }
 
     private TestResult getSupportsTicketResumption() {
         // TODO
-        return TestResults.NOT_TESTED_YET;
+        return TestResults.NOT_IMPLEMENTED;
     }
 
     private void addResetConnectionActions(WorkflowTrace trace) {
