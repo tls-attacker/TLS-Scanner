@@ -542,19 +542,19 @@ public class DefaultPrintingScheme {
 
         colorMap.put(
                 TlsAnalyzedProperty.UNENCRYPTED_TICKET,
-                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(
                 TlsAnalyzedProperty.DEFAULT_ENCRYPTION_KEY_TICKET,
-                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(
                 TlsAnalyzedProperty.DEFAULT_HMAC_KEY_TICKET,
-                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(
                 TlsAnalyzedProperty.NO_MAC_CHECK_TICKET,
-                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         colorMap.put(
                 TlsAnalyzedProperty.PADDING_ORACLE_TICKET,
-                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.DEFAULT_COLOR));
+                getDefaultColorEncoding(AnsiColor.RED, AnsiColor.GREEN));
         HashMap<AnalyzedPropertyCategory, TestResultTextEncoder> textMap = new HashMap<>();
         textMap.put(
                 TlsAnalyzedPropertyCategory.ATTACKS, new TestResultTextEncoder(attackEncodingMap));
