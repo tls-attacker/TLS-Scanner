@@ -58,6 +58,7 @@ public class AnalyzedPropertyGuidelineCheck extends TlsGuidelineCheck {
             case CANNOT_BE_TESTED:
             case ERROR_DURING_TEST:
             case NOT_TESTED_YET:
+            case NOT_SCHEDULED:
             case TIMEOUT:
                 return new AnalyzedPropertyGuidelineCheckResult(
                         this, GuidelineAdherence.CHECK_FAILED, property, result, reportResult);
