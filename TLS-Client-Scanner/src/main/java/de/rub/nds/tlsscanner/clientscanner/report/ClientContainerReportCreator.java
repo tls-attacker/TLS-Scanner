@@ -13,7 +13,6 @@ import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
 import de.rub.nds.scanner.core.probe.result.IntegerResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.report.container.HeadlineContainer;
@@ -22,6 +21,7 @@ import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TableContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
+import de.rub.nds.scanner.core.report.markup.SemanticMarkup;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ECPointFormat;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
@@ -174,12 +174,12 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             "Min. RSA Modulus Accepted",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             report.getIntegerResult(
                                             TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA)
                                     .getValue()
                                     .toString(),
-                            AnsiColor.DEFAULT_COLOR));
+                            SemanticMarkup.NEUTRAL));
         }
 
         if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
@@ -187,12 +187,12 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             "Min. RSA Sig. Modulus Accepted",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             report.getIntegerResult(
                                             TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_RSA_SIG)
                                     .getValue()
                                     .toString(),
-                            AnsiColor.DEFAULT_COLOR));
+                            SemanticMarkup.NEUTRAL));
         }
 
         if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS)
@@ -200,12 +200,12 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             "Min. DSS Modulus Accepted",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             report.getIntegerResult(
                                             TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DSS)
                                     .getValue()
                                     .toString(),
-                            AnsiColor.DEFAULT_COLOR));
+                            SemanticMarkup.NEUTRAL));
         }
 
         if (report.getResult(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH)
@@ -213,11 +213,11 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             "Min. DH Modulus Accepted",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             report.getIntegerResult(TlsAnalyzedProperty.SERVER_CERT_MIN_KEY_SIZE_DH)
                                     .getValue()
                                     .toString(),
-                            AnsiColor.DEFAULT_COLOR));
+                            SemanticMarkup.NEUTRAL));
         }
         return container;
     }
@@ -267,9 +267,12 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
     private static List<TextContainer> getCipherSuitesTableHeadlines() {
         List<TextContainer> container = new LinkedList<>();
-        container.add(new TextContainer("Cipher Suite", AnsiColor.BOLD));
-        container.add(new TextContainer("Advertised", AnsiColor.BOLD));
-        container.add(new TextContainer("Negotiated", AnsiColor.BOLD));
+        container.add(
+                new TextContainer("Cipher Suite", SemanticMarkup.REPORT_STRUCTURE_TABLE_HEADING));
+        container.add(
+                new TextContainer("Advertised", SemanticMarkup.REPORT_STRUCTURE_TABLE_HEADING));
+        container.add(
+                new TextContainer("Negotiated", SemanticMarkup.REPORT_STRUCTURE_TABLE_HEADING));
         return container;
     }
 
@@ -413,7 +416,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new TextContainer(
                             "- " + report.getKnownPaddingOracleVulnerability().getShortName(),
-                            AnsiColor.RED));
+                            SemanticMarkup.RESULT_BAD));
         }
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_CRIME, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_FREAK, report));
@@ -436,7 +439,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             containerKey,
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             containerValue,
                             getColorForDhModulusSize(lowestPossibleDheModulusSize.getValue())));
         }
@@ -448,7 +451,7 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             containerKey,
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             containerValue,
                             getColorForDhModulusSize(highestPossibleDheModulusSize.getValue())));
         }
@@ -522,46 +525,48 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             container.add(
                     new KeyValueContainer(
                             "Identification",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             "Could not identify vulnerability. Please contact us if you know which software/hardware is generating this behavior.",
-                            AnsiColor.YELLOW));
+                            SemanticMarkup.RESULT_MEDIUM));
             return container;
         }
         container.add(
                 new KeyValueContainer(
                         "Identification",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         knownVulnerability.getLongName(),
-                        AnsiColor.RED));
+                        SemanticMarkup.RESULT_BAD));
         container.add(
                 new KeyValueContainer(
                         "CVE",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         knownVulnerability.getCve(),
-                        AnsiColor.RED));
-        AnsiColor oracleStrengthColor =
+                        SemanticMarkup.RESULT_BAD));
+        SemanticMarkup oracleStrengthColor =
                 knownVulnerability.getStrength() != PaddingOracleStrength.WEAK
-                        ? AnsiColor.RED
-                        : AnsiColor.YELLOW;
+                        ? SemanticMarkup.RESULT_BAD
+                        : SemanticMarkup.RESULT_MEDIUM;
         container.add(
                 new KeyValueContainer(
                         "Strength",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         knownVulnerability.getStrength().name(),
                         oracleStrengthColor));
-        AnsiColor oracleObservableColor =
-                knownVulnerability.isObservable() ? AnsiColor.RED : AnsiColor.YELLOW;
+        SemanticMarkup oracleObservableColor =
+                knownVulnerability.isObservable()
+                        ? SemanticMarkup.RESULT_BAD
+                        : SemanticMarkup.RESULT_MEDIUM;
         container.add(
                 new KeyValueContainer(
                         "Observable",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         String.valueOf(knownVulnerability.isObservable()),
                         oracleObservableColor));
         container.add(new HeadlineContainer("Vulnerability Description"));
         container.add(createDefaultTextContainer(knownVulnerability.getDescription()));
         container.add(new HeadlineContainer("Affected Products"));
         for (String products : knownVulnerability.getAffectedProducts()) {
-            container.add(new TextContainer(products, AnsiColor.YELLOW));
+            container.add(new TextContainer(products, SemanticMarkup.RESULT_MEDIUM));
         }
         container.add(
                 createDefaultTextContainer(
@@ -600,40 +605,46 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             if (testResult.getValueP() < 0.01) {
                 List<TextContainer> tableLine =
                         resultStrings.stream()
-                                .map(x -> new TextContainer(x, AnsiColor.RED))
+                                .map(x -> new TextContainer(x, SemanticMarkup.RESULT_BAD))
                                 .collect(Collectors.toCollection(LinkedList::new));
                 tableLine.add(
-                        new TextContainer(testResult.getEqualityError().name(), AnsiColor.RED));
-                tableLine.add(new TextContainer("VULNERABLE", AnsiColor.RED));
-                tableLine.add(new TextContainer(valueP, AnsiColor.RED));
+                        new TextContainer(
+                                testResult.getEqualityError().name(), SemanticMarkup.RESULT_BAD));
+                tableLine.add(new TextContainer("VULNERABLE", SemanticMarkup.RESULT_BAD));
+                tableLine.add(new TextContainer(valueP, SemanticMarkup.RESULT_BAD));
                 tableContainer.addLineToTable(tableLine);
             } else if (testResult.getValueP() < 0.05) {
                 List<TextContainer> tableLine =
                         resultStrings.stream()
-                                .map(x -> new TextContainer(x, AnsiColor.YELLOW))
+                                .map(x -> new TextContainer(x, SemanticMarkup.RESULT_MEDIUM))
                                 .collect(Collectors.toCollection(LinkedList::new));
                 tableLine.add(
-                        new TextContainer(testResult.getEqualityError().name(), AnsiColor.YELLOW));
-                tableLine.add(new TextContainer("PROBABLY VULNERABLE", AnsiColor.YELLOW));
-                tableLine.add(new TextContainer(valueP, AnsiColor.YELLOW));
+                        new TextContainer(
+                                testResult.getEqualityError().name(),
+                                SemanticMarkup.RESULT_MEDIUM));
+                tableLine.add(
+                        new TextContainer("PROBABLY VULNERABLE", SemanticMarkup.RESULT_MEDIUM));
+                tableLine.add(new TextContainer(valueP, SemanticMarkup.RESULT_MEDIUM));
                 tableContainer.addLineToTable(tableLine);
             } else if (testResult.getValueP() < 1) {
                 List<TextContainer> tableLine =
                         resultStrings.stream()
-                                .map(x -> new TextContainer(x, AnsiColor.GREEN))
+                                .map(x -> new TextContainer(x, SemanticMarkup.RESULT_GOOD))
                                 .collect(Collectors.toCollection(LinkedList::new));
-                tableLine.add(new TextContainer("No significant difference", AnsiColor.GREEN));
-                tableLine.add(new TextContainer("NOT VULNERABLE", AnsiColor.GREEN));
-                tableLine.add(new TextContainer(valueP, AnsiColor.GREEN));
+                tableLine.add(
+                        new TextContainer("No significant difference", SemanticMarkup.RESULT_GOOD));
+                tableLine.add(new TextContainer("NOT VULNERABLE", SemanticMarkup.RESULT_GOOD));
+                tableLine.add(new TextContainer(valueP, SemanticMarkup.RESULT_GOOD));
                 tableContainer.addLineToTable(tableLine);
             } else {
                 List<TextContainer> tableLine =
                         resultStrings.stream()
-                                .map(x -> new TextContainer(x, AnsiColor.GREEN))
+                                .map(x -> new TextContainer(x, SemanticMarkup.RESULT_GOOD))
                                 .collect(Collectors.toCollection(LinkedList::new));
-                tableLine.add(new TextContainer("No behavior difference", AnsiColor.GREEN));
-                tableLine.add(new TextContainer("NOT VULNERABLE", AnsiColor.GREEN));
-                tableLine.add(new TextContainer(valueP, AnsiColor.GREEN));
+                tableLine.add(
+                        new TextContainer("No behavior difference", SemanticMarkup.RESULT_GOOD));
+                tableLine.add(new TextContainer("NOT VULNERABLE", SemanticMarkup.RESULT_GOOD));
+                tableLine.add(new TextContainer(valueP, SemanticMarkup.RESULT_GOOD));
                 tableContainer.addLineToTable(tableLine);
             }
             if ((detail == ScannerDetail.DETAILED
@@ -664,14 +675,14 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             vectorResult.add(responseTable);
             responseTable.setHeadlineList(
                     List.of(
-                            new TextContainer("Fingerprint", AnsiColor.DEFAULT_COLOR),
-                            new TextContainer("Received (Total)", AnsiColor.DEFAULT_COLOR),
-                            new TextContainer("Received (Percentage)", AnsiColor.DEFAULT_COLOR)));
+                            new TextContainer("Fingerprint", SemanticMarkup.NEUTRAL),
+                            new TextContainer("Received (Total)", SemanticMarkup.NEUTRAL),
+                            new TextContainer("Received (Percentage)", SemanticMarkup.NEUTRAL)));
             for (ResponseCounter counter : vectorContainer.getDistinctResponsesCounterList()) {
-                AnsiColor color =
+                SemanticMarkup color =
                         counter.getFingerprint().equals(defaultAnswer)
-                                ? AnsiColor.GREEN
-                                : AnsiColor.RED;
+                                ? SemanticMarkup.RESULT_GOOD
+                                : SemanticMarkup.RESULT_BAD;
                 List<TextContainer> tableLine = new LinkedList<>();
                 responseTable.addLineToTable(tableLine);
                 tableLine.add(new TextContainer(counter.getFingerprint().toHumanReadable(), color));
@@ -725,21 +736,21 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
         container.add(
                 new KeyValueContainer(
                         "Adhered",
-                        AnsiColor.GREEN,
+                        SemanticMarkup.RESULT_GOOD,
                         String.valueOf(guidelineReport.getAdhered().size()),
-                        AnsiColor.GREEN));
+                        SemanticMarkup.RESULT_GOOD));
         container.add(
                 new KeyValueContainer(
                         "Violated",
-                        AnsiColor.RED,
+                        SemanticMarkup.RESULT_BAD,
                         String.valueOf(guidelineReport.getViolated().size()),
-                        AnsiColor.RED));
+                        SemanticMarkup.RESULT_BAD));
         container.add(
                 new KeyValueContainer(
                         "Failed",
-                        AnsiColor.YELLOW,
+                        SemanticMarkup.RESULT_MEDIUM,
                         String.valueOf(guidelineReport.getFailedChecks().size()),
-                        AnsiColor.YELLOW));
+                        SemanticMarkup.RESULT_MEDIUM));
         container.add(
                 createDefaultKeyValueContainer(
                         "Condition Not Met: ",
@@ -747,7 +758,9 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
 
         if (this.detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
             container.add(
-                    new TextContainer(StringUtils.trim(guidelineReport.getLink()), AnsiColor.BLUE));
+                    new TextContainer(
+                            StringUtils.trim(guidelineReport.getLink()),
+                            SemanticMarkup.REPORT_STRUCTURE_LINK));
             ListContainer detailContainer = new ListContainer(1);
             container.add(detailContainer);
 
@@ -756,7 +769,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
                 for (GuidelineCheckResult result : guidelineReport.getAdhered()) {
                     detailContainer.add(
                             new TextContainer(
-                                    StringUtils.trim(result.getCheckName()), AnsiColor.GREEN));
+                                    StringUtils.trim(result.getCheckName()),
+                                    SemanticMarkup.RESULT_GOOD));
                     detailContainer.add(
                             createDefaultTextContainer(
                                     "\t"
@@ -768,7 +782,9 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             detailContainer.add(new HeadlineContainer("Violated Checks:"));
             for (GuidelineCheckResult result : guidelineReport.getViolated()) {
                 detailContainer.add(
-                        new TextContainer(StringUtils.trim(result.getCheckName()), AnsiColor.RED));
+                        new TextContainer(
+                                StringUtils.trim(result.getCheckName()),
+                                SemanticMarkup.RESULT_BAD));
                 detailContainer.add(
                         createDefaultTextContainer(
                                 "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));
@@ -778,7 +794,8 @@ public class ClientContainerReportCreator extends TlsReportCreator<ClientReport>
             for (GuidelineCheckResult result : guidelineReport.getFailedChecks()) {
                 detailContainer.add(
                         new TextContainer(
-                                StringUtils.trim(result.getCheckName()), AnsiColor.YELLOW));
+                                StringUtils.trim(result.getCheckName()),
+                                SemanticMarkup.RESULT_MEDIUM));
                 detailContainer.add(
                         createDefaultTextContainer(
                                 "\t" + StringUtils.trim(result.toString()).replace("\n", "\n\t")));

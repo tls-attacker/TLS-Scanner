@@ -11,7 +11,6 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
 import de.rub.nds.scanner.core.probe.result.TestResults;
-import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.scanner.core.report.PerformanceData;
 import de.rub.nds.scanner.core.report.PrintingScheme;
 import de.rub.nds.scanner.core.report.container.HeadlineContainer;
@@ -19,6 +18,7 @@ import de.rub.nds.scanner.core.report.container.KeyValueContainer;
 import de.rub.nds.scanner.core.report.container.ListContainer;
 import de.rub.nds.scanner.core.report.container.ReportContainer;
 import de.rub.nds.scanner.core.report.container.TextContainer;
+import de.rub.nds.scanner.core.report.markup.SemanticMarkup;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRatingInfluencer;
 import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.Recommendation;
@@ -80,11 +80,11 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(
                 new TextContainer(
                         "Report for " + report.getHost() + ":" + report.getPort(),
-                        AnsiColor.DEFAULT_COLOR));
+                        SemanticMarkup.NEUTRAL));
         if (report.getServerIsAlive() == Boolean.FALSE) {
             container.add(
                     new TextContainer(
-                            "Cannot reach the Server. Is it online?", AnsiColor.DEFAULT_COLOR));
+                            "Cannot reach the Server. Is it online?", SemanticMarkup.NEUTRAL));
             return container;
         }
         if (report.getSpeaksProtocol() == Boolean.FALSE) {
@@ -93,7 +93,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                             "Server does not seem to support "
                                     + report.getProtocolType().getName()
                                     + " on the scanned port",
-                            AnsiColor.DEFAULT_COLOR));
+                            SemanticMarkup.NEUTRAL));
             return container;
         }
         container.add(createProtocolVersionContainer(report));
@@ -179,7 +179,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         if (report.getSupportedExtensions() != null) {
             container.add(new HeadlineContainer("Supported Extensions"));
             for (ExtensionType type : report.getSupportedExtensions()) {
-                container.add(new TextContainer(type.name(), AnsiColor.DEFAULT_COLOR));
+                container.add(new TextContainer(type.name(), SemanticMarkup.NEUTRAL));
             }
         }
         container.add(new HeadlineContainer("Extensions"));
@@ -202,13 +202,13 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TOKENBINDING) == TestResults.TRUE) {
             container.add(new HeadlineContainer("Tokenbinding Version"));
             for (TokenBindingVersion version : report.getSupportedTokenbindingVersions()) {
-                container.add(new TextContainer(version.toString(), AnsiColor.DEFAULT_COLOR));
+                container.add(new TextContainer(version.toString(), SemanticMarkup.NEUTRAL));
             }
 
             container.add(new HeadlineContainer("Tokenbinding Key Parameters"));
             for (TokenBindingKeyParameters keyParameter :
                     report.getSupportedTokenbindingKeyParameters()) {
-                container.add(new TextContainer(keyParameter.toString(), AnsiColor.DEFAULT_COLOR));
+                container.add(new TextContainer(keyParameter.toString(), SemanticMarkup.NEUTRAL));
             }
         }
         appendTLS13Groups(report, container);
@@ -222,10 +222,10 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             container.add(new HeadlineContainer("TLS 1.3 Named Groups"));
             if (!report.getSupportedTls13Groups().isEmpty()) {
                 for (NamedGroup group : report.getSupportedTls13Groups()) {
-                    container.add(new TextContainer(group.name(), AnsiColor.DEFAULT_COLOR));
+                    container.add(new TextContainer(group.name(), SemanticMarkup.NEUTRAL));
                 }
             } else {
-                container.add(new TextContainer("none", AnsiColor.DEFAULT_COLOR));
+                container.add(new TextContainer("none", SemanticMarkup.NEUTRAL));
             }
         }
     }
@@ -235,21 +235,21 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             container.add(new HeadlineContainer("Supported Named Groups"));
             if (!report.getSupportedNamedGroups().isEmpty()) {
                 for (NamedGroup group : report.getSupportedNamedGroups()) {
-                    container.add(new TextContainer(group.name(), AnsiColor.DEFAULT_COLOR));
+                    container.add(new TextContainer(group.name(), SemanticMarkup.NEUTRAL));
                 }
                 if (report.getResult(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER)
                         == TestResults.TRUE) {
                     container.add(
                             new TextContainer(
                                     "Not all Groups are supported for all Cipher Suites",
-                                    AnsiColor.DEFAULT_COLOR));
+                                    SemanticMarkup.NEUTRAL));
                 }
                 if (report.getResult(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY)
                         == TestResults.TRUE) {
                     container.add(
                             new TextContainer(
                                     "Groups required for ECDSA validation are not enforced",
-                                    AnsiColor.YELLOW));
+                                    SemanticMarkup.RESULT_MEDIUM));
                 }
                 if (detail == ScannerDetail.ALL) {
                     ListContainer curveDetails = new ListContainer(1);
@@ -268,7 +268,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                     }
                 }
             } else {
-                container.add(new TextContainer("none", AnsiColor.DEFAULT_COLOR));
+                container.add(new TextContainer("none", SemanticMarkup.NEUTRAL));
             }
         }
     }
@@ -379,9 +379,9 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             container.add(
                     new KeyValueContainer(
                             "Padding Oracle",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             report.getKnownPaddingOracleVulnerability().getShortName(),
-                            AnsiColor.RED));
+                            SemanticMarkup.RESULT_BAD));
         }
         container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.VULNERABLE_TO_BLEICHENBACHER, report));
@@ -444,17 +444,17 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 container.add(
                         new KeyValueContainer(
                                 alpnProtocol.getPrintableName(),
-                                AnsiColor.DEFAULT_COLOR,
+                                SemanticMarkup.NEUTRAL,
                                 "true",
-                                AnsiColor.DEFAULT_COLOR));
+                                SemanticMarkup.NEUTRAL));
             } else {
                 if (detail.isGreaterEqualTo(ScannerDetail.DETAILED)) {
                     container.add(
                             new KeyValueContainer(
                                     alpnProtocol.getPrintableName(),
-                                    AnsiColor.DEFAULT_COLOR,
+                                    SemanticMarkup.NEUTRAL,
                                     "false",
-                                    AnsiColor.DEFAULT_COLOR));
+                                    SemanticMarkup.NEUTRAL));
                 }
             }
         }
@@ -496,17 +496,17 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                         container.add(
                                 new KeyValueContainer(
                                         "HPKP-Pins",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         report.getNormalHpkpPins().toString(),
-                                        AnsiColor.GREEN));
+                                        SemanticMarkup.RESULT_GOOD));
                     }
                     if (!report.getReportOnlyHpkpPins().isEmpty()) {
                         container.add(
                                 new KeyValueContainer(
                                         "Report Only HPKP-Pins",
-                                        AnsiColor.DEFAULT_COLOR,
+                                        SemanticMarkup.NEUTRAL,
                                         report.getReportOnlyHpkpPins().toString(),
-                                        AnsiColor.GREEN));
+                                        SemanticMarkup.RESULT_GOOD));
                     }
 
                 } else {
@@ -536,7 +536,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_COMMON_DH_PRIMES, report));
         if (report.getCommonDhValues() != null && !report.getCommonDhValues().isEmpty()) {
             for (CommonDhValues value : report.getCommonDhValues()) {
-                container.add(new TextContainer(value.getName(), AnsiColor.YELLOW));
+                container.add(new TextContainer(value.getName(), SemanticMarkup.RESULT_MEDIUM));
             }
         }
         container.add(
@@ -549,30 +549,30 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 container.add(
                         new KeyValueContainer(
                                 "DH Strength",
-                                AnsiColor.DEFAULT_COLOR,
+                                SemanticMarkup.NEUTRAL,
                                 String.valueOf(report.getWeakestDhStrength()),
-                                AnsiColor.RED));
+                                SemanticMarkup.RESULT_BAD));
             } else if (report.getWeakestDhStrength() < 2000) {
                 container.add(
                         new KeyValueContainer(
                                 "DH Strength",
-                                AnsiColor.DEFAULT_COLOR,
+                                SemanticMarkup.NEUTRAL,
                                 String.valueOf(report.getWeakestDhStrength()),
-                                AnsiColor.YELLOW));
+                                SemanticMarkup.RESULT_MEDIUM));
             } else if (report.getWeakestDhStrength() < 4100) {
                 container.add(
                         new KeyValueContainer(
                                 "DH Strength",
-                                AnsiColor.DEFAULT_COLOR,
+                                SemanticMarkup.NEUTRAL,
                                 String.valueOf(report.getWeakestDhStrength()),
-                                AnsiColor.GREEN));
+                                SemanticMarkup.RESULT_GOOD));
             } else {
                 container.add(
                         new KeyValueContainer(
                                 "DH Strength",
-                                AnsiColor.DEFAULT_COLOR,
+                                SemanticMarkup.NEUTRAL,
                                 String.valueOf(report.getWeakestDhStrength()),
-                                AnsiColor.YELLOW));
+                                SemanticMarkup.RESULT_MEDIUM));
             }
         }
         return container;
@@ -636,16 +636,22 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                                                 + influencer.getResult()
                                                 + additionalInfo;
                                 if (scoreInfluence > 0) {
-                                    container.add(new TextContainer(result, AnsiColor.GREEN));
+                                    container.add(
+                                            new TextContainer(result, SemanticMarkup.RESULT_GOOD));
                                 } else if (scoreInfluence < -50) {
-                                    container.add(new TextContainer(result, AnsiColor.RED));
+                                    container.add(
+                                            new TextContainer(result, SemanticMarkup.RESULT_BAD));
                                 } else if (scoreInfluence < 0) {
-                                    container.add(new TextContainer(result, AnsiColor.YELLOW));
+                                    container.add(
+                                            new TextContainer(
+                                                    result, SemanticMarkup.RESULT_MEDIUM));
                                 }
                             });
         } catch (Exception ex) {
             LOGGER.error(ex);
-            container.add(new TextContainer("Could not append scoring results", AnsiColor.RED));
+            container.add(
+                    new TextContainer(
+                            "Could not append scoring results", SemanticMarkup.RESULT_BAD));
         }
         return container;
     }
@@ -689,7 +695,8 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         } catch (Exception ex) {
             container.add(
                     new TextContainer(
-                            "Could not append recommendations - unrelated error", AnsiColor.RED));
+                            "Could not append recommendations - unrelated error",
+                            SemanticMarkup.SCANNER_ERROR_PROGRAMMING));
             LOGGER.error("Could not append recommendations", ex);
         }
         return container;
@@ -701,11 +708,11 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             Recommendation recommendation,
             PropertyResultRatingInfluencer influencer,
             PropertyResultRecommendation resultRecommendation) {
-        AnsiColor color = getColorForRecommendation(influencer);
+        SemanticMarkup color = getColorForRecommendation(influencer);
         outerContainer.add(
                 new KeyValueContainer(
                         recommendation.getShortName(),
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         influencer.getResult().getName(),
                         color));
         int scoreInfluence = 0;
@@ -726,25 +733,25 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         }
         outerContainer.add(
                 new KeyValueContainer(
-                        "Score", AnsiColor.DEFAULT_COLOR, scoreInfluence + additionalInfo, color));
+                        "Score", SemanticMarkup.NEUTRAL, scoreInfluence + additionalInfo, color));
         if (influencer.hasScoreCap()) {
             outerContainer.add(
                     new KeyValueContainer(
                             "Score cap",
-                            AnsiColor.DEFAULT_COLOR,
+                            SemanticMarkup.NEUTRAL,
                             influencer.getScoreCap().toString(),
                             color));
         }
         outerContainer.add(
                 new KeyValueContainer(
                         "Information",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         resultRecommendation.getShortDescription(),
                         color));
         outerContainer.add(
                 new KeyValueContainer(
                         "Recommendation",
-                        AnsiColor.DEFAULT_COLOR,
+                        SemanticMarkup.NEUTRAL,
                         resultRecommendation.getHandlingRecommendation(),
                         color));
     }
@@ -753,7 +760,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
             ListContainer outerContainer,
             PropertyResultRatingInfluencer influencer,
             PropertyResultRecommendation resultRecommendation) {
-        AnsiColor color = getColorForRecommendation(influencer);
+        SemanticMarkup color = getColorForRecommendation(influencer);
         outerContainer.add(
                 new TextContainer(
                         resultRecommendation.getShortDescription()
