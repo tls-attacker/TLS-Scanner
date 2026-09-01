@@ -362,6 +362,9 @@ public final class TlsServerScanner
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
         report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
+        report.putResult(
+                TlsAnalyzedProperty.STARTTLS_REQUIRES_CAPABILITY_DISCOVERY,
+                configSelector.isStarttlsCapabilityDiscoveryRequired());
         report.putResult(QuicAnalyzedProperty.RETRY_REQUIRED, configSelector.isQuicRetryRequired());
         return isConnectable && speaksProtocol && isHandshaking;
     }

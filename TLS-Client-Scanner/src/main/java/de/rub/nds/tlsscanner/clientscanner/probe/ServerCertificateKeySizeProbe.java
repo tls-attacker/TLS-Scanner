@@ -231,7 +231,8 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
     private Config getRsaConfig(List<CipherSuite> cipherSuites, RsaPrivateKey keyMaterial) {
         Config config = scannerConfig.createConfig();
         config.setDefaultServerSupportedCipherSuites(cipherSuites);
-        X509CertificateConfig certConfig = config.getCertificateChainConfig().getFirst();
+        X509CertificateConfig certConfig =
+                config.getCertificateChainConfigs().getFirst().getFirst();
         certConfig.setDefaultSubjectRsaModulus(keyMaterial.getModulus());
         certConfig.setDefaultSubjectRsaPrivateExponent(keyMaterial.getPrivateExponent());
         certConfig.setDefaultIssuerRsaPublicKey(RSA_PUBLIC_KEY);
