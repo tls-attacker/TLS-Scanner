@@ -82,19 +82,15 @@ public class ConfigSelector {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private boolean speaksProtocol = false;
-
-    /** Greeting, upgrade command and upgrade reply, the trace TLS-Attacker builds for STARTTLS. */
-    private static final int MINIMAL_STARTTLS_ACTION_COUNT = 3;
-
     private boolean isHandshaking = false;
     private boolean quicRetryRequired = false;
 
     /**
-     * The capability-discovery exchange the target turned out to need, or null while the minimal
-     * upgrade still works. Learned once by {@link #findWorkingConfigs()} and reused for the rest of
-     * the scan, so probes never repeat the refused attempt.
+     * Whether the target turned out to need its capability-discovery exchange. Learned once by
+     * {@link #findWorkingConfigs()} and stamped onto every config this selector hands out, so the
+     * probes that follow build the working upgrade instead of repeating the refused one.
      */
-    private StarttlsCapabilityDiscovery starttlsDiscovery = null;
+    private boolean starttlsUseCapabilityDiscovery = false;
 
     /**
      * The reply the target sent to the minimal upgrade command, which decides whether running the
@@ -153,30 +149,17 @@ public class ConfigSelector {
      */
     private boolean retryWithStarttlsCapabilityDiscovery() {
         StarttlsType starttlsType = scannerConfig.getStartTlsDelegate().getStarttlsType();
-        if (starttlsType == StarttlsType.NONE || starttlsDiscovery != null) {
-            return false;
-        }
-        StarttlsCapabilityDiscovery discovery = StarttlsCapabilityDiscovery.forType(starttlsType);
-        if (discovery == null) {
-            return false;
-        }
-        if (!discovery.isRetryableRefusal(starttlsMinimalUpgradeReply)) {
-            LOGGER.debug(
-                    "Target did not refuse the {} upgrade in a way the capability exchange would "
-                            + "fix (reply: {}), not retrying",
-                    starttlsType,
-                    starttlsMinimalUpgradeReply == null
-                            ? "none"
-                            : starttlsMinimalUpgradeReply.trim());
+        if (starttlsUseCapabilityDiscovery
+                || !StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                        starttlsType, starttlsMinimalUpgradeReply)) {
             return false;
         }
         LOGGER.info(
-                "Target refused the direct {} upgrade with \"{}\", retrying with its {} "
-                        + "capability exchange",
+                "Target refused the direct {} upgrade with \"{}\", retrying with its capability "
+                        + "discovery exchange",
                 starttlsType,
-                starttlsMinimalUpgradeReply.trim(),
-                discovery.getCapability());
-        starttlsDiscovery = discovery;
+                starttlsMinimalUpgradeReply.trim());
+        starttlsUseCapabilityDiscovery = true;
         return findWorkingConfigsWithCurrentStarttlsVariant();
     }
 
@@ -282,6 +265,10 @@ public class ConfigSelector {
         applyScannerConfigParameters(baseConfig);
         repairSni(baseConfig);
         repairConfig(baseConfig);
+        // After the delegates, which is where the STARTTLS type itself is applied. Every config
+        // that leaves this selector carries the upgrade variant the target accepted, so the probes
+        // build it too rather than repeating the refused one.
+        baseConfig.setStarttlsUseCapabilityDiscovery(starttlsUseCapabilityDiscovery);
     }
 
     private void pauseSearch() {
@@ -298,7 +285,6 @@ public class ConfigSelector {
         WorkflowTrace trace =
                 factory.createWorkflowTrace(
                         WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-        applyStarttlsCapabilityDiscovery(trace);
         State state = new State(config, trace);
         parallelExecutor.bulkExecuteStateTasks(state);
         recordStarttlsMinimalUpgradeReply(trace);
@@ -320,26 +306,6 @@ public class ConfigSelector {
     }
 
     /**
-     * Replaces the minimal STARTTLS upgrade TLS-Attacker built with the capability-discovery
-     * variant, once the target has shown it needs one.
-     *
-     * <p>TLS-Attacker always builds greeting, upgrade command, upgrade reply. Those three are
-     * dropped and the longer exchange is put in their place, ahead of the EnableLayerAction that
-     * switches the connection over to TLS.
-     *
-     * @param trace the freshly built trace to rewrite
-     */
-    private void applyStarttlsCapabilityDiscovery(WorkflowTrace trace) {
-        if (starttlsDiscovery == null) {
-            return;
-        }
-        for (int i = 0; i < MINIMAL_STARTTLS_ACTION_COUNT; i++) {
-            trace.removeTlsAction(0);
-        }
-        starttlsDiscovery.prependTo(trace);
-    }
-
-    /**
      * Keeps the refusal the target sent to the minimal upgrade, which decides whether the
      * capability exchange is worth a second attempt. Only the first is kept; later connections
      * repeat it.
@@ -347,14 +313,10 @@ public class ConfigSelector {
      * @param trace an executed trace
      */
     private void recordStarttlsMinimalUpgradeReply(WorkflowTrace trace) {
-        if (starttlsDiscovery != null
-                || starttlsMinimalUpgradeReply != null
-                || scannerConfig.getStartTlsDelegate().getStarttlsType() == StarttlsType.NONE) {
+        if (starttlsUseCapabilityDiscovery || starttlsMinimalUpgradeReply != null) {
             return;
         }
-        starttlsMinimalUpgradeReply =
-                StarttlsCapabilityDiscovery.getMinimalUpgradeReply(
-                        trace, MINIMAL_STARTTLS_ACTION_COUNT);
+        starttlsMinimalUpgradeReply = StarttlsCapabilityDiscovery.getMinimalUpgradeReply(trace);
     }
 
     private void applyPerformanceParamters(Config config) {
@@ -555,6 +517,16 @@ public class ConfigSelector {
      *
      * @return true if QUIC retry is required, false otherwise
      */
+    /**
+     * Whether the target required its capability-discovery exchange before accepting the STARTTLS
+     * upgrade.
+     *
+     * @return true if the minimal upgrade was refused and discovery was needed
+     */
+    public boolean isStarttlsCapabilityDiscoveryRequired() {
+        return starttlsUseCapabilityDiscovery;
+    }
+
     public boolean isQuicRetryRequired() {
         return quicRetryRequired;
     }
@@ -564,16 +536,6 @@ public class ConfigSelector {
      *
      * @return the server scanner configuration
      */
-    /**
-     * Whether the target required its capability-discovery exchange before accepting the STARTTLS
-     * upgrade.
-     *
-     * @return true if the minimal upgrade was refused and discovery was needed
-     */
-    public boolean isStarttlsCapabilityDiscoveryRequired() {
-        return starttlsDiscovery != null;
-    }
-
     public ServerScannerConfig getScannerConfig() {
         return scannerConfig;
     }
