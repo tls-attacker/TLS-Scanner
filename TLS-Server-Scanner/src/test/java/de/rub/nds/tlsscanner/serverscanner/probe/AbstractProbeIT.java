@@ -101,6 +101,15 @@ public abstract class AbstractProbeIT extends AbstractDockerbasedIT {
     protected abstract boolean executedAsPlanned();
 
     protected boolean verifyProperty(TlsAnalyzedProperty property, TestResult result) {
-        return report.getResult(property) == result;
+        var actual = report.getResult(property);
+        if (actual != result) {
+            LOGGER.error(
+                    "Property {} was expected to be {}, but was {}",
+                    property,
+                    result,
+                    actual);
+            return false;
+        }
+        return true;
     }
 }
