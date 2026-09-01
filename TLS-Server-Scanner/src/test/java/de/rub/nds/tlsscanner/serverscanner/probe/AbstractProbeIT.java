@@ -103,11 +103,7 @@ public abstract class AbstractProbeIT extends AbstractDockerbasedIT {
     protected boolean verifyProperty(TlsAnalyzedProperty property, TestResult result) {
         var actual = report.getResult(property);
         if (actual != result) {
-            LOGGER.error(
-                    "Property {} was expected to be {}, but was {}",
-                    property,
-                    result,
-                    actual);
+            LOGGER.error("Property {} was expected to be {}, but was {}", property, result, actual);
             return false;
         }
         return true;
