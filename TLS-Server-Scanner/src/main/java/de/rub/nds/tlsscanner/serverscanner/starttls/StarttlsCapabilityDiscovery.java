@@ -12,7 +12,10 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveRegexTextAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
+import de.rub.nds.tlsattacker.core.workflow.factory.StartTlsDialect;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Reads a STARTTLS target's refusal to decide whether its capability-discovery exchange is worth a
@@ -20,61 +23,54 @@ import java.util.List;
  *
  * <p>TLS-Attacker builds both upgrade variants and picks between them from the config. This only
  * answers the question the config cannot: whether the target we are looking at needs the longer
- * one.
+ * one. What each protocol says is the dialect's business, so nothing here names one.
  */
 public final class StarttlsCapabilityDiscovery {
-
-    /**
-     * The only refusal that says the upgrade could still succeed in a different order. RFC 959
-     * defines 503 as a bad sequence of commands, which is exactly what a server means when it wants
-     * its capability exchange run first. Every other error either rejects the command itself (500,
-     * 502, 504), or describes a condition the exchange does not change (421, 431, 530), so retrying
-     * those would only cost a connection.
-     */
-    private static final String BAD_SEQUENCE_STATUS = "503";
-
-    /** Greeting, upgrade command and upgrade reply, the trace TLS-Attacker builds by default. */
-    private static final int MINIMAL_UPGRADE_ACTION_COUNT = 3;
 
     private StarttlsCapabilityDiscovery() {}
 
     /**
      * Whether the target should be retried with its capability-discovery exchange.
      *
-     * <p>True only for a protocol TLS-Attacker can build the longer upgrade for, and only when the
-     * target refused with a bad sequence. Anything else, including no reply at all, is not retried:
-     * there is no evidence discovery would help.
+     * <p>True only when the protocol has a dialect that can tell a complaint about the order of the
+     * commands apart from a refusal of the upgrade itself, and the target answered with the former.
+     * Anything else, including no reply at all, is not retried: there is no evidence discovery
+     * would help.
      *
      * @param type the STARTTLS type being scanned
      * @param upgradeReply the text the target sent in response to the upgrade command
      * @return true if the discovery exchange is worth attempting
      */
     public static boolean shouldRetryWithDiscovery(StarttlsType type, String upgradeReply) {
-        return type == StarttlsType.FTP
-                && upgradeReply != null
-                && upgradeReply.trim().startsWith(BAD_SEQUENCE_STATUS);
+        if (upgradeReply == null) {
+            return false;
+        }
+        return StartTlsDialect.forType(type)
+                .map(StartTlsDialect::badSequenceRegex)
+                .filter(Objects::nonNull)
+                .filter(regex -> Pattern.compile(regex).matcher(upgradeReply.trim()).find())
+                .isPresent();
     }
 
     /**
-     * Returns the reply the target sent to the upgrade command of a minimal-variant trace, or null
-     * if the trace never got that far.
+     * Returns the last reply the target sent during a text-based STARTTLS prefix, or null if it
+     * never sent one.
      *
-     * <p>The upgrade reply is the third action of the prefix TLS-Attacker builds for the minimal
-     * variant. The discovery variant puts its capability exchange in between, so this must only be
-     * called on a trace built without discovery; the index would otherwise name the discovery reply
-     * instead.
+     * <p>The upgrade reply is the last thing read before the trace either gives up or starts the
+     * handshake, so searching from the end finds it without counting the actions in front of it.
+     * That keeps this independent of which upgrade variant built the trace and of how long a given
+     * protocol's exchange is.
      *
-     * @param workflowTrace an executed trace built with the minimal upgrade
+     * @param workflowTrace an executed trace
      * @return the received upgrade reply, or null
      */
     public static String getMinimalUpgradeReply(WorkflowTrace workflowTrace) {
         List<TlsAction> actions = workflowTrace.getTlsActions();
-        if (actions.size() < MINIMAL_UPGRADE_ACTION_COUNT) {
-            return null;
-        }
-        TlsAction action = actions.get(MINIMAL_UPGRADE_ACTION_COUNT - 1);
-        if (action instanceof ReceiveRegexTextAction) {
-            return ((ReceiveRegexTextAction) action).getReceivedText();
+        for (int i = actions.size() - 1; i >= 0; i--) {
+            if (actions.get(i) instanceof ReceiveRegexTextAction receiveAction
+                    && receiveAction.getReceivedText() != null) {
+                return receiveAction.getReceivedText();
+            }
         }
         return null;
     }
