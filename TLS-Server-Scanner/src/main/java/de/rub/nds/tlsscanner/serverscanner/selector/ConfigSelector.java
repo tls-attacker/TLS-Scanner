@@ -90,7 +90,7 @@ public class ConfigSelector {
      * {@link #findWorkingConfigs()} and stamped onto every config this selector hands out, so the
      * probes that follow build the working upgrade instead of repeating the refused one.
      */
-    private boolean starttlsUseCapabilityDiscovery = false;
+    private boolean targetRequiresCapabilityDiscovery = false;
 
     /**
      * The reply the target sent to the minimal upgrade command, which decides whether running the
@@ -149,7 +149,7 @@ public class ConfigSelector {
      */
     private boolean retryWithStarttlsCapabilityDiscovery() {
         StarttlsType starttlsType = scannerConfig.getStartTlsDelegate().getStarttlsType();
-        if (starttlsUseCapabilityDiscovery
+        if (targetRequiresCapabilityDiscovery
                 || !StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
                         starttlsType, starttlsMinimalUpgradeReply)) {
             return false;
@@ -159,7 +159,7 @@ public class ConfigSelector {
                         + "discovery exchange",
                 starttlsType,
                 starttlsMinimalUpgradeReply.trim());
-        starttlsUseCapabilityDiscovery = true;
+        targetRequiresCapabilityDiscovery = true;
         return findWorkingConfigsWithCurrentStarttlsVariant();
     }
 
@@ -268,7 +268,7 @@ public class ConfigSelector {
         // After the delegates, which is where the STARTTLS type itself is applied. Every config
         // that leaves this selector carries the upgrade variant the target accepted, so the probes
         // build it too rather than repeating the refused one.
-        baseConfig.setStarttlsUseCapabilityDiscovery(starttlsUseCapabilityDiscovery);
+        baseConfig.setStarttlsUseCapabilityDiscovery(targetRequiresCapabilityDiscovery);
     }
 
     private void pauseSearch() {
@@ -313,7 +313,7 @@ public class ConfigSelector {
      * @param trace an executed trace
      */
     private void recordStarttlsMinimalUpgradeReply(WorkflowTrace trace) {
-        if (starttlsUseCapabilityDiscovery || starttlsMinimalUpgradeReply != null) {
+        if (targetRequiresCapabilityDiscovery || starttlsMinimalUpgradeReply != null) {
             return;
         }
         starttlsMinimalUpgradeReply = StarttlsCapabilityDiscovery.getMinimalUpgradeReply(trace);
@@ -524,7 +524,7 @@ public class ConfigSelector {
      * @return true if the minimal upgrade was refused and discovery was needed
      */
     public boolean isStarttlsCapabilityDiscoveryRequired() {
-        return starttlsUseCapabilityDiscovery;
+        return targetRequiresCapabilityDiscovery;
     }
 
     public boolean isQuicRetryRequired() {
