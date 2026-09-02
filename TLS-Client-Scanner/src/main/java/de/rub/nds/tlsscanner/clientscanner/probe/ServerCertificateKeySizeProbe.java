@@ -147,8 +147,8 @@ public class ServerCertificateKeySizeProbe extends TlsClientProbe {
         put(
                 TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_RSA_SIG,
                 resolveResult(minimumRSASigKeySize, getSortedKeySizes(RSA_KEYS).getFirst()));
-        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS, TestResults.NOT_TESTED_YET);
-        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH, TestResults.NOT_TESTED_YET);
+        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DSS, TestResults.NOT_IMPLEMENTED);
+        put(TlsAnalyzedProperty.ENFORCES_SERVER_CERT_MIN_KEY_SIZE_DH, TestResults.NOT_IMPLEMENTED);
     }
 
     private TestResult resolveResult(Integer determinedKeySize, int ourLowestKeySize) {

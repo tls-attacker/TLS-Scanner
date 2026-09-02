@@ -41,6 +41,17 @@ These can be obtained by compiling the app yourself or by
 $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
+TLS-Scanner will evaluate the specified server (here `localhost` on port `4433`), and in the end print a report.
+The report uses colors to convey the severity of the findings:
+- Green: A good result.
+- Yellow: A warning, which may be a potential problem.
+- Yellow Background: Results where the scanner is unsure whether the target is vulnerable.
+- Red: A severe problem, which should be fixed.
+- Default color (depending on your terminal, likely black or white): A neutral result, which is neither good nor bad. This includes informational results.
+- Blue: The scanner could not scan the server for this specific test. This is likely due to a prerequisite for this test to not being supported.
+- Purple: The scanner encountered an error while scanning the server for this specific test. This can be the result of a bug in the scanner, but also due to the server not supporting a required feature.
+- Cyan: Used for structuring the report (headings, ...).
+
 ## Important Parameters
 
 You must specify a host you want to scan with the -connect parameter.
