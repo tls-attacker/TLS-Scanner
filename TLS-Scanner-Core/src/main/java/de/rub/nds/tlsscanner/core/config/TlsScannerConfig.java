@@ -17,13 +17,12 @@ import de.rub.nds.tlsattacker.core.config.delegate.QuicDelegate;
 import de.rub.nds.tlsattacker.core.config.delegate.StarttlsDelegate;
 import de.rub.nds.tlsscanner.core.config.delegate.CallbackDelegate;
 import de.rub.nds.tlsscanner.core.config.delegate.DtlsDelegate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TlsScannerConfig extends TLSDelegateConfig {
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    @Parameter(
-            names = "-timeout",
-            required = false,
-            description = "The timeout used for the scans in ms (default 1000)")
     private int timeout = 1000;
 
     @ParametersDelegate private DtlsDelegate dtlsDelegate;
@@ -75,7 +74,18 @@ public class TlsScannerConfig extends TLSDelegateConfig {
         return timeout;
     }
 
+    @Parameter(
+            names = "-timeout",
+            required = false,
+            description = "The timeout used for individual actions within connections in ms (default 1000)")
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+        if(timeout < 20){
+            LOGGER.warn("Timeout is set to a very low value. This may lead to inconclusive results or unexpected behavior.");
+        } else if(timeout < 100){
+            LOGGER.warn("Timeout is set to a low value not suitable for remote servers. This may lead to inconclusive results or unexpected behavior.");
+        } else if(timeout < 500){
+            LOGGER.info("Timeout is set to a low value not suitable for slow remote servers. This may lead to inconclusive results or unexpected behavior.");
+        }
     }
 }
