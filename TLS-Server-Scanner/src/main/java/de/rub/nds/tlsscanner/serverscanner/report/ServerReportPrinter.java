@@ -3163,7 +3163,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
 
     public void appendTimeoutWarnings(StringBuilder builder) {
         var issues = report.getExtractedValueContainer(TrackableValueType.CONNECTION_ISSUE);
-        if (issues.getNumberOfExtractedValues() > 0) {
+        if (issues != null && issues.getNumberOfExtractedValues() > 0) {
             prettyAppendHeading(builder, "Connection Issues");
             prettyAppend(
                     builder,
