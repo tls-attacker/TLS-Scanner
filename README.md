@@ -93,8 +93,9 @@ A profile is a JSON file with:
   inheritance).
 - `inheritedFromProfiles`: paths to other profiles to combine probes from, resolved relative to
   the directory of the profile file declaring them (an absolute path is used as-is).
-- `probes`: the probes to run, each identified by the fully qualified name of the `ProbeType` enum
-  class implementing it plus the constant name. A single profile can freely mix probes from
+- `probes`: the probes to run, as a map from the fully qualified name of a `ProbeType` enum class
+  to the list of its constant names to run. This groups probes by type instead of repeating the
+  type for every single probe, while a single profile can still freely combine probes from
   different `ProbeType` implementations, e.g. `TlsProbeType` and `QuicProbeType`.
 - `settings` (optional): overrides for parameters like `-scanDetail`, `-reportDetail`,
   `-postAnalysisDetail`, `-noColor`, `-outputFile`, `-probeTimeout`, `-parallelProbes`, and
@@ -112,10 +113,9 @@ Example, combining a base profile's probes with your own and tuning the scan det
 ```json
 {
     "name": "base",
-    "probes": [
-        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "PROTOCOL_VERSION" },
-        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "CIPHER_SUITE" }
-    ]
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.TlsProbeType": ["PROTOCOL_VERSION", "CIPHER_SUITE"]
+    }
 }
 ```
 
@@ -128,9 +128,9 @@ Example, combining a base profile's probes with your own and tuning the scan det
     "settings": {
         "scanDetail": "QUICK"
     },
-    "probes": [
-        { "type": "de.rub.nds.tlsscanner.core.constants.QuicProbeType", "name": "SUPPORTED_VERSIONS" }
-    ]
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.QuicProbeType": ["SUPPORTED_VERSIONS"]
+    }
 }
 ```
 
