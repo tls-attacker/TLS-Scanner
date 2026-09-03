@@ -14,6 +14,12 @@ A profile is a JSON file with:
 - `probes`: the probes to run, each identified by the fully qualified name of the `ProbeType` enum
   class implementing it plus the constant name. A single profile can freely mix probes from
   different `ProbeType` implementations, e.g. `TlsProbeType` and `QuicProbeType`.
+- `settings` (optional): overrides for `ExecutorConfig` fields — `noColor`, `scanDetail`,
+  `postAnalysisDetail`, `reportDetail`, `outputFile`, `probeTimeout`, `parallelProbes`,
+  `overallThreads`. Any field left out keeps its normal default (or whatever was passed on the
+  command line). **Unlike `probes`, `settings` are not inherited** — only the settings declared
+  directly on the profile you point `-profile` at apply, even if it inherits probes from other
+  profiles.
 
 Only the probes resolved from the active profile (and everything it inherits from) are executed;
 everything else is skipped.

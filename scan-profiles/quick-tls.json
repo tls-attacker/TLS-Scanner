@@ -1,6 +1,10 @@
 {
     "name": "quick-tls",
     "inheritedFromProfiles": [],
+    "settings": {
+        "scanDetail": "QUICK",
+        "reportDetail": "QUICK"
+    },
     "probes": [
         { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "PROTOCOL_VERSION" },
         { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "CIPHER_SUITE" },
