@@ -77,15 +77,19 @@ public class TlsScannerConfig extends TLSDelegateConfig {
     @Parameter(
             names = "-timeout",
             required = false,
-            description = "The timeout used for individual actions within connections in ms (default 1000)")
+            description =
+                    "The timeout used for individual actions within connections in ms (default 1000)")
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-        if(timeout < 20){
-            LOGGER.warn("Timeout is set to a very low value. This may lead to inconclusive results or unexpected behavior.");
-        } else if(timeout < 100){
-            LOGGER.warn("Timeout is set to a low value not suitable for remote servers. This may lead to inconclusive results or unexpected behavior.");
-        } else if(timeout < 500){
-            LOGGER.info("Timeout is set to a low value not suitable for slow remote servers. This may lead to inconclusive results or unexpected behavior.");
+        if (timeout < 20) {
+            LOGGER.warn(
+                    "Timeout is set to a very low value. This may lead to inconclusive results or unexpected behavior.");
+        } else if (timeout < 100) {
+            LOGGER.warn(
+                    "Timeout is set to a low value not suitable for remote servers. This may lead to inconclusive results or unexpected behavior.");
+        } else if (timeout < 500) {
+            LOGGER.info(
+                    "Timeout is set to a low value not suitable for slow remote servers. This may lead to inconclusive results or unexpected behavior.");
         }
     }
 }

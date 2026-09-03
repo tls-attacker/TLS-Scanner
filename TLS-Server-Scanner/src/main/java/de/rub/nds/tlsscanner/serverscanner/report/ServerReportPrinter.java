@@ -3165,8 +3165,16 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         var issues = report.getExtractedValueContainer(TrackableValueType.CONNECTION_ISSUE);
         if (issues.getNumberOfExtractedValues() > 0) {
             prettyAppendHeading(builder, "Connection Issues");
-            prettyAppend(builder, "WARNING: Encountered connection issues during the scan. This may indicate that the server is not responding properly or is blocking certain requests. Some results might have become inaccurate due to this.", SemanticMarkup.SCANNER_ERROR_SERVER_DEPENDENT);
-            prettyAppend(builder, "Encountered "+issues.getNumberOfExtractedValues()+" instances where the transport layer (TCP/UDP) was not properly initialized.", SemanticMarkup.SCANNER_ERROR_SERVER_DEPENDENT);
+            prettyAppend(
+                    builder,
+                    "WARNING: Encountered connection issues during the scan. This may indicate that the server is not responding properly or is blocking certain requests. Some results might have become inaccurate due to this.",
+                    SemanticMarkup.SCANNER_ERROR_SERVER_DEPENDENT);
+            prettyAppend(
+                    builder,
+                    "Encountered "
+                            + issues.getNumberOfExtractedValues()
+                            + " instances where the transport layer (TCP/UDP) was not properly initialized.",
+                    SemanticMarkup.SCANNER_ERROR_SERVER_DEPENDENT);
         }
     }
 }
