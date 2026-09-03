@@ -80,6 +80,64 @@ If you want to perform a fast scan and get a quick overview over your system, we
 
 If you want to fully evaluate your system and execute everything that we have, we recommend to use both detail levels set to `ALL`. This executes all existing probes fully and prints very detailed information for further analysis and evaluation.
 
+## Scan Profiles
+
+Instead of (or in addition to) setting parameters like `-scanDetail` individually, you can bundle
+which probes to run and which of these parameters to use into a reusable JSON scan profile with
+the `-profile <path/to/profile.json>` parameter. It is available on both `TlsServerScanner` and
+`TlsClientScanner`.
+
+A profile is a JSON file with:
+
+- `name`: the profile's name, used by other profiles to inherit from it.
+- `inheritedFromProfiles`: names of other profiles to combine probes from. Referenced profiles are
+  looked up among the other `*.json` files in the same directory as the profile you point
+  `-profile` at.
+- `probes`: the probes to run, each identified by the fully qualified name of the `ProbeType` enum
+  class implementing it plus the constant name. A single profile can freely mix probes from
+  different `ProbeType` implementations, e.g. `TlsProbeType` and `QuicProbeType`.
+- `settings` (optional): overrides for parameters like `-scanDetail`, `-reportDetail`,
+  `-postAnalysisDetail`, `-noColor`, `-outputFile`, `-probeTimeout`, `-parallelProbes`, and
+  `-threads`. Any field left out keeps its normal default (or whatever was passed on the command
+  line). **Unlike `probes`, `settings` are not inherited** — only the settings declared directly on
+  the profile you point `-profile` at apply, even if it inherits probes from other profiles.
+
+Only the probes resolved from the active profile (and everything it inherits from) are executed;
+everything else is skipped.
+
+Example, combining a base profile's probes with your own and tuning the scan detail:
+
+`base.json`:
+```json
+{
+    "name": "base",
+    "probes": [
+        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "PROTOCOL_VERSION" },
+        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "CIPHER_SUITE" }
+    ]
+}
+```
+
+`quic.json` (in the same directory as `base.json`):
+```json
+{
+    "name": "quic",
+    "inheritedFromProfiles": ["base"],
+    "settings": {
+        "scanDetail": "QUICK"
+    },
+    "probes": [
+        { "type": "de.rub.nds.tlsscanner.core.constants.QuicProbeType", "name": "SUPPORTED_VERSIONS" }
+    ]
+}
+```
+
+```bash
+$ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433 -profile quic.json
+```
+
+This runs `PROTOCOL_VERSION`, `CIPHER_SUITE`, and `SUPPORTED_VERSIONS` with `-scanDetail QUICK`.
+
 ## All Parameters
 
 To get detailed information about all possible parameters, use the `-help` parameter or execute the jar without any parameters set.
