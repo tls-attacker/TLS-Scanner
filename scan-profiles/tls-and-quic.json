@@ -1,6 +1,6 @@
 {
     "name": "tls-and-quic",
-    "inheritedFromProfiles": ["quick-tls"],
+    "inheritedFromProfiles": ["quick-tls.json"],
     "settings": {
         "scanDetail": "NORMAL",
         "parallelProbes": 2
