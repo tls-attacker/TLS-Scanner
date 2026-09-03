@@ -143,6 +143,18 @@ $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433 -profile quic.js
 
 This runs `PROTOCOL_VERSION`, `CIPHER_SUITE`, and `SUPPORTED_VERSIONS` with `-scanDetail QUICK`.
 
+To see every probe available for a scanner (without connecting to a target), use `-listProbes`.
+It prints them grouped by `ProbeType` class in the exact JSON syntax a profile's `probes` field
+expects, so you can copy-paste it straight into a profile:
+
+```bash
+$ java -jar apps/TLS-Server-Scanner.jar -listProbes
+{
+  "de.rub.nds.tlsscanner.core.constants.TlsProbeType" : [ "ALPN", "ESNI", "CERTIFICATE", ... ],
+  "de.rub.nds.tlsscanner.core.constants.QuicProbeType" : [ "SUPPORTED_VERSIONS", ... ]
+}
+```
+
 ## All Parameters
 
 To get detailed information about all possible parameters, use the `-help` parameter or execute the jar without any parameters set.

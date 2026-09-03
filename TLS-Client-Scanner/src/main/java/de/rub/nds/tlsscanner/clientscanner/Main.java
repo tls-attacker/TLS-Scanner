@@ -11,13 +11,18 @@ package de.rub.nds.tlsscanner.clientscanner;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import de.rub.nds.protocol.exception.ConfigurationException;
+import de.rub.nds.scanner.core.config.ProbeTypeCatalog;
+import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientContainerReportCreator;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -27,14 +32,23 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
+        // -help and -listProbes need to work without also satisfying required parameters, so they
+        // are handled before JCommander's validating parse() call.
+        List<String> argList = Arrays.asList(args);
         ClientScannerConfig config = new ClientScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
+        if (argList.contains("-h") || argList.contains("-help")) {
+            commander.usage();
+            return;
+        }
+        if (argList.contains("-listProbes")) {
+            System.out.println(
+                    ProbeTypeCatalog.toProfileProbesJson(
+                            List.<Class<? extends ProbeType>>of(TlsProbeType.class)));
+            return;
+        }
         try {
             commander.parse(args);
-            if (config.getGeneralDelegate().isHelp()) {
-                commander.usage();
-                return;
-            }
             System.setProperty("debugMode", String.valueOf(config.getGeneralDelegate().isDebug()));
             Configurator.reconfigure();
             // Cmd was parsable
