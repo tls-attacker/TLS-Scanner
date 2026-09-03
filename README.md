@@ -108,6 +108,7 @@ everything else is skipped.
 Example, combining a base profile's probes with your own and tuning the scan detail:
 
 `base.json`:
+
 ```json
 {
     "name": "base",
@@ -119,6 +120,7 @@ Example, combining a base profile's probes with your own and tuning the scan det
 ```
 
 `quic.json` (in the same directory as `base.json`):
+
 ```json
 {
     "name": "quic",
