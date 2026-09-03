@@ -96,7 +96,10 @@ A profile is a JSON file with:
 - `probes`: the probes to run, as a map from the fully qualified name of a `ProbeType` enum class
   to the list of its constant names to run. This groups probes by type instead of repeating the
   type for every single probe, while a single profile can still freely combine probes from
-  different `ProbeType` implementations, e.g. `TlsProbeType` and `QuicProbeType`.
+  different `ProbeType` implementations, e.g. `TlsProbeType` and `QuicProbeType`. Each per-type
+  list also accepts `"*"` (all constants of that type) and `"!CONSTANT_NAME"` (remove a constant
+  previously added by name or by `"*"`), processed in order — see `Everything.json` and
+  `demo.json` in [`scan-profiles/`](scan-profiles) for examples.
 - `settings` (optional): overrides for parameters like `-scanDetail`, `-reportDetail`,
   `-postAnalysisDetail`, `-noColor`, `-outputFile`, `-probeTimeout`, `-parallelProbes`, and
   `-threads`. Any field left out keeps its normal default (or whatever was passed on the command
