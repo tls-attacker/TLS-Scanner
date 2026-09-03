@@ -334,8 +334,10 @@ public class ConfigSelector {
         List<NamedGroup> configuredGroups =
                 new LinkedList<>(config.getDefaultClientKeyShareNamedGroups());
         if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
+            // this results in a more restricted list consisting of mandatory and recommended groups
+            // minus anything filtered by the config selector
             config.setDefaultClientKeyShareNamedGroups(
-                    new LinkedList<>(config.getDefaultClientNamedGroups()));
+                    workingTl13Config.getDefaultClientKeyShareNamedGroups());
         } else {
             config.setDefaultClientKeyShareNamedGroups(
                     config.getDefaultClientKeyShareNamedGroups().stream()
@@ -344,7 +346,7 @@ public class ConfigSelector {
         }
         configuredGroups.removeAll(config.getDefaultClientKeyShareNamedGroups());
         if (!configuredGroups.isEmpty()) {
-            LOGGER.warn(
+            LOGGER.debug(
                     "The following groups were configured as key share groups by a probe but have been removed based on the identified working config: {}",
                     configuredGroups);
         }

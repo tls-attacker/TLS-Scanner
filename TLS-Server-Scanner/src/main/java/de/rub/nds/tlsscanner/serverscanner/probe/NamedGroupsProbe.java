@@ -379,8 +379,10 @@ public class NamedGroupsProbe extends TlsServerProbe {
         Config tlsConfig = configSelector.getTls13BaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientNamedGroups(groups);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
         configSelector.repairConfig(tlsConfig);
+        // explicitly wipe the key share list so the server communicates its choice based on our
+        // supported groups extension
+        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceResultUtil.didReceiveMessage(
