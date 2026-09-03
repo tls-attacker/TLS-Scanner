@@ -1,0 +1,8 @@
+{
+    "name": "tls-and-quic",
+    "inheritedFromProfiles": ["quick-tls"],
+    "probes": [
+        { "type": "de.rub.nds.tlsscanner.core.constants.QuicProbeType", "name": "SUPPORTED_VERSIONS" },
+        { "type": "de.rub.nds.tlsscanner.core.constants.QuicProbeType", "name": "TRANSPORT_PARAMETERS" }
+    ]
+}

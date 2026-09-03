@@ -1,0 +1,10 @@
+{
+    "name": "quick-tls",
+    "inheritedFromProfiles": [],
+    "probes": [
+        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "PROTOCOL_VERSION" },
+        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "CIPHER_SUITE" },
+        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "CERTIFICATE" },
+        { "type": "de.rub.nds.tlsscanner.core.constants.TlsProbeType", "name": "HEARTBLEED" }
+    ]
+}
