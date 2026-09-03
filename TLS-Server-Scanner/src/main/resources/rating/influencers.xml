@@ -240,7 +240,7 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>SUPPORTS_POST_QUANTUM</property>
+        <property>SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>0</influence>
@@ -2206,6 +2206,39 @@
         <propertyRatingInfluencers>
             <result>FALSE</result>
             <influence>-50</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_POST_QUANTUM_KEX</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>300</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_POST_QUANTUM_HYBRID_KEX</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>300</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_MLKEM</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>

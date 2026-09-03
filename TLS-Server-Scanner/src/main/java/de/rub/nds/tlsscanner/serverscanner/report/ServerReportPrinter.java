@@ -164,6 +164,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendCipherSuites(builder);
         appendClientAuth(builder);
         appendExtensions(builder);
+        appendPostQuantum(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
         appendRecordFragmentation(builder);
@@ -199,6 +200,28 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendMissingProbesRequirements(builder);
 
         return builder.toString();
+    }
+
+    private void appendPostQuantum(StringBuilder builder) {
+        prettyAppendHeading(builder, "Post Quantum");
+        prettyAppend(
+                builder,
+                "Supports post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX);
+        prettyAppend(
+                builder,
+                "Supports hybrid post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX);
+        prettyAppend(builder, "Supports ML-KEM", TlsAnalyzedProperty.SUPPORTS_MLKEM);
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE)
+                == TestResults.TRUE) {
+            // PQ cipher suites have not seen wide-spread adoption. Hence, to avoid confusion with
+            // TLS 1.3 PQ mechanisms, we only show this when supported.
+            prettyAppend(
+                    builder,
+                    "Supports legacy post quantum cipher suite",
+                    TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE);
+        }
     }
 
     private void appendClientAuth(StringBuilder builder) {
