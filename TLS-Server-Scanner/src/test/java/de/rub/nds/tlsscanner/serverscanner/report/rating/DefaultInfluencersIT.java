@@ -144,7 +144,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -100)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+                        TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
@@ -1065,6 +1065,23 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Rating is already awarded for PQ support so there is no need to change the rating
+        // unless ML KEM gets broken
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_MLKEM,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =

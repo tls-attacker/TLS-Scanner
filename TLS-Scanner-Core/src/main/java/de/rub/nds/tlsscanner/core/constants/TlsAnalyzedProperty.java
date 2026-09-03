@@ -132,7 +132,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_SHA384_PRF(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_CBC(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_AEAD(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
-    SUPPORTS_POST_QUANTUM(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
+    SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_ONLY_PFS(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_AES(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
     SUPPORTS_CAMELLIA(TlsAnalyzedPropertyCategory.CIPHER_SUITES),
@@ -392,7 +392,11 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** Handshakes */
     HANDSHAKE_SUCCESFUL_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
     HANDSHAKE_FAILED_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
-    CONNECTION_INSECURE_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS);
+    CONNECTION_INSECURE_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
+    /** Post Quantum for TLS 1.3 and QUIC */
+    SUPPORTS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    SUPPORTS_POST_QUANTUM_HYBRID_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    SUPPORTS_MLKEM(TlsAnalyzedPropertyCategory.POST_QUANTUM);
 
     private final TlsAnalyzedPropertyCategory category;
 
