@@ -51,6 +51,7 @@ import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.QuicAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.RandomType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
+import de.rub.nds.tlsscanner.core.passive.TrackableValueType;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateChainReport;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateIssue;
 import de.rub.nds.tlsscanner.core.probe.certificate.CertificateReport;
@@ -164,6 +165,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendCipherSuites(builder);
         appendClientAuth(builder);
         appendExtensions(builder);
+        appendPostQuantum(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
         appendRecordFragmentation(builder);
@@ -197,8 +199,35 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         }
         appendPerformanceData(builder);
         appendMissingProbesRequirements(builder);
+        appendTimeoutWarnings(builder);
 
         return builder.toString();
+    }
+
+    private void appendPostQuantum(StringBuilder builder) {
+        prettyAppendHeading(builder, "Post Quantum");
+        prettyAppend(
+                builder,
+                "Supports post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX);
+        prettyAppend(
+                builder,
+                "Supports hybrid post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX);
+        prettyAppend(builder, "Supports ML-KEM", TlsAnalyzedProperty.SUPPORTS_MLKEM);
+        prettyAppend(
+                builder,
+                "Prefers post quantum key exchange",
+                TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX);
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE)
+                == TestResults.TRUE) {
+            // PQ cipher suites have not seen wide-spread adoption. Hence, to avoid confusion with
+            // TLS 1.3 PQ mechanisms, we only show this when supported.
+            prettyAppend(
+                    builder,
+                    "Supports legacy post quantum cipher suite",
+                    TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE);
+        }
     }
 
     private void appendClientAuth(StringBuilder builder) {
@@ -3156,6 +3185,23 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             }
         } else {
             LOGGER.debug("Not printing performance data.");
+        }
+    }
+
+    public void appendTimeoutWarnings(StringBuilder builder) {
+        var issues = report.getExtractedValueContainer(TrackableValueType.CONNECTION_ISSUE);
+        if (issues != null && issues.getNumberOfExtractedValues() > 0) {
+            prettyAppendHeading(builder, "Connection Issues");
+            prettyAppend(
+                    builder,
+                    "WARNING: Encountered connection issues during the scan. This may indicate that the server is not responding properly or is blocking certain requests. Some results might have become inaccurate due to this.",
+                    SemanticMarkup.SCANNER_ERROR_SERVER_DEPENDENT);
+            prettyAppend(
+                    builder,
+                    "Encountered "
+                            + issues.getNumberOfExtractedValues()
+                            + " instances where the transport layer (TCP/UDP) was not properly initialized.",
+                    SemanticMarkup.SCANNER_ERROR_SERVER_DEPENDENT);
         }
     }
 }

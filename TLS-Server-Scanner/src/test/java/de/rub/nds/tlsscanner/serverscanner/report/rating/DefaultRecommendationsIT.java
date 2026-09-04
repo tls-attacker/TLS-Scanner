@@ -395,7 +395,7 @@ public class DefaultRecommendationsIT {
         // post quantum
         recommendations.add(
                 new Recommendation(
-                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+                        TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
                         "Post quantum algorithms support",
                         "Evaluates whether the server supports post quantum algorithms",
                         ""));
@@ -410,6 +410,46 @@ public class DefaultRecommendationsIT {
                         TlsAnalyzedProperty.SUPPORTS_ECMQV,
                         "Post quantum ECMQV algorithm support",
                         "Evaluates whether the server supports the ECMQV post quantum algorithm",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
+                        "Post quantum key exchange support",
+                        "Evaluates whether the server supports a post quantum key exchange group in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not support a post quantum key exchange group",
+                                "Add support for a post quantum key exchange group to protect against store-now-decrypt-later attacks"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
+                        "Hybrid post quantum key exchange support",
+                        "Evaluates whether the server supports a hybrid post quantum key exchange group in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not support a hybrid post quantum key exchange group",
+                                "Prefer hybrid groups to support peers that rely on the combination of classic and post quantum algorithms"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_MLKEM,
+                        "ML-KEM support",
+                        "Evaluates whether the server supports an ML-KEM based key exchange group in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not support an ML-KEM based key exchange group",
+                                "Consider adding support for an ML-KEM based group as ML-KEM is the standardized post quantum KEM"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
+                        "Post quantum preference",
+                        "Evaluates if the server prefers post quantum key exchange regardless of client preference",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not prefer post quantum groups",
+                                "Consider adding post quantum preference to protect against store-now-decrypt-later attacks whenever a client provides support for it"),
                         ""));
 
         recommendations.add(
