@@ -89,8 +89,6 @@ the `-profile <path/to/profile.json>` parameter. It is available on both `TlsSer
 
 A profile is a JSON file with:
 
-- `name`: an informational label for the profile (used in error messages, not for resolving
-  inheritance).
 - `inheritedFromProfiles`: paths to other profiles to combine probes from, resolved relative to
   the directory of the profile file declaring them (an absolute path is used as-is).
 - `probes`: the probes to run, as a map from the fully qualified name of a `ProbeType` enum class
@@ -115,7 +113,6 @@ Example, combining a base profile's probes with your own and tuning the scan det
 
 ```json
 {
-    "name": "base",
     "probes": {
         "de.rub.nds.tlsscanner.core.constants.TlsProbeType": ["PROTOCOL_VERSION", "CIPHER_SUITE"]
     }
@@ -126,7 +123,6 @@ Example, combining a base profile's probes with your own and tuning the scan det
 
 ```json
 {
-    "name": "quic",
     "inheritedFromProfiles": ["base.json"],
     "settings": {
         "scanDetail": "QUICK"

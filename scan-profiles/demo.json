@@ -1,5 +1,4 @@
 {
-    "name": "demo",
     "inheritedFromProfiles": [],
     "probes": {
         "de.rub.nds.tlsscanner.core.constants.TlsProbeType": [

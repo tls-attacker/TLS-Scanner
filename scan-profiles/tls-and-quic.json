@@ -1,5 +1,4 @@
 {
-    "name": "tls-and-quic",
     "inheritedFromProfiles": [
         "quick-tls.json"
     ],
