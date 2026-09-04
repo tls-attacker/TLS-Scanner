@@ -28,3 +28,7 @@ nbactions.xml
 
 # VS Code
 .factorypath
+.vscode/
+
+# Apple
+.DS_Store

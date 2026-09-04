@@ -38,5 +38,6 @@ public enum TlsAnalyzedPropertyCategory implements AnalyzedPropertyCategory {
     MAC,
     HELLO_RETRY_REQUEST,
     APPLICATION_LAYER,
-    CLIENT_ADVERTISED
+    CLIENT_ADVERTISED,
+    POST_QUANTUM
 }

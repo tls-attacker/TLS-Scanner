@@ -63,6 +63,11 @@ public class NamedGroupsProbe extends TlsServerProbe {
     private TestResult groupsDependOnCipherSuite = TestResults.COULD_NOT_TEST;
     private TestResult ignoresEcdsaGroupDisparity = TestResults.COULD_NOT_TEST;
 
+    // PQ groups
+    private TestResult supportsPqGroup = TestResults.COULD_NOT_TEST;
+    private TestResult supportsPqHybridKex = TestResults.COULD_NOT_TEST;
+    private TestResult supportsMlKem = TestResults.COULD_NOT_TEST;
+
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
         register(
@@ -73,7 +78,10 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
                 TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
-                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13);
+                TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
+                TlsAnalyzedProperty.SUPPORTS_MLKEM);
     }
 
     @Override
@@ -429,7 +437,31 @@ public class NamedGroupsProbe extends TlsServerProbe {
         LinkedList<NamedGroup> tls13Groups = new LinkedList<>();
         if (namedGroupsMapTls13 != null) {
             tls13Groups.addAll(namedGroupsMapTls13.keySet());
+            supportsPqGroup = TestResults.FALSE;
+            supportsPqHybridKex = TestResults.FALSE;
+            supportsMlKem = TestResults.FALSE;
         }
+        boolean hasAnyHybridPqGroup =
+                tls13Groups.stream().filter(group -> group.isHybridPQGroup()).findAny().isPresent();
+        boolean hasAnyPqGroup =
+                hasAnyHybridPqGroup
+                        || tls13Groups.stream()
+                                .filter(group -> group.isPQGroup())
+                                .findAny()
+                                .isPresent();
+        boolean hasAnyMlKem =
+                tls13Groups.stream().filter(group -> group.isMlKemGroup()).findAny().isPresent();
+
+        if (hasAnyPqGroup) {
+            supportsPqGroup = TestResults.TRUE;
+        }
+        if (hasAnyHybridPqGroup) {
+            supportsPqHybridKex = TestResults.TRUE;
+        }
+        if (hasAnyMlKem) {
+            supportsMlKem = TestResults.TRUE;
+        }
+
         put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, allGroups);
         put(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, tls13Groups);
         put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES, namedGroupsMap);
@@ -438,5 +470,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
         put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
         put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCipherSuite);
         put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
+        put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX, supportsPqGroup);
+        put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, supportsPqHybridKex);
+        put(TlsAnalyzedProperty.SUPPORTS_MLKEM, supportsMlKem);
     }
 }

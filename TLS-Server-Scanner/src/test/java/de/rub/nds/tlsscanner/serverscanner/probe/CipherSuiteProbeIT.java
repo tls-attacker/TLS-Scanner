@@ -89,7 +89,9 @@ public class CipherSuiteProbeIT extends AbstractProbeIT {
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_RC2, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_RC4, TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_3DES, TestResults.FALSE)
-                && verifyProperty(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, TestResults.FALSE)
+                && verifyProperty(
+                        TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
+                        TestResults.FALSE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_AEAD, TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_PFS, TestResults.TRUE)
                 && verifyProperty(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, TestResults.FALSE)
