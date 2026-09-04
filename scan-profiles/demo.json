@@ -1,0 +1,17 @@
+{
+    "inheritedFromProfiles": [],
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.TlsProbeType": [
+            "*",
+            "!TLS_LATENCY",
+            "!DIRECT_RACCOON",
+            "!PADDING_ORACLE",
+            "!BLEICHENBACHER",
+            "!SESSION_TICKET_MANIPULATION",
+            "!SESSION_TICKET_PADDING_ORACLE"
+        ],
+        "de.rub.nds.tlsscanner.core.constants.QuicProbeType": [
+            "*"
+        ]
+    }
+}
