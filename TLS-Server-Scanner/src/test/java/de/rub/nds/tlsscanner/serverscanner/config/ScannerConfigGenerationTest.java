@@ -130,7 +130,7 @@ public class ScannerConfigGenerationTest {
          * and the recommended x25519 group (see Sect. 9.1 of RFC 9846)
          */
         config.setDefaultClientKeyShareNamedGroups(
-                List.of(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519));
+                List.of(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519, NamedGroup.X25519_MLKEM768));
 
         writeConfig(config, "tls13rich.config");
     }

@@ -24,8 +24,11 @@ import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
+import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -160,7 +163,7 @@ public class ConfigSelector {
      * @param versionText the TLS version description (e.g., "TLS 1.2", "TLS 1.3")
      */
     public void reportLimitation(ConfigFilterProfile configProfile, String versionText) {
-        if (configProfile.getConfigFilterTypes().length > 0) {
+        if (!configProfile.isBestConfigProfile()) {
             LOGGER.warn(
                     "Unable to perform handshake with extensive Config for {}.\nScanning with reduced Config ({}), which may affect the extent of some probes.",
                     versionText,
@@ -331,25 +334,50 @@ public class ConfigSelector {
     public void adjustKeyShareFields(Config config) {
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(false);
-        List<NamedGroup> configuredGroups =
+        List<NamedGroup> configuredKeyShareGroups =
                 new LinkedList<>(config.getDefaultClientKeyShareNamedGroups());
+        List<NamedGroup> repairedKeyShareGroups;
         if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
             // this results in a more restricted list consisting of mandatory and recommended groups
             // minus anything filtered by the config selector
-            config.setDefaultClientKeyShareNamedGroups(
-                    workingTl13Config.getDefaultClientKeyShareNamedGroups());
+            repairedKeyShareGroups =
+                    new LinkedList<>(workingTl13Config.getDefaultClientKeyShareNamedGroups());
         } else {
-            config.setDefaultClientKeyShareNamedGroups(
+            repairedKeyShareGroups =
                     config.getDefaultClientKeyShareNamedGroups().stream()
                             .filter(config.getDefaultClientNamedGroups()::contains)
-                            .collect(Collectors.toList()));
+                            .collect(Collectors.toList());
         }
-        configuredGroups.removeAll(config.getDefaultClientKeyShareNamedGroups());
-        if (!configuredGroups.isEmpty()) {
+        syncGroupsOrder(config.getDefaultClientNamedGroups(), repairedKeyShareGroups);
+        config.setDefaultClientKeyShareNamedGroups(repairedKeyShareGroups);
+
+        configuredKeyShareGroups.removeAll(config.getDefaultClientKeyShareNamedGroups());
+        if (!configuredKeyShareGroups.isEmpty()) {
             LOGGER.debug(
                     "The following groups were configured as key share groups by a probe but have been removed based on the identified working config: {}",
-                    configuredGroups);
+                    configuredKeyShareGroups);
         }
+    }
+
+    /**
+     * Ensures we always offer key shares in the same order as they appear in supported groups to
+     * comply with RFC 8446. Gaps may exist between the groups and key share list. This sort logic
+     * places any key share group not found in supported groups even though these groups pose an RFC
+     * violation.
+     *
+     * @param supportedGroups The groups configured for the SupportedGroups extension
+     * @param keyShareGroups The groups selected by the repair logic for use in the KeyShare
+     *     extension
+     */
+    public void syncGroupsOrder(List<NamedGroup> supportedGroups, List<NamedGroup> keyShareGroups) {
+        Map<NamedGroup, Integer> order = new EnumMap<>(NamedGroup.class);
+
+        for (int i = 0; i < supportedGroups.size(); i++) {
+            order.put(supportedGroups.get(i), i);
+        }
+
+        keyShareGroups.sort(
+                Comparator.comparingInt(group -> order.getOrDefault(group, Integer.MAX_VALUE)));
     }
 
     /**
