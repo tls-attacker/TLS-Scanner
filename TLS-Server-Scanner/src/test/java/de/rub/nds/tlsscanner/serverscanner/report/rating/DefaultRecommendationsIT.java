@@ -441,6 +441,16 @@ public class DefaultRecommendationsIT {
                                 "The server does not support an ML-KEM based key exchange group",
                                 "Consider adding support for an ML-KEM based group as ML-KEM is the standardized post quantum KEM"),
                         ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
+                        "Post quantum preference",
+                        "Evaluates if the server prefers post quantum key exchange regardless of client preference",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not prefer post quantum groups",
+                                "Consider adding post quantum preference to protect against store-now-decrypt-later attacks whenever a client provides support for it"),
+                        ""));
 
         recommendations.add(
                 new Recommendation(

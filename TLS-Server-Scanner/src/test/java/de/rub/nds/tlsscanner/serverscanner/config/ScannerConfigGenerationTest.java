@@ -124,7 +124,13 @@ public class ScannerConfigGenerationTest {
         config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL);
 
         config.setDefaultClientNamedGroups(NamedGroup.getImplemented());
-        config.setDefaultClientKeyShareNamedGroups(NamedGroup.getImplemented());
+        /**
+         * To avoid excessively large CHs while also reducing the risk of unexpected
+         * HelloRetryRequests, we restrict the default key shares sent to the mandatory secp256r1
+         * and the recommended x25519 group (see Sect. 9.1 of RFC 9846)
+         */
+        config.setDefaultClientKeyShareNamedGroups(
+                List.of(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519, NamedGroup.X25519_MLKEM768));
 
         writeConfig(config, "tls13rich.config");
     }

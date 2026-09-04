@@ -89,26 +89,32 @@ public class ConfigFilter {
     }
 
     private static void filterNamedGroups(Config baseConfig, ConfigFilterType filterType) {
-        List<NamedGroup> reducedNamedGroups = baseConfig.getDefaultClientNamedGroups();
+        List<NamedGroup> configuredBaseGroups = baseConfig.getDefaultClientNamedGroups();
+        List<NamedGroup> reducedNamedGroups;
         switch (filterType) {
+            case NAMEDGROUP_PQ:
+                reducedNamedGroups =
+                        configuredBaseGroups.stream()
+                                .filter(group -> !group.isPQGroup() && !group.isHybridPQGroup())
+                                .toList();
+                break;
             case NAMEDGROUP_GREASE:
             case NAMEDGROUP_SECT:
                 String filteredEnumSubstring = filterType.name().replace("NAMEDGROUP_", "");
                 reducedNamedGroups =
-                        reducedNamedGroups.stream()
+                        configuredBaseGroups.stream()
                                 .filter(group -> !group.name().contains(filteredEnumSubstring))
-                                .collect(Collectors.toList());
+                                .toList();
                 break;
             case NAMEDGROUP_DEPRECATED:
                 reducedNamedGroups =
-                        reducedNamedGroups.stream()
-                                .filter(NamedGroup::isTls13)
-                                .collect(Collectors.toList());
+                        configuredBaseGroups.stream().filter(NamedGroup::isTls13).toList();
                 break;
             default:
                 throw new IllegalArgumentException("No behavior defined for filter " + filterType);
         }
         baseConfig.setDefaultClientNamedGroups(reducedNamedGroups);
+        baseConfig.getDefaultClientKeyShareNamedGroups().retainAll(reducedNamedGroups);
     }
 
     private static void filterSignatureAlgorithms(Config baseConfig, ConfigFilterType filterType) {
