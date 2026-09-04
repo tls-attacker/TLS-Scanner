@@ -23,7 +23,6 @@ import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReportPrinter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,24 +33,21 @@ public class Main {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void main(String[] args) throws IOException {
-        // -help and -listProbes need to work without also satisfying required parameters like
-        // -connect, so they are handled before JCommander's validating parse() call.
-        List<String> argList = Arrays.asList(args);
         ServerScannerConfig config = new ServerScannerConfig(new GeneralDelegate());
         JCommander commander = new JCommander(config);
-        if (argList.contains("-h") || argList.contains("-help")) {
-            commander.usage();
-            return;
-        }
-        if (argList.contains("-listProbes")) {
-            System.out.println(
-                    ProbeTypeCatalog.toProfileProbesJson(
-                            List.<Class<? extends ProbeType>>of(
-                                    TlsProbeType.class, QuicProbeType.class)));
-            return;
-        }
         try {
             commander.parse(args);
+            if (config.getGeneralDelegate().isHelp()) {
+                commander.usage();
+                return;
+            }
+            if (config.getExecutorConfig().isListProbes()) {
+                System.out.println(
+                        ProbeTypeCatalog.toProfileProbesJson(
+                                List.<Class<? extends ProbeType>>of(
+                                        TlsProbeType.class, QuicProbeType.class)));
+                return;
+            }
             System.setProperty("debugMode", String.valueOf(config.getGeneralDelegate().isDebug()));
             Configurator.reconfigure();
             // Cmd was parsable
