@@ -13,6 +13,7 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.config.delegate.Delegate;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.record.Record;
@@ -402,6 +403,8 @@ public class ConfigSelector {
     public void adjustKeyShareFields(Config config) {
         config.setAddEllipticCurveExtension(true);
         config.setAddECPointFormatExtension(false);
+        List<NamedGroup> configuredGroups =
+                new LinkedList<>(config.getDefaultClientKeyShareNamedGroups());
         if (config.getDefaultClientKeyShareNamedGroups().isEmpty()) {
             config.setDefaultClientKeyShareNamedGroups(
                     new LinkedList<>(config.getDefaultClientNamedGroups()));
@@ -410,6 +413,12 @@ public class ConfigSelector {
                     config.getDefaultClientKeyShareNamedGroups().stream()
                             .filter(config.getDefaultClientNamedGroups()::contains)
                             .collect(Collectors.toList()));
+        }
+        configuredGroups.removeAll(config.getDefaultClientKeyShareNamedGroups());
+        if (!configuredGroups.isEmpty()) {
+            LOGGER.warn(
+                    "The following groups were configured as key share groups by a probe but have been removed based on the identified working config: {}",
+                    configuredGroups);
         }
     }
 
