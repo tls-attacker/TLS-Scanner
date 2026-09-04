@@ -213,6 +213,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 "Supports hybrid post quantum key exchange",
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX);
         prettyAppend(builder, "Supports ML-KEM", TlsAnalyzedProperty.SUPPORTS_MLKEM);
+        prettyAppend(
+                builder,
+                "Prefers post quantum key exchange",
+                TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX);
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE)
                 == TestResults.TRUE) {
             // PQ cipher suites have not seen wide-spread adoption. Hence, to avoid confusion with
