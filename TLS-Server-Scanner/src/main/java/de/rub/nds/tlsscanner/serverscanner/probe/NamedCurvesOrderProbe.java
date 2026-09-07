@@ -69,6 +69,9 @@ public class NamedCurvesOrderProbe extends TlsServerProbe {
         tlsConfig.setEnforceSettings(true);
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
         tlsConfig.setDefaultClientNamedGroups(toTestList);
+        if (tlsConfig.getHighestProtocolVersion().is13()) {
+            tlsConfig.setDefaultClientKeyShareNamedGroups(toTestList);
+        }
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
@@ -77,8 +80,18 @@ public class NamedCurvesOrderProbe extends TlsServerProbe {
 
     @Override
     public Requirement<ServerReport> getRequirements() {
-        return new ProbeRequirement<ServerReport>(
-                        TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE)
+        Requirement<ServerReport> requirements =
+                new ProbeRequirement<ServerReport>(
+                        TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE);
+
+        if (usesTls13Config()) {
+            return requirements.and(
+                    new PropertyComparatorRequirement<>(
+                            PropertyComparatorRequirement.Operator.GREATER,
+                            TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
+                            0));
+        }
+        return requirements
                 .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_ECDHE))
                 .and(
                         new PropertyComparatorRequirement<>(
@@ -89,11 +102,19 @@ public class NamedCurvesOrderProbe extends TlsServerProbe {
 
     @Override
     public void adjustConfig(ServerReport report) {
-        supportedGroups = report.getSupportedNamedGroups();
+        if (usesTls13Config()) {
+            supportedGroups = report.getSupportedTls13Groups();
+        } else {
+            supportedGroups = report.getSupportedNamedGroups();
+        }
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, enforced);
+    }
+
+    private boolean usesTls13Config() {
+        return configSelector.getAnyWorkingBaseConfig().getHighestProtocolVersion().is13();
     }
 }
