@@ -522,11 +522,6 @@ public class ConfigSelector {
     }
 
     /**
-     * Indicates whether a QUIC retry is required for the connection.
-     *
-     * @return true if QUIC retry is required, false otherwise
-     */
-    /**
      * Whether the target required its capability-discovery exchange before accepting the STARTTLS
      * upgrade.
      *
@@ -536,6 +531,11 @@ public class ConfigSelector {
         return targetRequiresCapabilityDiscovery;
     }
 
+    /**
+     * Indicates whether a QUIC retry is required for the connection.
+     *
+     * @return true if QUIC retry is required, false otherwise
+     */
     public boolean isQuicRetryRequired() {
         return quicRetryRequired;
     }
