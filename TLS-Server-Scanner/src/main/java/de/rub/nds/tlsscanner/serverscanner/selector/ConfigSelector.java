@@ -89,13 +89,7 @@ public class ConfigSelector {
     private boolean quicRetryRequired = false;
 
     /**
-     * Returns the selector suited to the target: a {@link StarttlsConfigSelector} when the scan
-     * runs behind a STARTTLS upgrade, which may have to search twice, and a plain ConfigSelector
-     * otherwise.
-     *
-     * @param scannerConfig the server scanner configuration
-     * @param parallelExecutor the parallel executor for running test handshakes
-     * @return a selector for this target
+     * Returns a {@link StarttlsConfigSelector} behind a STARTTLS upgrade, a plain one otherwise.
      */
     public static ConfigSelector forTarget(
             ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
@@ -270,12 +264,7 @@ public class ConfigSelector {
         return trace.executedAsPlanned();
     }
 
-    /**
-     * Called with every trace this selector executes while searching. Does nothing here; subclasses
-     * override it to read something out of the exchange the search itself does not need.
-     *
-     * @param trace an executed trace
-     */
+    /** Hook for subclasses that need to read something out of each trace the search executes. */
     protected void onTraceExecuted(WorkflowTrace trace) {}
 
     private void applyPerformanceParamters(Config config) {

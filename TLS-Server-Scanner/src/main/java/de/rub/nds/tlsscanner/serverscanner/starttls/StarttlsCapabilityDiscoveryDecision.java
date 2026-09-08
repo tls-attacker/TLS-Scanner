@@ -15,29 +15,14 @@ import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Reads a STARTTLS target's refusal to decide whether its capability-discovery exchange is worth a
- * second attempt.
- *
- * <p>TLS-Attacker builds both upgrade variants and picks between them from the config. This only
- * answers the question the config cannot: whether the target we are looking at needs the longer
- * one. What each protocol says is carried by its StarttlsType, so nothing here names one.
- */
+/** Decides whether a STARTTLS target's capability-discovery exchange is worth a second attempt. */
 public final class StarttlsCapabilityDiscoveryDecision {
 
     private StarttlsCapabilityDiscoveryDecision() {}
 
     /**
-     * Whether the target should be retried with its capability-discovery exchange.
-     *
-     * <p>True only when the protocol's StarttlsType can tell a complaint about the order of the
-     * commands apart from a refusal of the upgrade itself, and the target answered with the former.
-     * Anything else, including no reply at all, is not retried: there is no evidence discovery
-     * would help.
-     *
-     * @param type the STARTTLS type being scanned
-     * @param upgradeReply the text the target sent in response to the upgrade command
-     * @return true if the discovery exchange is worth attempting
+     * True only for a refusal that complains about the order of the commands. Anything else,
+     * including no reply, is no evidence that discovery would help.
      */
     public static boolean shouldRetryWithDiscovery(StarttlsType type, String upgradeReply) {
         if (upgradeReply == null) {
@@ -54,16 +39,8 @@ public final class StarttlsCapabilityDiscoveryDecision {
     }
 
     /**
-     * Returns the last reply the target sent during a text-based STARTTLS prefix, or null if it
-     * never sent one.
-     *
-     * <p>The upgrade reply is the last thing read before the trace either gives up or starts the
-     * handshake, so searching from the end finds it without counting the actions in front of it.
-     * That keeps this independent of which upgrade variant built the trace and of how long a given
-     * protocol's exchange is.
-     *
-     * @param workflowTrace an executed trace
-     * @return the received upgrade reply, or null
+     * Searched from the end because the upgrade reply is the last thing read before the handshake,
+     * which keeps this independent of the variant that built the trace and of the exchange length.
      */
     public static String getMinimalUpgradeReply(WorkflowTrace workflowTrace) {
         List<TlsAction> actions = workflowTrace.getTlsActions();
