@@ -67,6 +67,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
     private TestResult supportsPqGroup = TestResults.COULD_NOT_TEST;
     private TestResult supportsPqHybridKex = TestResults.COULD_NOT_TEST;
     private TestResult supportsMlKem = TestResults.COULD_NOT_TEST;
+    private TestResult prefersPqGroup = TestResults.COULD_NOT_TEST;
 
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.NAMED_GROUPS, configSelector);
@@ -81,7 +82,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
-                TlsAnalyzedProperty.SUPPORTS_MLKEM);
+                TlsAnalyzedProperty.SUPPORTS_MLKEM,
+                TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX);
     }
 
     @Override
@@ -188,13 +190,12 @@ public class NamedGroupsProbe extends TlsServerProbe {
         NamedGroup selectedGroup = null;
         X509NamedCurve certificateGroup = null;
         // place signing groups at the bottom of the list, the server should
-        // choose
-        // all other first
+        // choose all other first
         if (pkGroups != null) {
-            placeRequiredGroupsLast(toTestList, pkGroups);
+            moveGroupsToEndOfList(toTestList, pkGroups);
         }
         if (sigGroups != null) {
-            placeRequiredGroupsLast(toTestList, sigGroups);
+            moveGroupsToEndOfList(toTestList, sigGroups);
         }
 
         do {
@@ -329,14 +330,9 @@ public class NamedGroupsProbe extends TlsServerProbe {
         return tlsConfig;
     }
 
-    public void placeRequiredGroupsLast(List<NamedGroup> groupList, List<NamedGroup> sigGroups) {
-        for (int i = 0; i < groupList.size(); i++) {
-            if (sigGroups.contains(groupList.get(i))) {
-                groupList.remove(i);
-                i--;
-            }
-        }
-        groupList.addAll(sigGroups);
+    public void moveGroupsToEndOfList(List<NamedGroup> groupList, List<NamedGroup> toBeMoved) {
+        groupList.removeAll(toBeMoved);
+        groupList.addAll(toBeMoved);
     }
 
     private Map<NamedGroup, NamedGroupWitness> getTls13SupportedGroups() {
@@ -345,13 +341,23 @@ public class NamedGroupsProbe extends TlsServerProbe {
         X509NamedCurve certificateGroup = null;
         TlsContext context = null;
         List<NamedGroup> toTestList = NamedGroup.getImplemented();
-        List<NamedGroup> supportedGroups = new LinkedList<>();
+        // place signing groups at the bottom of the list, the server should
+        // choose all other first
         if (ecdsaPkGroupsTls13 != null) {
-            placeRequiredGroupsLast(supportedGroups, ecdsaPkGroupsTls13);
+            moveGroupsToEndOfList(toTestList, ecdsaPkGroupsTls13);
         }
         if (ecdsaCertSigGroupsTls13 != null) {
-            placeRequiredGroupsLast(supportedGroups, ecdsaCertSigGroupsTls13);
+            moveGroupsToEndOfList(toTestList, ecdsaCertSigGroupsTls13);
         }
+        // place all PQ groups at the very end so we can evaluate PQ preference
+        // note that a server would have to ignore the client's preference order of the groups list
+        // to enforce PQ
+        moveGroupsToEndOfList(
+                toTestList,
+                NamedGroup.getImplemented().stream()
+                        .filter(group -> group.isPQGroup() || group.isHybridPQGroup())
+                        .collect(Collectors.toList()));
+        prefersPqGroup = TestResults.FALSE;
         do {
             context = getTls13SupportedGroup(toTestList);
 
@@ -365,6 +371,10 @@ public class NamedGroupsProbe extends TlsServerProbe {
                     break;
                 }
 
+                if (namedGroupMap.isEmpty()
+                        && (selectedGroup.isPQGroup() || selectedGroup.isHybridPQGroup())) {
+                    prefersPqGroup = TestResults.TRUE;
+                }
                 namedGroupMap.put(
                         selectedGroup,
                         new NamedGroupWitness(
@@ -377,10 +387,12 @@ public class NamedGroupsProbe extends TlsServerProbe {
 
     public TlsContext getTls13SupportedGroup(List<NamedGroup> groups) {
         Config tlsConfig = configSelector.getTls13BaseConfig();
-        tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
-        tlsConfig.setDefaultClientNamedGroups(groups);
-        tlsConfig.setDefaultClientKeyShareNamedGroups(groups);
+        tlsConfig.setWorkflowTraceType(WorkflowTraceType.SHORT_HELLO);
         configSelector.repairConfig(tlsConfig);
+        tlsConfig.setDefaultClientNamedGroups(groups);
+        // explicitly wipe the key share list so the server communicates its choice based on our
+        // supported groups extension
+        tlsConfig.setDefaultClientKeyShareNamedGroups(new LinkedList<>());
         State state = new State(tlsConfig);
         executeState(state);
         if (WorkflowTraceResultUtil.didReceiveMessage(
@@ -473,5 +485,6 @@ public class NamedGroupsProbe extends TlsServerProbe {
         put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX, supportsPqGroup);
         put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, supportsPqHybridKex);
         put(TlsAnalyzedProperty.SUPPORTS_MLKEM, supportsMlKem);
+        put(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, prefersPqGroup);
     }
 }

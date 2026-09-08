@@ -1075,6 +1075,11 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         // Rating is already awarded for PQ support so there is no need to change the rating
         // unless ML KEM gets broken
         influencers.add(

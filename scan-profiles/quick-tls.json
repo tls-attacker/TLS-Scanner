@@ -1,0 +1,15 @@
+{
+    "inheritedFromProfiles": [],
+    "settings": {
+        "scanDetail": "QUICK",
+        "reportDetail": "QUICK"
+    },
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.TlsProbeType": [
+            "PROTOCOL_VERSION",
+            "CIPHER_SUITE",
+            "CERTIFICATE",
+            "HEARTBLEED"
+        ]
+    }
+}

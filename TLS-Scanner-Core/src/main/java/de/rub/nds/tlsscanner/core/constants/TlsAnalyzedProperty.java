@@ -397,7 +397,8 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     /** Post Quantum for TLS 1.3 and QUIC */
     SUPPORTS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_POST_QUANTUM_HYBRID_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
-    SUPPORTS_MLKEM(TlsAnalyzedPropertyCategory.POST_QUANTUM);
+    SUPPORTS_MLKEM(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    PREFERS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM);
 
     private final TlsAnalyzedPropertyCategory category;
 

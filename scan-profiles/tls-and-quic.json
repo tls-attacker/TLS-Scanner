@@ -1,0 +1,15 @@
+{
+    "inheritedFromProfiles": [
+        "quick-tls.json"
+    ],
+    "settings": {
+        "scanDetail": "NORMAL",
+        "parallelProbes": 2
+    },
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.QuicProbeType": [
+            "SUPPORTED_VERSIONS",
+            "TRANSPORT_PARAMETERS"
+        ]
+    }
+}
