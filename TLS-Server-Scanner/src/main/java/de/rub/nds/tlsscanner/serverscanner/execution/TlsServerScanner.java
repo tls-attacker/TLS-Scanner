@@ -106,7 +106,7 @@ public final class TlsServerScanner
                         config.getExecutorConfig().getOverallThreads(),
                         3,
                         new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
-        this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.configSelector = ConfigSelector.forTarget(config, parallelExecutor);
         setCallbacks();
     }
 
@@ -135,7 +135,7 @@ public final class TlsServerScanner
             ProbeProgressCallback<ServerReport, State> progressCallback) {
         super(config.getExecutorConfig(), progressCallback);
         this.config = config;
-        this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.configSelector = ConfigSelector.forTarget(config, parallelExecutor);
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         setCallbacks();
@@ -177,7 +177,7 @@ public final class TlsServerScanner
         super(config.getExecutorConfig(), probeList, afterList, progressCallback);
         this.parallelExecutor = parallelExecutor;
         this.config = config;
-        this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.configSelector = ConfigSelector.forTarget(config, parallelExecutor);
         closeAfterFinishParallel = false;
         setCallbacks();
     }

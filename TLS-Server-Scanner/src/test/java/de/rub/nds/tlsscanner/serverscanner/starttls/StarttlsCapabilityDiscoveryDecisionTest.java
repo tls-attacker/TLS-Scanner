@@ -16,20 +16,20 @@ import de.rub.nds.tlsattacker.core.workflow.action.ReceiveRegexTextAction;
 import de.rub.nds.tlsattacker.core.workflow.action.SendTextAction;
 import org.junit.jupiter.api.Test;
 
-public class StarttlsCapabilityDiscoveryTest {
+public class StarttlsCapabilityDiscoveryDecisionTest {
 
     /** FTP is the only protocol the longer upgrade is defined for so far. */
     @Test
     public void testOnlyFtpIsRetried() {
         String badSequence = "503 Bad sequence of commands\r\n";
         assertTrue(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, badSequence));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.IMAP, badSequence));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.NONE, badSequence));
     }
 
@@ -40,7 +40,7 @@ public class StarttlsCapabilityDiscoveryTest {
     @Test
     public void testBadSequenceRefusalIsRetried() {
         assertTrue(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "503 Bad sequence of commands\r\n"));
     }
 
@@ -51,29 +51,32 @@ public class StarttlsCapabilityDiscoveryTest {
     @Test
     public void testOtherRefusalsAreNotRetried() {
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "502 Command not implemented\r\n"));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "500 Syntax error\r\n"));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "530 Not logged in\r\n"));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "534 Request denied for policy reasons\r\n"));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "421 Service not available\r\n"));
     }
 
     /** No reply is no evidence that discovery would help, and neither is a success. */
     @Test
     public void testMissingOrSuccessfulReplyIsNotRetried() {
-        assertFalse(StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(StarttlsType.FTP, null));
-        assertFalse(StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(StarttlsType.FTP, ""));
         assertFalse(
-                StarttlsCapabilityDiscovery.shouldRetryWithDiscovery(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
+                        StarttlsType.FTP, null));
+        assertFalse(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(StarttlsType.FTP, ""));
+        assertFalse(
+                StarttlsCapabilityDiscoveryDecision.shouldRetryWithDiscovery(
                         StarttlsType.FTP, "234 AUTH TLS OK.\r\n"));
     }
 
@@ -86,7 +89,7 @@ public class StarttlsCapabilityDiscoveryTest {
         trace.addTlsAction(new ReceiveRegexTextAction("^234 "));
 
         // Nothing was received because the trace was never executed.
-        assertNull(StarttlsCapabilityDiscovery.getMinimalUpgradeReply(trace));
-        assertNull(StarttlsCapabilityDiscovery.getMinimalUpgradeReply(new WorkflowTrace()));
+        assertNull(StarttlsCapabilityDiscoveryDecision.getMinimalUpgradeReply(trace));
+        assertNull(StarttlsCapabilityDiscoveryDecision.getMinimalUpgradeReply(new WorkflowTrace()));
     }
 }

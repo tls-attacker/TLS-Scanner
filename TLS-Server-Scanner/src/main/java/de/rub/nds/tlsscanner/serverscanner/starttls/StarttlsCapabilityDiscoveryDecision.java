@@ -12,9 +12,7 @@ import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveRegexTextAction;
 import de.rub.nds.tlsattacker.core.workflow.action.TlsAction;
-import de.rub.nds.tlsattacker.core.workflow.factory.StartTlsDialect;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -23,16 +21,16 @@ import java.util.regex.Pattern;
  *
  * <p>TLS-Attacker builds both upgrade variants and picks between them from the config. This only
  * answers the question the config cannot: whether the target we are looking at needs the longer
- * one. What each protocol says is the dialect's business, so nothing here names one.
+ * one. What each protocol says is carried by its StarttlsType, so nothing here names one.
  */
-public final class StarttlsCapabilityDiscovery {
+public final class StarttlsCapabilityDiscoveryDecision {
 
-    private StarttlsCapabilityDiscovery() {}
+    private StarttlsCapabilityDiscoveryDecision() {}
 
     /**
      * Whether the target should be retried with its capability-discovery exchange.
      *
-     * <p>True only when the protocol has a dialect that can tell a complaint about the order of the
+     * <p>True only when the protocol's StarttlsType can tell a complaint about the order of the
      * commands apart from a refusal of the upgrade itself, and the target answered with the former.
      * Anything else, including no reply at all, is not retried: there is no evidence discovery
      * would help.
@@ -45,11 +43,14 @@ public final class StarttlsCapabilityDiscovery {
         if (upgradeReply == null) {
             return false;
         }
-        return StartTlsDialect.forType(type)
-                .map(StartTlsDialect::badSequenceRegex)
-                .filter(Objects::nonNull)
-                .filter(regex -> Pattern.compile(regex).matcher(upgradeReply.trim()).find())
-                .isPresent();
+        if (type == null || !type.hasDialect()) {
+            return false;
+        }
+        String badSequenceRegex = type.getBadSequenceRegex();
+        if (badSequenceRegex == null) {
+            return false;
+        }
+        return Pattern.compile(badSequenceRegex).matcher(upgradeReply.trim()).find();
     }
 
     /**
