@@ -21,6 +21,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -123,16 +124,42 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
+    /**
+     * Builds the receive that ends the first handshake of the session ticket tests. A STARTTLS
+     * server that greets unprompted once the handshake is done sends that greeting right behind its
+     * Finished, so the receive has to expect it, or the trace stops there as unexpected and the
+     * resumption never runs.
+     */
+    private ReceiveAction createServerFinishedWithTicketReceive(Config tlsConfig) {
+        List<ProtocolMessage> messages = new ArrayList<>();
+        messages.add(new NewSessionTicketMessage(false));
+        messages.add(new ChangeCipherSpecMessage());
+        messages.add(new FinishedMessage());
+        if (tlsConfig.getStarttlsType().sendsUnpromptedPostHandshakeGreeting()) {
+            messages.add(new ApplicationMessage());
+        }
+        return new ReceiveAction(messages);
+    }
+
+    /**
+     * Checks whether the server answered the resumption attempt with a full handshake. Every
+     * receive after the reset is inspected rather than only the last one, because a trace that
+     * stops early leaves the receives behind the unexpected one unexecuted with nothing received.
+     */
     private boolean performedFullHandShakeDuringResumption(State state) {
-        ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
-
-        boolean receivedCertificate =
-                action.getReceivedMessages().stream()
-                        .anyMatch(CertificateMessage.class::isInstance);
-
-        if (receivedCertificate) {
-            LOGGER.debug("LastReceive Trace contains certificate.");
-            return true;
+        WorkflowTrace trace = state.getWorkflowTrace();
+        List<TlsAction> actions = trace.getTlsActions();
+        int resetIndex = actions.indexOf(trace.getFirstAction(ResetConnectionAction.class));
+        for (TlsAction action : actions.subList(resetIndex + 1, actions.size())) {
+            if (!(action instanceof ReceivingAction)) {
+                continue;
+            }
+            List<ProtocolMessage> received = ((ReceivingAction) action).getReceivedMessages();
+            if (received != null
+                    && received.stream().anyMatch(CertificateMessage.class::isInstance)) {
+                LOGGER.debug("Resumption trace contains certificate.");
+                return true;
+            }
         }
         return false;
     }
@@ -193,11 +220,7 @@ public class ResumptionProbe extends TlsServerProbe {
             trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
             trace.addTlsAction(
                     new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(
-                    new ReceiveAction(
-                            new NewSessionTicketMessage(false),
-                            new ChangeCipherSpecMessage(),
-                            new FinishedMessage()));
+            trace.addTlsAction(createServerFinishedWithTicketReceive(tlsConfig));
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
@@ -238,11 +261,7 @@ public class ResumptionProbe extends TlsServerProbe {
                 trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
                 trace.addTlsAction(
                         new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-                trace.addTlsAction(
-                        new ReceiveAction(
-                                new NewSessionTicketMessage(false),
-                                new ChangeCipherSpecMessage(),
-                                new FinishedMessage()));
+                trace.addTlsAction(createServerFinishedWithTicketReceive(tlsConfig));
                 addAlertToTrace(trace);
                 trace.addTlsAction(new ResetConnectionAction());
                 tlsConfig.setDtlsCookieExchange(
