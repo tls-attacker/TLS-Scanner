@@ -93,7 +93,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>crawler-core</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
