@@ -17,5 +17,18 @@ standardPipeline(
                     nameApp: 'tlsscanner',
                     dockerfile: 'Dockerfile_Jenkins'
             )
+            stage('🏷️ Set version') {
+                setVersion(projectName: 'tls.scanner')
+            }
+            stage('🚀 Maven publish central') {
+                centralPublish(
+                        autoPublish: false,
+                        skipTests: true,
+                        quiet: false,
+                        useSettings: true,
+                        settingsId: 'central-settings',
+                        profile: '!protocol-attacker,central-release'
+                )
+            }
         }
 )
