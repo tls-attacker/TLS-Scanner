@@ -20,48 +20,78 @@ import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import java.util.List;
-import org.bson.Document;
 import org.junit.jupiter.api.Test;
 
 public class TlsScanWorkerTest {
 
+    /** No-op persistence provider for testing */
+    private static final IPersistenceProvider NO_OP_PERSISTENCE_PROVIDER =
+            new IPersistenceProvider() {
+                @Override
+                public void insertScanResult(ScanResult scanResult, ScanJobDescription job) {}
+
+                @Override
+                public void insertBulkScan(BulkScan bulkScan) {}
+
+                @Override
+                public void updateBulkScan(BulkScan bulkScan) {}
+
+                @Override
+                public List<ScanResult> getScanResultsByTarget(
+                        String dbName, String collectionName, String target) {
+                    return List.of();
+                }
+
+                @Override
+                public ScanResult getScanResultById(
+                        String dbName, String collectionName, String id) {
+                    return null;
+                }
+
+                @Override
+                public ScanResult getScanResultByScanJobDescriptionId(
+                        String dbName, String collectionName, String scanJobDescriptionId) {
+                    return null;
+                }
+
+                @Override
+                public void upsertPartialResult(ScanJobDescription job, ScanResult partialResult) {}
+            };
+
+    private static TlsScanWorker createWorker() {
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, List.of());
+        return new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
+    }
+
+    // ---- Init / cleanup tests ----
+
     @Test
     public void testCleanupWithoutInit() {
-        TlsScanConfig config =
-                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
-        TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
-
-        // Should throw IllegalStateException since parallelExecutor is null
+        TlsScanWorker worker = createWorker();
         assertThrows(IllegalStateException.class, worker::cleanupInternal);
     }
 
     @Test
     public void testInitAfterInit() {
-        TlsScanConfig config =
-                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
-        TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
-
-        // Initialize once
+        TlsScanWorker worker = createWorker();
         worker.initInternal();
-
-        // Second init should throw IllegalStateException
         assertThrows(IllegalStateException.class, worker::initInternal);
-
-        // Clean up
         worker.cleanupInternal();
     }
+
+    // ---- ServerScannerConfig parallelProbes propagation ----
 
     @Test
     public void testCreateServerScannerConfigPropagatesParallelProbes() {
         TlsScanConfig config =
-                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 4, StarttlsType.NONE, null);
-        TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
-
-        ScanTarget scanTarget = createScanTarget();
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 4, StarttlsType.NONE, List.of());
+        TlsScanWorker worker =
+                new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
 
         assertEquals(
                 4,
-                worker.createServerScannerConfig(scanTarget)
+                worker.createServerScannerConfig(createScanTarget())
                         .getExecutorConfig()
                         .getParallelProbes());
     }
@@ -69,56 +99,22 @@ public class TlsScanWorkerTest {
     @Test
     public void testCreateServerScannerConfigPropagatesZeroParallelProbes() {
         TlsScanConfig config =
-                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 0, StarttlsType.NONE, null);
-        TlsScanWorker worker = new TlsScanWorker("test-scan", 2, config, 3, noOpPersistence());
-
-        ScanTarget scanTarget = createScanTarget();
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 0, StarttlsType.NONE, List.of());
+        TlsScanWorker worker =
+                new TlsScanWorker("test-scan", 2, config, 3, NO_OP_PERSISTENCE_PROVIDER);
 
         assertEquals(
                 0,
-                worker.createServerScannerConfig(scanTarget)
+                worker.createServerScannerConfig(createScanTarget())
                         .getExecutorConfig()
                         .getParallelProbes());
     }
 
-    private ScanTarget createScanTarget() {
+    private static ScanTarget createScanTarget() {
         ScanTarget scanTarget = new ScanTarget();
         scanTarget.setIp("127.0.0.1");
         scanTarget.setPort(443);
         scanTarget.setHostname("localhost");
         return scanTarget;
-    }
-
-    private IPersistenceProvider noOpPersistence() {
-        return new IPersistenceProvider() {
-            @Override
-            public void insertScanResult(ScanResult scanResult, ScanJobDescription job) {}
-
-            @Override
-            public void insertBulkScan(BulkScan bulkScan) {}
-
-            @Override
-            public void updateBulkScan(BulkScan bulkScan) {}
-
-            @Override
-            public List<ScanResult> getScanResultsByTarget(
-                    String dbName, String collectionName, String target) {
-                return List.of();
-            }
-
-            @Override
-            public ScanResult getScanResultById(String dbName, String collectionName, String id) {
-                return null;
-            }
-
-            @Override
-            public ScanResult getScanResultByScanJobDescriptionId(
-                    String dbName, String collectionName, String scanJobDescriptionId) {
-                return null;
-            }
-
-            @Override
-            public void upsertPartialResult(ScanJobDescription job, Document partialResult) {}
-        };
     }
 }
