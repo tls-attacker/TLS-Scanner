@@ -10,7 +10,10 @@ standardPipeline(
         uniTestTimeout: 180,
         archiveArtifacts: true,
         archivePattern: '**/target/*.jar',
-
+        buildStashes: [
+                'jar': '**/apps/*.jar',
+                'lib': '**/apps/*.jar'
+        ],
         extraStages: {
             dockerBuildSH(
                     nameApp: 'tls-crawler',
