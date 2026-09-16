@@ -13,7 +13,6 @@ import de.rub.nds.modifiablevariable.util.ComparableByteArray;
 import de.rub.nds.modifiablevariable.util.Modifiable;
 import de.rub.nds.protocol.constants.MlKemParameters;
 import de.rub.nds.protocol.constants.PointFormat;
-import de.rub.nds.protocol.crypto.ec.EllipticCurve25519;
 import de.rub.nds.protocol.crypto.ec.Point;
 import de.rub.nds.protocol.crypto.ec.PointFormatter;
 import de.rub.nds.protocol.crypto.ec.RFC7748Curve;
@@ -304,7 +303,11 @@ public class MlKemProbe extends TlsServerProbe {
                         supportedHybridMlKemGroups);
 
         put(TlsAnalyzedProperty.ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS, eccValidationResult);
-        put(TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS, new FaultListResult<>(TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS, groupsWithSharedSecretReuse));
+        put(
+                TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                new FaultListResult<>(
+                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                        groupsWithSharedSecretReuse));
         put(TlsAnalyzedProperty.ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS, eccStaticKeysResult);
         put(
                 TlsAnalyzedProperty.ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
