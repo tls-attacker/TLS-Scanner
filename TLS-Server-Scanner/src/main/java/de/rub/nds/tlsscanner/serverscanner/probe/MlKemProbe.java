@@ -41,10 +41,12 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.InvalidCurvePoint;
 import de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point.TwistedCurvePoint;
+import de.rub.nds.tlsscanner.serverscanner.probe.mlkem.MalformedEncapsulationKey;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +64,10 @@ public class MlKemProbe extends TlsServerProbe {
     private List<NamedGroup> groupsWithSharedSecretReuse = new LinkedList<>();
     private List<NamedGroup> groupsWithMissingEcValidation = new LinkedList<>();
     private List<NamedGroup> groupsWithMissingEncapKeyLengthValidation = new LinkedList<>();
+    private List<NamedGroup> groupsWithMissingEncapKeyPolynomialValidation = new LinkedList<>();
     private Map<NamedGroup, List<byte[]>> observedEcPublicKeys = new HashMap<>();
+    private Map<NamedGroup, List<MalformedEncapsulationKey>> mlkemGroupMalformedKeys =
+            new HashMap<>();
 
     public MlKemProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
         super(parallelExecutor, TlsProbeType.ML_KEM, configSelector);
@@ -76,11 +81,13 @@ public class MlKemProbe extends TlsServerProbe {
 
     @Override
     protected void executeTest() {
-        evaluateEncapsulationKeyLengthValidation(
+        List<NamedGroup> allMlKemGroups =
                 Stream.concat(
                                 supportedHybridMlKemGroups.stream(),
                                 supportedPureMlKemGroups.stream())
-                        .toList());
+                        .toList();
+        evaluateEncapsulationKeyLengthValidation(allMlKemGroups);
+        evaluateEncapsulationKeyPolynomialValidation(allMlKemGroups);
         evaluateEcPublicKeyValidation(supportedHybridMlKemGroups);
         evaluateSharedSecretSelection(supportedHybridMlKemGroups);
         evaluateSharedSecretSelection(supportedPureMlKemGroups);
@@ -106,6 +113,14 @@ public class MlKemProbe extends TlsServerProbe {
         for (NamedGroup group : toTest) {
             if (acceptsInvalidMlkemLength(group)) {
                 groupsWithMissingEncapKeyLengthValidation.add(group);
+            }
+        }
+    }
+
+    private void evaluateEncapsulationKeyPolynomialValidation(List<NamedGroup> toTest) {
+        for (NamedGroup group : toTest) {
+            if (acceptsMalformedEncapsulationKey(group)) {
+                groupsWithMissingEncapKeyPolynomialValidation.add(group);
             }
         }
     }
@@ -143,6 +158,32 @@ public class MlKemProbe extends TlsServerProbe {
                         .getRight()
                         .getEncapsulationKey();
         ksEntry.setMlKemPublicKey(Modifiable.explicit(offendingEncKey));
+        executeState(state);
+        return receivedRealServerHello(state);
+    }
+
+    private boolean acceptsMalformedEncapsulationKey(NamedGroup group) {
+        for (MalformedEncapsulationKey malformedKey :
+                mlkemGroupMalformedKeys.get(group.getAnyInvolvedPqGroup())) {
+            if (acceptsEncapsulationKey(group, malformedKey.getEncapsulationKey())) {
+                LOGGER.debug(
+                        "Server accepted encapsulation key of type {} for group {}",
+                        malformedKey.getType(),
+                        group);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean acceptsEncapsulationKey(NamedGroup group, byte[] encapsulationKey) {
+        Config config = getConfigForGroup(group);
+        State state = new State(config);
+        // invalid key share should always terminate the handshake
+        WorkflowTraceMutator.replaceReceivingMessage(
+                state.getWorkflowTrace(), HandshakeMessageType.SERVER_HELLO, new AlertMessage());
+        KeyShareEntry ksEntry = getSendingKeyShareEntry(state);
+        ksEntry.setMlKemPublicKey(Modifiable.explicit(encapsulationKey));
         executeState(state);
         return receivedRealServerHello(state);
     }
@@ -209,7 +250,7 @@ public class MlKemProbe extends TlsServerProbe {
         if (group == NamedGroup.ECDH_X25519) {
             invalidPoint = TwistedCurvePoint.smallOrder(group).getPoint();
             // ensure correct endianness for X25519
-            RFC7748Curve curve = (RFC7748Curve) group.getGroupParameters();
+            RFC7748Curve curve = (RFC7748Curve) group.getGroupParameters().getGroup();
             maliciousPublicKey = curve.encodeCoordinate(invalidPoint.getFieldX().getData());
         } else {
             invalidPoint = InvalidCurvePoint.smallOrder(group).getPoint();
@@ -268,6 +309,15 @@ public class MlKemProbe extends TlsServerProbe {
                         .toList();
         supportedHybridMlKemGroups.forEach(
                 group -> observedEcPublicKeys.put(group, new LinkedList<>()));
+        Set<NamedGroup> uniqueMlKemGroups = new HashSet<>();
+        supportedHybridMlKemGroups.stream()
+                .map(NamedGroup::getAnyInvolvedPqGroup)
+                .forEach(group -> uniqueMlKemGroups.add(group));
+        uniqueMlKemGroups.addAll(supportedPureMlKemGroups);
+        uniqueMlKemGroups.forEach(
+                group ->
+                        mlkemGroupMalformedKeys.put(
+                                group, MalformedEncapsulationKey.getAll(group)));
     }
 
     @Override
@@ -282,6 +332,11 @@ public class MlKemProbe extends TlsServerProbe {
                         TlsAnalyzedProperty
                                 .ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
                         groupsWithMissingEncapKeyLengthValidation);
+        TestResult mlKemEncapKeyPolynomialValidationResult =
+                new FaultListResult<>(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS,
+                        groupsWithMissingEncapKeyPolynomialValidation);
 
         observedEcPublicKeys.values().forEach(publicKeys -> publicKeys.removeIf(Objects::isNull));
         List<NamedGroup> groupsWithPublicKeyReuse = new LinkedList<>();
@@ -312,6 +367,9 @@ public class MlKemProbe extends TlsServerProbe {
         put(
                 TlsAnalyzedProperty.ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
                 mlKemEncapKeyLengthValidationResult);
+        put(
+                TlsAnalyzedProperty.ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS,
+                mlKemEncapKeyPolynomialValidationResult);
     }
 
     private FaultListResult<NamedGroup> resultIfEvaluated(
