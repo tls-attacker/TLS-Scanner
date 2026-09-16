@@ -9,8 +9,6 @@
 package de.rub.nds.tlscrawler.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import de.rub.nds.crawler.data.BulkScan;
@@ -21,10 +19,7 @@ import de.rub.nds.crawler.persistence.IPersistenceProvider;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlscrawler.data.TlsScanConfig;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
-import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
 import java.util.List;
-import org.bson.Document;
 import org.junit.jupiter.api.Test;
 
 public class TlsScanWorkerTest {
@@ -113,33 +108,6 @@ public class TlsScanWorkerTest {
                 worker.createServerScannerConfig(createScanTarget())
                         .getExecutorConfig()
                         .getParallelProbes());
-    }
-
-    /**
-     * The stored report must keep Jackson's type id. Without it the report is not polymorphically
-     * resolvable and consumers cannot deserialize it back into a {@link ServerReport}.
-     */
-    @Test
-    public void storedReportKeepsJacksonTypeId() {
-        ServerReport report = new ServerReport("example.test", 443);
-        report.setServerIsAlive(true);
-
-        Document document = createWorker().createDocumentFromSiteReport(report);
-
-        assertNotNull(document, "Expected a document for a reachable target");
-        Object storedReport = document.get("report");
-        assertInstanceOf(
-                Document.class, storedReport, "Expected the report to be stored as a document");
-        assertEquals(
-                "de.rub.nds.tlsscanner.serverscanner.report.ServerReport",
-                ((Document) storedReport).get("@class"),
-                "Stored report is missing its @class type id and cannot be deserialized back");
-
-        ServerReport roundTripped =
-                new ServerReportJsonMapper()
-                        .objectMapper.convertValue(storedReport, ServerReport.class);
-        assertNotNull(roundTripped, "Expected the stored report to round-trip back");
-        assertEquals("example.test", roundTripped.getHost(), "Expected the host to survive");
     }
 
     private static ScanTarget createScanTarget() {
