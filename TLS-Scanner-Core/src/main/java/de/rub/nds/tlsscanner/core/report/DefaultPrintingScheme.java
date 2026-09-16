@@ -267,7 +267,7 @@ public class DefaultPrintingScheme {
                 new HashMap<>());
     }
 
-    private static HashMap<TestResult, String> getDefaultTextEncodings() {
+    static HashMap<TestResult, String> getDefaultTextEncodings() {
         HashMap<TestResult, String> map = new HashMap<>();
         map.put(TestResults.CANNOT_BE_TESTED, "cannot be tested");
         map.put(TestResults.COULD_NOT_TEST, "could not test");
@@ -320,7 +320,7 @@ public class DefaultPrintingScheme {
      * @param falseColor The color to use when a test result is FALSE
      * @return A ColorEncoding with the specified color mappings
      */
-    private static ColorEncoding getDefaultColorEncoding(
+    static ColorEncoding getDefaultColorEncoding(
             SemanticMarkup trueColor, SemanticMarkup falseColor) {
         HashMap<TestResult, SemanticMarkup> colorMap = new HashMap<>();
         colorMap.put(TestResults.CANNOT_BE_TESTED, SemanticMarkup.SCANNER_INFO_SERVER_DEPENDENT);
