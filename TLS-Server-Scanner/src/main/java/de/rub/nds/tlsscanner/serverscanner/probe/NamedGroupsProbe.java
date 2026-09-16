@@ -476,9 +476,12 @@ public class NamedGroupsProbe extends TlsServerProbe {
         }
 
         TestResult exclusivelyPqGroupsTls13;
-        if(tls13Groups == null || tls13Groups.isEmpty()) {
+        if (tls13Groups == null || tls13Groups.isEmpty()) {
             exclusivelyPqGroupsTls13 = TestResults.CANNOT_BE_TESTED;
-        } else if(tls13Groups.stream().filter(group -> group.isGrease() && !group.isPQGroup() && !group.isHybridPQGroup()).findAny().isPresent()) {
+        } else if (tls13Groups.stream()
+                .filter(group -> group.isGrease() && !group.isPQGroup() && !group.isHybridPQGroup())
+                .findAny()
+                .isPresent()) {
             exclusivelyPqGroupsTls13 = TestResults.FALSE;
         } else {
             exclusivelyPqGroupsTls13 = TestResults.TRUE;
