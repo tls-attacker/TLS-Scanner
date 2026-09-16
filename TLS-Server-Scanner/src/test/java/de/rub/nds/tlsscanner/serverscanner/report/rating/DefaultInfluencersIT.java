@@ -1087,6 +1087,40 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SUPPORTS_MLKEM,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -500, 1000),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 1500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 1000),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Skipping the input validation of FIPS 203 does not yield a known attack but shows lacking
+        // best practices
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =
