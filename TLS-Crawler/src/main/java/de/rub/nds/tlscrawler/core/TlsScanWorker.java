@@ -22,6 +22,7 @@ import de.rub.nds.tlscrawler.data.TlsScanConfig;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.execution.TlsServerScanner;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
+import de.rub.nds.tlsscanner.serverscanner.report.ServerReportJsonMapper;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +38,8 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
     private ParallelExecutor parallelExecutor;
 
     private final int parallelConnectionThreads;
+
+    private final ServerReportJsonMapper mapper = new ServerReportJsonMapper();
 
     public TlsScanWorker(
             String bulkScanID,
@@ -159,7 +162,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
         return config;
     }
 
-    private Document createDocumentFromSiteReport(ServerReport report) {
+    Document createDocumentFromSiteReport(ServerReport report) {
         if (report == null) {
             return null;
         }
@@ -167,7 +170,7 @@ public class TlsScanWorker extends BulkScanWorker<TlsScanConfig> {
             return null;
         }
         Document document = new Document();
-        document.put("report", report);
+        document.put("report", mapper.objectMapper.convertValue(report, Document.class));
         return document;
     }
 
