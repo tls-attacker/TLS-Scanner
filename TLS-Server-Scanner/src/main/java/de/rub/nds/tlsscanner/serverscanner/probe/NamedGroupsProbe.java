@@ -67,6 +67,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
     private TestResult supportsPqGroup = TestResults.COULD_NOT_TEST;
     private TestResult supportsPqHybridKex = TestResults.COULD_NOT_TEST;
     private TestResult supportsMlKem = TestResults.COULD_NOT_TEST;
+    private TestResult supportsKyberDraft = TestResults.COULD_NOT_TEST;
     private TestResult prefersPqGroup = TestResults.COULD_NOT_TEST;
 
     public NamedGroupsProbe(ConfigSelector configSelector, ParallelExecutor parallelExecutor) {
@@ -80,9 +81,10 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES,
                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES_TLS13,
-                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
+                TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX,
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
                 TlsAnalyzedProperty.SUPPORTS_MLKEM,
+                TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT,
                 TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
                 TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX);
     }
@@ -342,6 +344,13 @@ public class NamedGroupsProbe extends TlsServerProbe {
         X509NamedCurve certificateGroup = null;
         TlsContext context = null;
         List<NamedGroup> toTestList = NamedGroup.getImplemented();
+        for (NamedGroup additionalGroup : NamedGroup.values()) {
+            // add unimplemented TLS 1.3 (draft) groups as we can test for their support without
+            // handshaking
+            if (!toTestList.contains(additionalGroup) && additionalGroup.isTls13()) {
+                toTestList.add(additionalGroup);
+            }
+        }
         // place signing groups at the bottom of the list, the server should
         // choose all other first
         if (ecdsaPkGroupsTls13 != null) {
@@ -453,15 +462,14 @@ public class NamedGroupsProbe extends TlsServerProbe {
             supportsPqGroup = TestResults.FALSE;
             supportsPqHybridKex = TestResults.FALSE;
             supportsMlKem = TestResults.FALSE;
+            supportsKyberDraft = TestResults.FALSE;
         }
         boolean hasAnyHybridPqGroup =
                 tls13Groups.stream().filter(group -> group.isHybridPQGroup()).findAny().isPresent();
         boolean hasAnyPqGroup =
-                hasAnyHybridPqGroup
-                        || tls13Groups.stream()
-                                .filter(group -> group.isPQGroup())
-                                .findAny()
-                                .isPresent();
+                tls13Groups.stream().filter(group -> group.isPQGroup()).findAny().isPresent();
+        boolean hasAnyKyberDraft =
+                tls13Groups.stream().filter(group -> group.isKyber()).findAny().isPresent();
         boolean hasAnyMlKem =
                 tls13Groups.stream().filter(group -> group.isMlKemGroup()).findAny().isPresent();
 
@@ -473,6 +481,9 @@ public class NamedGroupsProbe extends TlsServerProbe {
         }
         if (hasAnyMlKem) {
             supportsMlKem = TestResults.TRUE;
+        }
+        if (hasAnyKyberDraft) {
+            supportsKyberDraft = TestResults.TRUE;
         }
 
         TestResult exclusivelyPqGroupsTls13;
@@ -495,9 +506,10 @@ public class NamedGroupsProbe extends TlsServerProbe {
         put(TlsAnalyzedProperty.SUPPORTS_EXPLICIT_CHAR2_CURVE, supportsExplicitChar2);
         put(TlsAnalyzedProperty.GROUPS_DEPEND_ON_CIPHER, groupsDependOnCipherSuite);
         put(TlsAnalyzedProperty.IGNORES_ECDSA_GROUP_DISPARITY, ignoresEcdsaGroupDisparity);
-        put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX, supportsPqGroup);
+        put(TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX, supportsPqGroup);
         put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, supportsPqHybridKex);
         put(TlsAnalyzedProperty.SUPPORTS_MLKEM, supportsMlKem);
+        put(TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT, supportsKyberDraft);
         put(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, prefersPqGroup);
         put(TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX, exclusivelyPqGroupsTls13);
     }

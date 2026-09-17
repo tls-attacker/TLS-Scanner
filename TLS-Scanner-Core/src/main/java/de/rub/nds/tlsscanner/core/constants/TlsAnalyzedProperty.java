@@ -394,8 +394,9 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     HANDSHAKE_FAILED_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
     CONNECTION_INSECURE_COUNTER(TlsAnalyzedPropertyCategory.QUIRKS),
     /** Post Quantum for TLS 1.3 and QUIC */
-    SUPPORTS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    SUPPORTS_PURE_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_POST_QUANTUM_HYBRID_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_MLKEM(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     PREFERS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     EXCLUSIVELY_POST_QUANTUM_SECURE_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
