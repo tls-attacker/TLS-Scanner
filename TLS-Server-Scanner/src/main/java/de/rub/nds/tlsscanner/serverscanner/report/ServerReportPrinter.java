@@ -210,13 +210,17 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Post Quantum");
         prettyAppend(
                 builder,
-                "Supports post quantum key exchange",
-                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX);
+                "Supports pure post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX);
         prettyAppend(
                 builder,
                 "Supports hybrid post quantum key exchange",
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX);
         prettyAppend(builder, "Supports ML-KEM", TlsAnalyzedProperty.SUPPORTS_MLKEM);
+        prettyAppend(
+                builder,
+                "Supports deprecated Kyber draft",
+                TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT);
         prettyAppend(
                 builder,
                 "Prefers post quantum key exchange",

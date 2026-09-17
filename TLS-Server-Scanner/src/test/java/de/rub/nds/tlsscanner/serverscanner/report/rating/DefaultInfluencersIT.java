@@ -1065,10 +1065,12 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
+        // Pure post quantum key exchange is neither rewarded nor penalized as it provides post
+        // quantum security but drops the classical security of the hybrid groups
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
-                        new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
+                        TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
@@ -1086,6 +1088,11 @@ public class DefaultInfluencersIT {
                 new RatingInfluencer(
                         TlsAnalyzedProperty.SUPPORTS_MLKEM,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -10),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
