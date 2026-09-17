@@ -8,6 +8,7 @@
  */
 package de.rub.nds.tlsscanner.serverscanner.probe.invalidcurve.point;
 
+import de.rub.nds.protocol.crypto.ec.Point;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import java.math.BigInteger;
 
@@ -464,5 +465,10 @@ public class InvalidCurvePoint {
 
     public void setOrder(BigInteger order) {
         this.order = order;
+    }
+
+    public Point getPoint() {
+        return Point.createPoint(
+                publicPointBaseX, publicPointBaseY, namedGroup.getGroupParameters());
     }
 }

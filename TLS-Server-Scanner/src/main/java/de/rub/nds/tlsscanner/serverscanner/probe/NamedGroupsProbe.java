@@ -83,7 +83,8 @@ public class NamedGroupsProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
                 TlsAnalyzedProperty.SUPPORTS_MLKEM,
-                TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX);
+                TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
+                TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX);
     }
 
     @Override
@@ -474,6 +475,18 @@ public class NamedGroupsProbe extends TlsServerProbe {
             supportsMlKem = TestResults.TRUE;
         }
 
+        TestResult exclusivelyPqGroupsTls13;
+        if (tls13Groups == null || tls13Groups.isEmpty()) {
+            exclusivelyPqGroupsTls13 = TestResults.CANNOT_BE_TESTED;
+        } else if (tls13Groups.stream()
+                .filter(group -> group.isGrease() && !group.isPQGroup() && !group.isHybridPQGroup())
+                .findAny()
+                .isPresent()) {
+            exclusivelyPqGroupsTls13 = TestResults.FALSE;
+        } else {
+            exclusivelyPqGroupsTls13 = TestResults.TRUE;
+        }
+
         put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS, allGroups);
         put(TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS, tls13Groups);
         put(TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS_WITNESSES, namedGroupsMap);
@@ -486,5 +499,6 @@ public class NamedGroupsProbe extends TlsServerProbe {
         put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, supportsPqHybridKex);
         put(TlsAnalyzedProperty.SUPPORTS_MLKEM, supportsMlKem);
         put(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, prefersPqGroup);
+        put(TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX, exclusivelyPqGroupsTls13);
     }
 }

@@ -2231,10 +2231,90 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>PREFERS_POST_QUANTUM_KEX</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>300</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>SUPPORTS_MLKEM</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>EXCLUSIVELY_POST_QUANTUM_SECURE_KEX</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ML_KEM_SHARED_SECRET_REUSE_GROUPS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-500</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1500</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-200</influence>
+            <scoreCap>1000</scoreCap>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-50</influence>
         </propertyRatingInfluencers>
         <propertyRatingInfluencers>
             <result>FALSE</result>

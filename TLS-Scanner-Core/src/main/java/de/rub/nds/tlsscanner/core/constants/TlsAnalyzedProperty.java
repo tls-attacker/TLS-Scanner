@@ -397,7 +397,15 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_POST_QUANTUM_HYBRID_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_MLKEM(TlsAnalyzedPropertyCategory.POST_QUANTUM),
-    PREFERS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM);
+    PREFERS_POST_QUANTUM_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    EXCLUSIVELY_POST_QUANTUM_SECURE_KEX(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    ML_KEM_SHARED_SECRET_REUSE_GROUPS(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS(
+            TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS(
+            TlsAnalyzedPropertyCategory.POST_QUANTUM);
 
     private final TlsAnalyzedPropertyCategory category;
 

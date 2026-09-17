@@ -277,6 +277,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new DestinationPortAfterProbe());
         // TLS-specific
         registerProbeForExecution(new HelloRetryProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new MlKemProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new RecordFragmentationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new EarlyCcsProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new EsniProbe(configSelector, parallelExecutor));
