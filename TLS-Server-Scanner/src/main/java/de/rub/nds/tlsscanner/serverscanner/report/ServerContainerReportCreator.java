@@ -375,13 +375,22 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Post Quantum"));
         container.add(
-                createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX, report));
+                createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX, report));
         container.add(
                 createKeyValueContainer(
                         TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MLKEM, report));
         container.add(
+                createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT, report));
+        container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, report));
+        container.add(
+                createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MLDSA, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SLHDSA, report));
         container.add(
                 createKeyValueContainer(
                         TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE, report));

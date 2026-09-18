@@ -413,13 +413,13 @@ public class DefaultRecommendationsIT {
                         ""));
         recommendations.add(
                 new Recommendation(
-                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX,
-                        "Post quantum key exchange support",
-                        "Evaluates whether the server supports a post quantum key exchange group in TLS 1.3",
+                        TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX,
+                        "Pure post quantum key exchange support",
+                        "Evaluates whether the server supports a key exchange group that relies exclusively on a post quantum algorithm in TLS 1.3",
                         new PropertyResultRecommendation(
-                                TestResults.FALSE,
-                                "The server does not support a post quantum key exchange group",
-                                "Add support for a post quantum key exchange group to protect against store-now-decrypt-later attacks"),
+                                TestResults.TRUE,
+                                "The server supports a key exchange group whose security relies exclusively on a post quantum algorithm",
+                                "Consider hybrid groups so that the security of the key exchange does not solely rely on the comparatively young post quantum algorithms"),
                         ""));
         recommendations.add(
                 new Recommendation(
@@ -443,6 +443,16 @@ public class DefaultRecommendationsIT {
                         ""));
         recommendations.add(
                 new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT,
+                        "Deprecated hybrid Kyber key exchange support",
+                        "Evaluates whether the server supports a hybrid key exchange group based on a deprecated Kyber draft in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server supports a hybrid key exchange group based on a deprecated Kyber draft",
+                                "Replace the deprecated Kyber draft groups with standardized hybrid groups utilizing ML-KEM"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
                         TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
                         "Post quantum preference",
                         "Evaluates if the server prefers post quantum key exchange regardless of client preference",
@@ -460,6 +470,26 @@ public class DefaultRecommendationsIT {
                                 TestResults.FALSE,
                                 "The server also offers key exchange groups that are not post quantum secure",
                                 "Consider restricting the offered groups to post quantum secure groups once all peers you serve support them"),
+                        ""));
+        // ML-DSA and SLH-DSA are still specified in drafts only, hence we do not recommend adding
+        // support for them yet
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                        "Post quantum signature support",
+                        "Evaluates whether the server signs with a post quantum signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                        "ML-DSA support",
+                        "Evaluates whether the server signs with an ML-DSA signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_SLHDSA,
+                        "SLH-DSA support",
+                        "Evaluates whether the server signs with an SLH-DSA signature algorithm in TLS 1.3",
                         ""));
         recommendations.add(
                 new Recommendation(

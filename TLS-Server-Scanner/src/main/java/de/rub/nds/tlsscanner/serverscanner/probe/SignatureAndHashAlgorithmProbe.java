@@ -11,6 +11,8 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.modifiablevariable.bytearray.ModifiableByteArray;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
+import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
 
@@ -49,7 +52,10 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
         super(parallelExecutor, TlsProbeType.SIGNATURE_AND_HASH, configSelector);
         register(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_SKE,
-                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13);
+                TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                TlsAnalyzedProperty.SUPPORTS_SLHDSA);
     }
 
     @Override
@@ -209,5 +215,36 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
         put(
                 TlsAnalyzedProperty.SUPPORTED_SIGNATURE_AND_HASH_ALGORITHMS_TLS13,
                 signatureAndHashAlgorithmListTls13);
+        put(
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                getSupportResult(SignatureAndHashAlgorithm::isPostQuantum));
+        put(
+                TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                getSupportResult(SignatureAndHashAlgorithm::isMlDsa));
+        put(
+                TlsAnalyzedProperty.SUPPORTS_SLHDSA,
+                getSupportResult(SignatureAndHashAlgorithm::isSlhDsa));
+    }
+
+    /**
+     * Determines if the server selected any algorithm that matches the given predicate. Post
+     * quantum algorithms are only defined for TLS 1.3 but we also consider the algorithms selected
+     * for the ServerKeyExchange to detect servers that apply them outside of their specification.
+     */
+    private TestResult getSupportResult(Predicate<SignatureAndHashAlgorithm> predicate) {
+        if (signatureAndHashAlgorithmListSke == null
+                && signatureAndHashAlgorithmListTls13 == null) {
+            return TestResults.COULD_NOT_TEST;
+        }
+        return Stream.concat(
+                                signatureAndHashAlgorithmListSke == null
+                                        ? Stream.empty()
+                                        : signatureAndHashAlgorithmListSke.stream(),
+                                signatureAndHashAlgorithmListTls13 == null
+                                        ? Stream.empty()
+                                        : signatureAndHashAlgorithmListTls13.stream())
+                        .anyMatch(predicate)
+                ? TestResults.TRUE
+                : TestResults.FALSE;
     }
 }

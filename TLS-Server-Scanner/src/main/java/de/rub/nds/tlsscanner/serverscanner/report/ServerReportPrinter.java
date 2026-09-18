@@ -210,8 +210,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Post Quantum");
         prettyAppend(
                 builder,
-                "Supports post quantum key exchange",
-                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX);
+                "Supports pure post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX);
         prettyAppend(
                 builder,
                 "Supports hybrid post quantum key exchange",
@@ -219,8 +219,18 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Supports ML-KEM", TlsAnalyzedProperty.SUPPORTS_MLKEM);
         prettyAppend(
                 builder,
+                "Supports deprecated Kyber draft",
+                TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT);
+        prettyAppend(
+                builder,
                 "Prefers post quantum key exchange",
                 TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX);
+        prettyAppend(
+                builder,
+                "Supports post quantum signatures",
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES);
+        prettyAppend(builder, "Supports ML-DSA", TlsAnalyzedProperty.SUPPORTS_MLDSA);
+        prettyAppend(builder, "Supports SLH-DSA", TlsAnalyzedProperty.SUPPORTS_SLHDSA);
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE)
                 == TestResults.TRUE) {
             // PQ cipher suites have not seen wide-spread adoption. Hence, to avoid confusion with

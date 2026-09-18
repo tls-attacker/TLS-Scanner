@@ -2209,10 +2209,10 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
-        <property>SUPPORTS_POST_QUANTUM_KEX</property>
+        <property>SUPPORTS_PURE_POST_QUANTUM_KEX</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
-            <influence>300</influence>
+            <influence>0</influence>
         </propertyRatingInfluencers>
         <propertyRatingInfluencers>
             <result>FALSE</result>
@@ -2253,10 +2253,54 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>-10</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>EXCLUSIVELY_POST_QUANTUM_SECURE_KEX</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>
             <influence>100</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_POST_QUANTUM_SIGNATURES</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_MLDSA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
+        <property>SUPPORTS_SLHDSA</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>0</influence>
         </propertyRatingInfluencers>
         <propertyRatingInfluencers>
             <result>FALSE</result>

@@ -18,6 +18,7 @@ import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -120,7 +121,7 @@ public class ScannerConfigGenerationTest {
          */
         config.setDefaultClientSupportedCipherSuites(CipherSuite.getImplementedTls13CipherSuites());
         config.setDefaultClientSupportedSignatureAndHashAlgorithms(
-                SignatureAndHashAlgorithm.getImplemented());
+                getRichSignatureAndHashAlgorithms());
         config.setDefaultClientSupportedCompressionMethods(CompressionMethod.NULL);
 
         config.setDefaultClientNamedGroups(NamedGroup.getImplemented());
@@ -133,6 +134,21 @@ public class ScannerConfigGenerationTest {
                 List.of(NamedGroup.SECP256R1, NamedGroup.ECDH_X25519, NamedGroup.X25519_MLKEM768));
 
         writeConfig(config, "tls13rich.config");
+    }
+
+    /**
+     * The algorithms implemented by TLS-Attacker, extended by the post quantum algorithms of the
+     * ML-DSA and SLH-DSA drafts. We do not implement these drafts yet, but we can still handshake
+     * with servers as we can gracefully skip over CertificateVerify signatures.
+     */
+    private static List<SignatureAndHashAlgorithm> getRichSignatureAndHashAlgorithms() {
+        List<SignatureAndHashAlgorithm> algorithms =
+                new ArrayList<>(SignatureAndHashAlgorithm.getImplemented());
+        Arrays.stream(SignatureAndHashAlgorithm.values())
+                .filter(SignatureAndHashAlgorithm::isPostQuantum)
+                .filter(algorithm -> !algorithms.contains(algorithm))
+                .forEach(algorithms::add);
+        return algorithms;
     }
 
     private static void writeConfig(Config config, String fileName) {
