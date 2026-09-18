@@ -1099,6 +1099,25 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Post quantum signatures are still specified in drafts only, so we reward support but do
+        // not penalize servers that do not offer them yet
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Rating is already awarded for post quantum signature support so there is no need to
+        // change the rating for the specific algorithm families
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_SLHDSA,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
                         TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,

@@ -471,6 +471,26 @@ public class DefaultRecommendationsIT {
                                 "The server also offers key exchange groups that are not post quantum secure",
                                 "Consider restricting the offered groups to post quantum secure groups once all peers you serve support them"),
                         ""));
+        // ML-DSA and SLH-DSA are still specified in drafts only, hence we do not recommend adding
+        // support for them yet
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                        "Post quantum signature support",
+                        "Evaluates whether the server signs with a post quantum signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                        "ML-DSA support",
+                        "Evaluates whether the server signs with an ML-DSA signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_SLHDSA,
+                        "SLH-DSA support",
+                        "Evaluates whether the server signs with an SLH-DSA signature algorithm in TLS 1.3",
+                        ""));
         recommendations.add(
                 new Recommendation(
                         TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,

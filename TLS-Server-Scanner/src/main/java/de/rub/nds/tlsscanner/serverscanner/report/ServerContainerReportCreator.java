@@ -388,6 +388,11 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
                 createKeyValueContainer(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, report));
         container.add(
                 createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MLDSA, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SLHDSA, report));
+        container.add(
+                createKeyValueContainer(
                         TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE, report));
         return container;
     }

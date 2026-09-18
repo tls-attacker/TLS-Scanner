@@ -99,8 +99,11 @@ public class DefaultPrintingScheme {
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_MLKEM, trueGood);
         colorMap.put(
-                TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT, trueMediumFalseNeutral);
+                TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT, trueMediumFalseGood);
         colorMap.put(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, trueGood);
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES, trueGood);
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_MLDSA, trueGood);
+        colorMap.put(TlsAnalyzedProperty.SUPPORTS_SLHDSA, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_AES, defaultColorEncoding);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, defaultColorEncoding);
