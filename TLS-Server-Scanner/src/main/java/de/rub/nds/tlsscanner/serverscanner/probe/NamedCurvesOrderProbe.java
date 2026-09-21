@@ -10,7 +10,6 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.PropertyComparatorRequirement;
-import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
@@ -26,16 +25,17 @@ import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /** Probe that checks if server enforces the order of named groups sent by the client */
 public class NamedCurvesOrderProbe extends TlsServerProbe {
 
-    private Collection<NamedGroup> supportedGroups;
+    private Set<NamedGroup> supportedGroups;
 
     private TestResult enforced = TestResults.COULD_NOT_TEST;
 
@@ -84,37 +84,29 @@ public class NamedCurvesOrderProbe extends TlsServerProbe {
                 new ProbeRequirement<ServerReport>(
                         TlsProbeType.NAMED_GROUPS, TlsProbeType.CIPHER_SUITE);
 
-        if (usesTls13Config()) {
-            return requirements.and(
-                    new PropertyComparatorRequirement<>(
-                            PropertyComparatorRequirement.Operator.GREATER,
-                            TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
-                            0));
-        }
-        return requirements
-                .and(new PropertyTrueRequirement<>(TlsAnalyzedProperty.SUPPORTS_ECDHE))
-                .and(
-                        new PropertyComparatorRequirement<>(
+        Requirement<ServerReport> supportedGroupsRequirement =
+                new PropertyComparatorRequirement<ServerReport>(
                                 PropertyComparatorRequirement.Operator.GREATER,
                                 TlsAnalyzedProperty.SUPPORTED_NAMED_GROUPS,
-                                0));
+                                0)
+                        .or(
+                                new PropertyComparatorRequirement<>(
+                                        PropertyComparatorRequirement.Operator.GREATER,
+                                        TlsAnalyzedProperty.SUPPORTED_TLS13_GROUPS,
+                                        0));
+
+        return requirements.and(supportedGroupsRequirement);
     }
 
     @Override
     public void adjustConfig(ServerReport report) {
-        if (usesTls13Config()) {
-            supportedGroups = report.getSupportedTls13Groups();
-        } else {
-            supportedGroups = report.getSupportedNamedGroups();
-        }
+        supportedGroups = new LinkedHashSet<>();
+        supportedGroups.addAll(report.getSupportedTls13Groups());
+        supportedGroups.addAll(report.getSupportedNamedGroups());
     }
 
     @Override
     protected void mergeData(ServerReport report) {
         put(TlsAnalyzedProperty.ENFORCES_NAMED_GROUP_ORDERING, enforced);
-    }
-
-    private boolean usesTls13Config() {
-        return configSelector.getAnyWorkingBaseConfig().getHighestProtocolVersion().is13();
     }
 }
