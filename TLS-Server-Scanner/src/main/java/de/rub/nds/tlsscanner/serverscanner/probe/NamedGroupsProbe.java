@@ -490,7 +490,7 @@ public class NamedGroupsProbe extends TlsServerProbe {
         if (tls13Groups == null || tls13Groups.isEmpty()) {
             exclusivelyPqGroupsTls13 = TestResults.CANNOT_BE_TESTED;
         } else if (tls13Groups.stream()
-                .filter(group -> group.isGrease() && !group.isPQGroup() && !group.isHybridPQGroup())
+                .filter(group -> !group.isPQGroup() && !group.isHybridPQGroup())
                 .findAny()
                 .isPresent()) {
             exclusivelyPqGroupsTls13 = TestResults.FALSE;
