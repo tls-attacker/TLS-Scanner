@@ -101,8 +101,13 @@ public class NamedCurvesOrderProbe extends TlsServerProbe {
     @Override
     public void adjustConfig(ServerReport report) {
         supportedGroups = new LinkedHashSet<>();
-        supportedGroups.addAll(report.getSupportedTls13Groups());
-        supportedGroups.addAll(report.getSupportedNamedGroups());
+        if (report.getSupportedNamedGroups() != null) {
+            supportedGroups.addAll(report.getSupportedNamedGroups());
+        }
+
+        if (report.getSupportedTls13Groups() != null) {
+            supportedGroups.addAll(report.getSupportedTls13Groups());
+        }
     }
 
     @Override
