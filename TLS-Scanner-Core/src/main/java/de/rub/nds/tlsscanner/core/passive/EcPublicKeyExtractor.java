@@ -63,7 +63,6 @@ public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
 
                     for (KeyShareEntry keyShareEntry : keyShareExtension.getKeyShareList()) {
 
-
                         NamedGroup group =
                                 NamedGroup.getNamedGroup(keyShareEntry.getGroup().getValue());
 
