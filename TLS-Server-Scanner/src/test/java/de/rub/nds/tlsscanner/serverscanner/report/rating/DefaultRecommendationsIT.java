@@ -395,7 +395,7 @@ public class DefaultRecommendationsIT {
         // post quantum
         recommendations.add(
                 new Recommendation(
-                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+                        TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
                         "Post quantum algorithms support",
                         "Evaluates whether the server supports post quantum algorithms",
                         ""));
@@ -411,6 +411,138 @@ public class DefaultRecommendationsIT {
                         "Post quantum ECMQV algorithm support",
                         "Evaluates whether the server supports the ECMQV post quantum algorithm",
                         ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX,
+                        "Pure post quantum key exchange support",
+                        "Evaluates whether the server supports a key exchange group that relies exclusively on a post quantum algorithm in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server supports a key exchange group whose security relies exclusively on a post quantum algorithm",
+                                "Consider hybrid groups so that the security of the key exchange does not solely rely on the comparatively young post quantum algorithms"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
+                        "Hybrid post quantum key exchange support",
+                        "Evaluates whether the server supports a hybrid post quantum key exchange group in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not support a hybrid post quantum key exchange group",
+                                "Prefer hybrid groups so that the security of the key exchange does not solely rely on the post quantum algorithm"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_MLKEM,
+                        "ML-KEM support",
+                        "Evaluates whether the server supports an ML-KEM based key exchange group in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not support an ML-KEM based key exchange group",
+                                "Consider adding support for an ML-KEM based group as ML-KEM is the standardized post quantum KEM"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT,
+                        "Deprecated hybrid Kyber key exchange support",
+                        "Evaluates whether the server supports a hybrid key exchange group based on a deprecated Kyber draft in TLS 1.3",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server supports a hybrid key exchange group based on a deprecated Kyber draft",
+                                "Replace the deprecated Kyber draft groups with standardized hybrid groups utilizing ML-KEM"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
+                        "Post quantum preference",
+                        "Evaluates if the server prefers post quantum key exchange regardless of client preference",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server does not prefer post quantum groups",
+                                "Consider adding post quantum preference to protect against store-now-decrypt-later attacks whenever a client provides support for it"),
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX,
+                        "Exclusive post quantum key exchange",
+                        "Evaluates whether the server offers post quantum secure key exchange groups only",
+                        new PropertyResultRecommendation(
+                                TestResults.FALSE,
+                                "The server also offers key exchange groups that are not post quantum secure",
+                                "Consider restricting the offered groups to post quantum secure groups once all peers you serve support them"),
+                        ""));
+        // ML-DSA and SLH-DSA are still specified in drafts only, hence we do not recommend adding
+        // support for them yet
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                        "Post quantum signature support",
+                        "Evaluates whether the server signs with a post quantum signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                        "ML-DSA support",
+                        "Evaluates whether the server signs with an ML-DSA signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.SUPPORTS_SLHDSA,
+                        "SLH-DSA support",
+                        "Evaluates whether the server signs with an SLH-DSA signature algorithm in TLS 1.3",
+                        ""));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                        "ML-KEM shared secret reuse",
+                        "Evaluates whether the server encapsulates a fresh ML-KEM shared secret for each handshake",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server sends the same ML-KEM ciphertext in multiple handshakes and hence derives the same shared secret",
+                                "Perform a fresh encapsulation for every handshake, as a reused shared secret voids the forward secrecy of the key exchange"),
+                        "https://doi.org/10.6028/NIST.FIPS.203"));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS,
+                        "Hybrid ML-KEM elliptic curve validation",
+                        "Evaluates whether the server validates the elliptic curve share of a hybrid ML-KEM key share",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server completes the handshake although the elliptic curve share of the hybrid key share is not a valid point of the curve",
+                                "Reject key shares whose elliptic curve point is invalid, as processing them exposes the classic part of the hybrid key exchange to invalid curve attacks"),
+                        "https://datatracker.ietf.org/doc/html/draft-ietf-tls-hybrid-design"));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS,
+                        "Hybrid ML-KEM static elliptic curve public key",
+                        "Evaluates whether the server uses an ephemeral elliptic curve key pair for hybrid ML-KEM key shares",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server sends the same elliptic curve public key in multiple handshakes",
+                                "Generate an ephemeral elliptic curve key pair for every handshake, as a static key pair voids the forward secrecy of the classic part of the hybrid key exchange"),
+                        "https://datatracker.ietf.org/doc/html/draft-ietf-tls-hybrid-design"));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
+                        "ML-KEM encapsulation key length validation",
+                        "Evaluates whether the server rejects encapsulation keys whose length does not match the negotiated ML-KEM parameter set",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server completes the handshake although the offered encapsulation key does not have the length defined for the negotiated parameter set",
+                                "Reject key shares whose encapsulation key length does not match the negotiated parameter set, as required by the input validation of FIPS 203"),
+                        "https://doi.org/10.6028/NIST.FIPS.203"));
+        recommendations.add(
+                new Recommendation(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS,
+                        "ML-KEM encapsulation key modulus validation",
+                        "Evaluates whether the server performs the modulus check on the polynomial coefficients of an ML-KEM encapsulation key",
+                        new PropertyResultRecommendation(
+                                TestResults.TRUE,
+                                "The server completes the handshake although the coefficients of the offered encapsulation key do not survive the encode and decode round trip of FIPS 203",
+                                "Apply the modulus check of FIPS 203 to each offered encapsulation key and abort the handshake if it fails"),
+                        "https://doi.org/10.6028/NIST.FIPS.203"));
 
         recommendations.add(
                 new Recommendation(

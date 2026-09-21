@@ -9,7 +9,7 @@
 
     <groupId>de.rub.nds.tls.scanner</groupId>
     <artifactId>tls-scanner</artifactId>
-    <version>7.4.1</version>
+    <version>7.7.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>TLS-Scanner</name>
@@ -48,7 +48,7 @@
     <scm>
         <connection>scm:git:https://github.com/tls-attacker/TLS-Scanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/tls-attacker/TLS-Scanner-Development.git</developerConnection>
-        <tag>v7.4.1</tag>
+        <tag>v7.4.0</tag>
         <url>https://github.com/tls-attacker/TLS-Scanner</url>
     </scm>
 
@@ -63,7 +63,7 @@
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
         <skip.failsafe.tests>${skipTests}</skip.failsafe.tests>
         <!-- Set TLS-Attacker version once -->
-        <toolkit.tls.attacker.version>7.7.0</toolkit.tls.attacker.version>
+        <toolkit.tls.attacker.version>7.14.0</toolkit.tls.attacker.version>
     </properties>
 
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>asn1-attacker</artifactId>
-            <version>4.2.3</version>
+            <version>4.2.5</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
@@ -140,12 +140,12 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>6.4.0</version>
+            <version>6.6.0</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>x509-attacker</artifactId>
-            <version>4.3.10</version>
+            <version>4.3.12</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds.tls.attacker</groupId>
@@ -206,7 +206,7 @@
         <dependency>
             <groupId>de.rub.nds.tls.dockerlib</groupId>
             <artifactId>tls-docker-library</artifactId>
-            <version>3.2.2</version>
+            <version>3.3.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
