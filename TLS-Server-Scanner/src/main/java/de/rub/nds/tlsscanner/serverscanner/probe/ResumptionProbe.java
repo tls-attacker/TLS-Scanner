@@ -125,10 +125,8 @@ public class ResumptionProbe extends TlsServerProbe {
     }
 
     /**
-     * Builds the receive that ends the first handshake of the session ticket tests. A STARTTLS
-     * server that greets unprompted once the handshake is done sends that greeting right behind its
-     * Finished, so the receive has to expect it, or the trace stops there as unexpected and the
-     * resumption never runs.
+     * Also expects the unprompted STARTTLS greeting behind the server Finished, otherwise the trace
+     * stops there as unexpected.
      */
     private ReceiveAction createServerFinishedWithTicketReceive(Config tlsConfig) {
         List<ProtocolMessage> messages = new ArrayList<>();
@@ -142,9 +140,8 @@ public class ResumptionProbe extends TlsServerProbe {
     }
 
     /**
-     * Checks whether the server answered the resumption attempt with a full handshake. Every
-     * receive after the reset is inspected rather than only the last one, because a trace that
-     * stops early leaves the receives behind the unexpected one unexecuted with nothing received.
+     * Checks every receive after the reset, since a trace that stops early leaves the last one
+     * empty.
      */
     private boolean performedFullHandShakeDuringResumption(State state) {
         WorkflowTrace trace = state.getWorkflowTrace();

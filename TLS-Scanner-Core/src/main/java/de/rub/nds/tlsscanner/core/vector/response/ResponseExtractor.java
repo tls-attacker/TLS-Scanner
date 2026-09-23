@@ -50,16 +50,8 @@ public class ResponseExtractor {
     }
 
     /**
-     * Drops the greeting a STARTTLS server sends unprompted after the handshake, so that responses
-     * are compared on what the scanner actually provoked.
-     *
-     * <p>Only leading application data is dropped, and only for a protocol whose {@link
-     * StarttlsType#sendsUnpromptedPostHandshakeGreeting()} says it sends one, so a genuine oracle
-     * is left intact: anything the server sends in reply follows the greeting.
-     *
-     * @param state the state the response was read from
-     * @param messages the messages the receiving action collected
-     * @return the messages without a leading unprompted greeting
+     * Drops the leading application data a STARTTLS server sends unprompted after the handshake, so
+     * fingerprints only compare what the scanner provoked.
      */
     private static List<ProtocolMessage> withoutUnpromptedGreeting(
             State state, List<ProtocolMessage> messages) {
@@ -78,11 +70,6 @@ public class ResponseExtractor {
         return messages.subList(firstProvoked, messages.size());
     }
 
-    /**
-     * @param before the messages the receiving action collected
-     * @param after the messages left after the greeting was dropped
-     * @return how many messages the greeting filter removed from the front
-     */
     private static int countDropped(List<ProtocolMessage> before, List<ProtocolMessage> after) {
         if (before == null || after == null) {
             return 0;
@@ -91,14 +78,8 @@ public class ResponseExtractor {
     }
 
     /**
-     * Drops the records that carried the unprompted greeting, since a fingerprint compares record
-     * counts too and filtering only the messages would move the difference from {@code
-     * MESSAGE_COUNT} to {@code RECORD_COUNT}. Assumes the greeting arrives in its own leading
-     * records, one per message it was parsed into.
-     *
-     * @param records the records the receiving action collected
-     * @param droppedMessages how many leading messages were dropped as greeting
-     * @return the records without the leading greeting
+     * Drops the greeting's records too, one per dropped message, so the record count stays
+     * comparable.
      */
     private static List<Record> withoutUnpromptedGreetingRecords(
             List<Record> records, int droppedMessages) {
