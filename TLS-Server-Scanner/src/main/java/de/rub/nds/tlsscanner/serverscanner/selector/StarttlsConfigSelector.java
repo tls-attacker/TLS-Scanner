@@ -39,10 +39,7 @@ public class StarttlsConfigSelector extends ConfigSelector {
         return retryWithCapabilityDiscovery();
     }
 
-    /**
-     * Sequential rather than nested in the profile loop: nesting would double the connections for
-     * every target, while this only repeats the search when the first variant found nothing.
-     */
+    /** Repeats the search only when the minimal upgrade found nothing. */
     private boolean retryWithCapabilityDiscovery() {
         StarttlsType starttlsType = getScannerConfig().getStartTlsDelegate().getStarttlsType();
         if (targetRequiresCapabilityDiscovery
@@ -59,11 +56,7 @@ public class StarttlsConfigSelector extends ConfigSelector {
         return super.findWorkingConfigs();
     }
 
-    /**
-     * Stamps on the learned upgrade variant. Part of the repair step rather than a one-off patch of
-     * the base config: probes derive their own configs, and one that lost the variant would repeat
-     * the upgrade the target already refused.
-     */
+    /** Stamps the learned variant on every config, so probes don't repeat the refused upgrade. */
     @Override
     public Config repairConfig(Config config) {
         super.repairConfig(config);

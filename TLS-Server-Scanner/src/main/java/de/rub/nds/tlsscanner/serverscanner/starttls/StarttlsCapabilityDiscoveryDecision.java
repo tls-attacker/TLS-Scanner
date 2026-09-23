@@ -20,10 +20,7 @@ public final class StarttlsCapabilityDiscoveryDecision {
 
     private StarttlsCapabilityDiscoveryDecision() {}
 
-    /**
-     * True only for a refusal that complains about the order of the commands. Anything else,
-     * including no reply, is no evidence that discovery would help.
-     */
+    /** True only for a bad-sequence refusal; nothing else suggests discovery would help. */
     public static boolean shouldRetryWithDiscovery(StarttlsType type, String upgradeReply) {
         if (upgradeReply == null) {
             return false;
@@ -38,10 +35,7 @@ public final class StarttlsCapabilityDiscoveryDecision {
         return Pattern.compile(badSequenceRegex).matcher(upgradeReply.trim()).find();
     }
 
-    /**
-     * Searched from the end because the upgrade reply is the last thing read before the handshake,
-     * which keeps this independent of the variant that built the trace and of the exchange length.
-     */
+    /** The upgrade reply is the last text received before the handshake. */
     public static String getMinimalUpgradeReply(WorkflowTrace workflowTrace) {
         List<TlsAction> actions = workflowTrace.getTlsActions();
         for (int i = actions.size() - 1; i >= 0; i--) {

@@ -495,12 +495,7 @@ public class ConfigSelector {
         return speaksProtocol;
     }
 
-    /**
-     * Whether the target required its capability-discovery exchange before accepting the STARTTLS
-     * upgrade.
-     *
-     * @return true if the minimal upgrade was refused and discovery was needed
-     */
+    /** Whether the target refused the minimal STARTTLS upgrade and needed capability discovery. */
     public boolean isStarttlsCapabilityDiscoveryRequired() {
         return false;
     }

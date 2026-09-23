@@ -33,10 +33,6 @@ public class StarttlsCapabilityDiscoveryDecisionTest {
                         StarttlsType.NONE, badSequence));
     }
 
-    /**
-     * A bad-sequence refusal says the upgrade was rejected for where it appeared, so running the
-     * capability exchange first can still get there.
-     */
     @Test
     public void testBadSequenceRefusalIsRetried() {
         assertTrue(
@@ -44,10 +40,6 @@ public class StarttlsCapabilityDiscoveryDecisionTest {
                         StarttlsType.FTP, "503 Bad sequence of commands\r\n"));
     }
 
-    /**
-     * Every other refusal either rejects the command itself or describes a condition the exchange
-     * does not change, so retrying would only cost a connection.
-     */
     @Test
     public void testOtherRefusalsAreNotRetried() {
         assertFalse(
@@ -67,7 +59,6 @@ public class StarttlsCapabilityDiscoveryDecisionTest {
                         StarttlsType.FTP, "421 Service not available\r\n"));
     }
 
-    /** No reply is no evidence that discovery would help, and neither is a success. */
     @Test
     public void testMissingOrSuccessfulReplyIsNotRetried() {
         assertFalse(
@@ -80,7 +71,6 @@ public class StarttlsCapabilityDiscoveryDecisionTest {
                         StarttlsType.FTP, "234 AUTH TLS OK.\r\n"));
     }
 
-    /** The upgrade reply is the last action of the minimal prefix TLS-Attacker builds. */
     @Test
     public void testUpgradeReplyIsReadFromTheLastPrefixAction() {
         WorkflowTrace trace = new WorkflowTrace();
