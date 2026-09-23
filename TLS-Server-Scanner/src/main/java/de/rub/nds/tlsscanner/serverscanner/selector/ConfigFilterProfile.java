@@ -26,4 +26,6 @@ public interface ConfigFilterProfile {
      * @return string identifier for the profile
      */
     public abstract String getIdentifier();
+
+    public abstract boolean isBestConfigProfile();
 }

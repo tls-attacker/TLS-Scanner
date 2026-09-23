@@ -41,6 +41,17 @@ These can be obtained by compiling the app yourself or by
 $ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433
 ```
 
+TLS-Scanner will evaluate the specified server (here `localhost` on port `4433`), and in the end print a report.
+The report uses colors to convey the severity of the findings:
+- Green: A good result.
+- Yellow: A warning, which may be a potential problem.
+- Yellow Background: Results where the scanner is unsure whether the target is vulnerable.
+- Red: A severe problem, which should be fixed.
+- Default color (depending on your terminal, likely black or white): A neutral result, which is neither good nor bad. This includes informational results.
+- Blue: The scanner could not scan the server for this specific test. This is likely due to a prerequisite for this test to not being supported.
+- Purple: The scanner encountered an error while scanning the server for this specific test. This can be the result of a bug in the scanner, but also due to the server not supporting a required feature.
+- Cyan: Used for structuring the report (headings, ...).
+
 ## Important Parameters
 
 You must specify a host you want to scan with the -connect parameter.
@@ -68,6 +79,77 @@ If you want to perform a fast scan and get a quick overview over your system, we
 ### Detailed Scan
 
 If you want to fully evaluate your system and execute everything that we have, we recommend to use both detail levels set to `ALL`. This executes all existing probes fully and prints very detailed information for further analysis and evaluation.
+
+## Scan Profiles
+
+Instead of (or in addition to) setting parameters like `-scanDetail` individually, you can bundle
+which probes to run and which of these parameters to use into a reusable JSON scan profile with
+the `-profile <path/to/profile.json>` parameter. It is available on both `TlsServerScanner` and
+`TlsClientScanner`.
+
+A profile is a JSON file with:
+
+- `inheritedFromProfiles`: paths to other profiles to combine probes from, resolved relative to
+  the directory of the profile file declaring them (an absolute path is used as-is).
+- `probes`: the probes to run, as a map from the fully qualified name of a `ProbeType` enum class
+  to the list of its constant names to run. This groups probes by type instead of repeating the
+  type for every single probe, while a single profile can still freely combine probes from
+  different `ProbeType` implementations, e.g. `TlsProbeType` and `QuicProbeType`. Each per-type
+  list also accepts `"*"` (all constants of that type) and `"!CONSTANT_NAME"` (remove a constant
+  previously added by name or by `"*"`), processed in order — see `Everything.json` and
+  `demo.json` in [`scan-profiles/`](scan-profiles) for examples.
+- `settings` (optional): overrides for parameters like `-scanDetail`, `-reportDetail`,
+  `-postAnalysisDetail`, `-noColor`, `-outputFile`, `-probeTimeout`, `-parallelProbes`, and
+  `-threads`. Any field left out keeps its normal default (or whatever was passed on the command
+  line). **Unlike `probes`, `settings` are not inherited** — only the settings declared directly on
+  the profile you point `-profile` at apply, even if it inherits probes from other profiles.
+
+Only the probes resolved from the active profile (and everything it inherits from) are executed;
+everything else is skipped.
+
+Example, combining a base profile's probes with your own and tuning the scan detail:
+
+`base.json`:
+
+```json
+{
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.TlsProbeType": ["PROTOCOL_VERSION", "CIPHER_SUITE"]
+    }
+}
+```
+
+`quic.json` (in the same directory as `base.json`):
+
+```json
+{
+    "inheritedFromProfiles": ["base.json"],
+    "settings": {
+        "scanDetail": "QUICK"
+    },
+    "probes": {
+        "de.rub.nds.tlsscanner.core.constants.QuicProbeType": ["SUPPORTED_VERSIONS"]
+    }
+}
+```
+
+```bash
+$ java -jar apps/TLS-Server-Scanner.jar -connect localhost:4433 -profile quic.json
+```
+
+This runs `PROTOCOL_VERSION`, `CIPHER_SUITE`, and `SUPPORTED_VERSIONS` with `-scanDetail QUICK`.
+
+To see every probe available for a scanner (without connecting to a target), use `-listProbes`.
+It prints them grouped by `ProbeType` class in the exact JSON syntax a profile's `probes` field
+expects, so you can copy-paste it straight into a profile:
+
+```bash
+$ java -jar apps/TLS-Server-Scanner.jar -listProbes
+{
+  "de.rub.nds.tlsscanner.core.constants.TlsProbeType" : [ "ALPN", "ESNI", "CERTIFICATE", ... ],
+  "de.rub.nds.tlsscanner.core.constants.QuicProbeType" : [ "SUPPORTED_VERSIONS", ... ]
+}
+```
 
 ## All Parameters
 

@@ -71,6 +71,7 @@ public enum TlsProbeType implements ProbeType {
     CONNECTION_CLOSING_DELTA("Connection Closing Delta"),
     RAW_PUBLIC_KEYS("Raw Public Key Extension Probe"),
     CLIENT_CERTIFICATE_URL("Client Certificate URLs extension probe"),
+    ML_KEM("ML-KEM"),
     // CLIENT SPECIFIC PROBES
     FORCED_COMPRESSION("Forced Compression"),
     FREAK("Freak"),

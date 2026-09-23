@@ -303,6 +303,7 @@ public class CertificateProbe extends TlsServerProbe {
             tls13Certs.addAll(sm2SigHashCerts);
         }
         tls13Certs.addAll(getTls13CertsEcdsaSigHash());
+        tls13Certs.addAll(getTls13PqCerts());
         return tls13Certs;
     }
 
@@ -371,9 +372,16 @@ public class CertificateProbe extends TlsServerProbe {
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
+        if (cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())) {
+            return extractX509Chain(state);
+        } else {
+            return null;
+        }
+    }
+
+    private X509CertificateChain extractX509Chain(State state) {
         if (WorkflowTraceResultUtil.didReceiveMessage(
                         state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE)
-                && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                 && state.getTlsContext().getServerCertificateChain() != null) {
             return state.getTlsContext().getServerCertificateChain();
         } else {
@@ -490,6 +498,39 @@ public class CertificateProbe extends TlsServerProbe {
             }
         }
         return algorithms;
+    }
+
+    private List<SignatureAndHashAlgorithm> getTls13PqSigHash() {
+        return SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms().stream()
+                .filter(SignatureAndHashAlgorithm::isPostQuantum)
+                .toList();
+    }
+
+    private List<X509CertificateChain> getTls13PqCerts() {
+        // TODO determine if tests need to be extended to evaluate the full mix of PQ and classic
+        // algorithms across the chain
+        List<X509CertificateChain> tls13PqCerts = new LinkedList<>();
+        List<SignatureAndHashAlgorithm> algorithmsToTest = new LinkedList<>(getTls13PqSigHash());
+        while (!algorithmsToTest.isEmpty()) {
+            Config tlsConfig = configSelector.getTls13BaseConfig();
+            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(algorithmsToTest);
+            State state = new State(tlsConfig);
+            executeState(state);
+            if (algorithmsToTest.contains(
+                    state.getTlsContext().getSelectedSignatureAndHashAlgorithm())) {
+                X509CertificateChain chain = extractX509Chain(state);
+                if (chain == null) {
+                    break;
+                } else {
+                    tls13PqCerts.add(chain);
+                    algorithmsToTest.remove(
+                            state.getTlsContext().getSelectedSignatureAndHashAlgorithm());
+                }
+            } else {
+                break;
+            }
+        }
+        return tls13PqCerts;
     }
 
     @Override
