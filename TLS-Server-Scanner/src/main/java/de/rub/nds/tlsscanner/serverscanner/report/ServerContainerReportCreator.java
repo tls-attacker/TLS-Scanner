@@ -33,6 +33,7 @@ import de.rub.nds.tlsattacker.core.constants.TokenBindingVersion;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.report.DefaultPrintingScheme;
+import de.rub.nds.tlsscanner.core.report.FaultResultFormatter;
 import de.rub.nds.tlsscanner.core.report.TlsReportCreator;
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.prime.CommonDhValues;
 import de.rub.nds.tlsscanner.serverscanner.probe.namedgroup.NamedGroupWitness;
@@ -106,6 +107,7 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(createIntolerancesContainer(report));
         container.add(createHelloRetryContainer(report));
         container.add(createPostQuantumContainer(report));
+        container.add(createMlKemContainer(report));
         container.add(createAttackVulnerabilitiesContainer(report));
         container.add(createAlpacaContainer(report));
         // container.add(createBleichenbacherOracleContainer(report));
@@ -373,17 +375,72 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         ListContainer container = new ListContainer();
         container.add(new HeadlineContainer("Post Quantum"));
         container.add(
-                createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX, report));
+                createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX, report));
         container.add(
                 createKeyValueContainer(
                         TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX, report));
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MLKEM, report));
         container.add(
+                createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT, report));
+        container.add(
                 createKeyValueContainer(TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX, report));
+        container.add(
+                createKeyValueContainer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_MLDSA, report));
+        container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SLHDSA, report));
         container.add(
                 createKeyValueContainer(
                         TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE, report));
         return container;
+    }
+
+    private ReportContainer createMlKemContainer(ServerReport report) {
+        ListContainer container = new ListContainer();
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_MLKEM) != TestResults.TRUE) {
+            // all properties of this section are determined for ML-KEM groups only
+            return container;
+        }
+        container.add(new HeadlineContainer("ML-KEM"));
+        container.add(
+                createMlKemFaultContainer(
+                        "Reuses ML-KEM shared secret",
+                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                        report));
+        container.add(
+                createMlKemFaultContainer(
+                        "Accepts wrong enc. key length",
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
+                        report));
+        container.add(
+                createMlKemFaultContainer(
+                        "Accepts non-modular enc. key",
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS,
+                        report));
+        container.add(
+                createMlKemFaultContainer(
+                        "Accepts invalid hybrid EC key",
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS,
+                        report));
+        container.add(
+                createMlKemFaultContainer(
+                        "Reuses hybrid EC public key",
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS,
+                        report));
+        return container;
+    }
+
+    private ReportContainer createMlKemFaultContainer(
+            String key, TlsAnalyzedProperty property, ServerReport report) {
+        return new KeyValueContainer(
+                key,
+                SemanticMarkup.NEUTRAL,
+                FaultResultFormatter.getValueText(report, property),
+                FaultResultFormatter.getValueColor(report, property));
     }
 
     private ReportContainer createAttackVulnerabilitiesContainer(ServerReport report) {
