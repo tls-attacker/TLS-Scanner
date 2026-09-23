@@ -18,6 +18,9 @@ import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHClientKeyExchangeMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ECDHEServerKeyExchangeMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.KeyShareExtensionMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.extension.keyshare.KeyShareEntry;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
@@ -49,6 +52,27 @@ public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
                             PointFormatter.formatFromByteArray(
                                     (NamedEllipticCurveParameters) group.getGroupParameters(),
                                     pointBytes));
+                } else if (message instanceof ServerHelloMessage serverHello) {
+
+                    KeyShareExtensionMessage keyShareExtension =
+                            serverHello.getExtension(KeyShareExtensionMessage.class);
+
+                    if (keyShareExtension == null || keyShareExtension.isRetryRequestMode()) {
+                        continue;
+                    }
+
+                    for (KeyShareEntry keyShareEntry : keyShareExtension.getKeyShareList()) {
+
+                        NamedGroup group =
+                                NamedGroup.getNamedGroup(keyShareEntry.getGroup().getValue());
+
+                        byte[] pointBytes = keyShareEntry.getPublicKey().getValue();
+
+                        put(
+                                PointFormatter.formatFromByteArray(
+                                        (NamedEllipticCurveParameters) group.getGroupParameters(),
+                                        pointBytes));
+                    }
                 }
             }
         } else {

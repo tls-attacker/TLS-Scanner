@@ -61,6 +61,7 @@ import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteGrade;
 import de.rub.nds.tlsscanner.core.report.CipherSuiteRater;
 import de.rub.nds.tlsscanner.core.report.EntropyReport;
+import de.rub.nds.tlsscanner.core.report.FaultResultFormatter;
 import de.rub.nds.tlsscanner.core.util.VersionInformation;
 import de.rub.nds.tlsscanner.core.vector.response.EqualityError;
 import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
@@ -166,6 +167,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         appendClientAuth(builder);
         appendExtensions(builder);
         appendPostQuantum(builder);
+        appendMlKem(builder);
         appendCompressions(builder);
         appendEcPointFormats(builder);
         appendRecordFragmentation(builder);
@@ -208,8 +210,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppendHeading(builder, "Post Quantum");
         prettyAppend(
                 builder,
-                "Supports post quantum key exchange",
-                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_KEX);
+                "Supports pure post quantum key exchange",
+                TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX);
         prettyAppend(
                 builder,
                 "Supports hybrid post quantum key exchange",
@@ -217,8 +219,18 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
         prettyAppend(builder, "Supports ML-KEM", TlsAnalyzedProperty.SUPPORTS_MLKEM);
         prettyAppend(
                 builder,
+                "Supports deprecated Kyber draft",
+                TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT);
+        prettyAppend(
+                builder,
                 "Prefers post quantum key exchange",
                 TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX);
+        prettyAppend(
+                builder,
+                "Supports post quantum signatures",
+                TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES);
+        prettyAppend(builder, "Supports ML-DSA", TlsAnalyzedProperty.SUPPORTS_MLDSA);
+        prettyAppend(builder, "Supports SLH-DSA", TlsAnalyzedProperty.SUPPORTS_SLHDSA);
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE)
                 == TestResults.TRUE) {
             // PQ cipher suites have not seen wide-spread adoption. Hence, to avoid confusion with
@@ -228,6 +240,43 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                     "Supports legacy post quantum cipher suite",
                     TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE);
         }
+    }
+
+    private void appendMlKem(StringBuilder builder) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_MLKEM) != TestResults.TRUE) {
+            // all properties of this section are determined for ML-KEM groups only
+            return;
+        }
+        prettyAppendHeading(builder, "ML-KEM");
+        appendMlKemFault(
+                builder,
+                "Reuses ML-KEM shared secret",
+                TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS);
+        appendMlKemFault(
+                builder,
+                "Accepts wrong enc. key length",
+                TlsAnalyzedProperty.ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS);
+        appendMlKemFault(
+                builder,
+                "Accepts non-modular enc. key",
+                TlsAnalyzedProperty.ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS);
+        appendMlKemFault(
+                builder,
+                "Accepts invalid hybrid EC key",
+                TlsAnalyzedProperty.ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS);
+        appendMlKemFault(
+                builder,
+                "Reuses hybrid EC public key",
+                TlsAnalyzedProperty.ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS);
+    }
+
+    private void appendMlKemFault(
+            StringBuilder builder, String name, TlsAnalyzedProperty property) {
+        prettyAppend(
+                builder,
+                name,
+                FaultResultFormatter.getValueText(report, property),
+                FaultResultFormatter.getValueColor(report, property));
     }
 
     private void appendClientAuth(StringBuilder builder) {
