@@ -2809,4 +2809,7 @@
     <ratingInfluencer>
         <property>SENDS_APPLICATION_MESSAGE</property>
     </ratingInfluencer>
+    <ratingInfluencer>
+        <property>STARTTLS_REQUIRES_CAPABILITY_DISCOVERY</property>
+    </ratingInfluencer>
 </ratingInfluencers>
