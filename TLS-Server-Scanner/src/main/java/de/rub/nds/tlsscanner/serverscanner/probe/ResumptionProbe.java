@@ -19,7 +19,6 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
@@ -125,21 +124,6 @@ public class ResumptionProbe extends TlsServerProbe {
     }
 
     /**
-     * Also expects the unprompted STARTTLS greeting behind the server Finished, otherwise the trace
-     * stops there as unexpected.
-     */
-    private ReceiveAction createServerFinishedWithTicketReceive(Config tlsConfig) {
-        List<ProtocolMessage> messages = new ArrayList<>();
-        messages.add(new NewSessionTicketMessage(false));
-        messages.add(new ChangeCipherSpecMessage());
-        messages.add(new FinishedMessage());
-        if (tlsConfig.getStarttlsType().sendsUnpromptedPostHandshakeGreeting()) {
-            messages.add(new ApplicationMessage());
-        }
-        return new ReceiveAction(messages);
-    }
-
-    /**
      * Checks every receive after the reset, since a trace that stops early leaves the last one
      * empty.
      */
@@ -213,11 +197,8 @@ public class ResumptionProbe extends TlsServerProbe {
             WorkflowTrace trace =
                     new WorkflowConfigurationFactory(tlsConfig)
                             .createWorkflowTrace(
-                                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-            trace.addTlsAction(
-                    new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(createServerFinishedWithTicketReceive(tlsConfig));
+                                    WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                    tlsConfig.getDefaultRunningMode());
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
@@ -254,11 +235,8 @@ public class ResumptionProbe extends TlsServerProbe {
                 WorkflowTrace trace =
                         new WorkflowConfigurationFactory(tlsConfig)
                                 .createWorkflowTrace(
-                                        WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-                trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-                trace.addTlsAction(
-                        new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-                trace.addTlsAction(createServerFinishedWithTicketReceive(tlsConfig));
+                                        WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                        tlsConfig.getDefaultRunningMode());
                 addAlertToTrace(trace);
                 trace.addTlsAction(new ResetConnectionAction());
                 tlsConfig.setDtlsCookieExchange(
