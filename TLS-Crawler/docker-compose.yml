@@ -26,14 +26,13 @@ services:
       - crawler_overlay
   controller:
     build: &local-dockerfile
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: Dockerfile.Crawler
       args:
         MODVAR_BRANCH: ${MODVAR_BRANCH}
         ASN1_BRANCH: ${ASN1_BRANCH}
         X509_BRANCH: ${X509_BRANCH}
         ATTACKER_BRANCH: ${ATTACKER_BRANCH}
-        SCANNER_BRANCH: ${SCANNER_BRANCH}
         SCANNER_CORE_BRANCH: ${SCANNER_CORE_BRANCH}
         CRAWLER_CORE_BRANCH: ${CRAWLER_CORE_BRANCH}
       secrets:

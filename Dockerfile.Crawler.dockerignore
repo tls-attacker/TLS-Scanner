@@ -1,0 +1,11 @@
+# Use an allowlist approach
+*
+!pom.xml
+!TLS-Client-Scanner/
+!TLS-Crawler/
+!TLS-Scanner-Core/
+!TLS-Server-Scanner/
+!trust_stores_observatory/
+**/target/
+**/.flattened-pom.xml
+TLS-Crawler/resources/

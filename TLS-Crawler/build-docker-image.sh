@@ -24,7 +24,6 @@ export MODVAR_BRANCH='N/A'
 export ASN1_BRANCH='N/A'
 export X509_BRANCH='N/A'
 export ATTACKER_BRANCH='N/A'
-export SCANNER_BRANCH='N/A'
 export CRAWLER_CORE_BRANCH='main'
 
 docker_args=()
