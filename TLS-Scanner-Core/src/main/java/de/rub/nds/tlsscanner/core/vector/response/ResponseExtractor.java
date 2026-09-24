@@ -8,9 +8,7 @@
  */
 package de.rub.nds.tlsscanner.core.vector.response;
 
-import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
-import de.rub.nds.tlsattacker.core.protocol.message.ApplicationMessage;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceivingAction;
@@ -29,11 +27,8 @@ public class ResponseExtractor {
      * @return A ResponseFingerprint containing the messages, records, and socket state
      */
     public static ResponseFingerprint getFingerprint(State state, ReceivingAction action) {
-        List<ProtocolMessage> receivedMessages = action.getReceivedMessages();
-        List<ProtocolMessage> messageList = withoutUnpromptedGreeting(state, receivedMessages);
-        List<Record> recordList =
-                withoutUnpromptedGreetingRecords(
-                        action.getReceivedRecords(), countDropped(receivedMessages, messageList));
+        List<ProtocolMessage> messageList = action.getReceivedMessages();
+        List<Record> recordList = action.getReceivedRecords();
         SocketState socketState = extractSocketState(state);
         return new ResponseFingerprint(messageList, recordList, socketState);
     }
@@ -47,46 +42,6 @@ public class ResponseExtractor {
     public static ResponseFingerprint getFingerprint(State state) {
         ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
         return getFingerprint(state, action);
-    }
-
-    /**
-     * Drops the leading application data a STARTTLS server sends unprompted after the handshake, so
-     * fingerprints only compare what the scanner provoked.
-     */
-    private static List<ProtocolMessage> withoutUnpromptedGreeting(
-            State state, List<ProtocolMessage> messages) {
-        if (messages == null || messages.isEmpty() || state.getConfig() == null) {
-            return messages;
-        }
-        StarttlsType starttlsType = state.getConfig().getStarttlsType();
-        if (starttlsType == null || !starttlsType.sendsUnpromptedPostHandshakeGreeting()) {
-            return messages;
-        }
-        int firstProvoked = 0;
-        while (firstProvoked < messages.size()
-                && messages.get(firstProvoked) instanceof ApplicationMessage) {
-            firstProvoked++;
-        }
-        return messages.subList(firstProvoked, messages.size());
-    }
-
-    private static int countDropped(List<ProtocolMessage> before, List<ProtocolMessage> after) {
-        if (before == null || after == null) {
-            return 0;
-        }
-        return before.size() - after.size();
-    }
-
-    /**
-     * Drops the greeting's records too, one per dropped message, so the record count stays
-     * comparable.
-     */
-    private static List<Record> withoutUnpromptedGreetingRecords(
-            List<Record> records, int droppedMessages) {
-        if (records == null || droppedMessages <= 0) {
-            return records;
-        }
-        return records.subList(Math.min(droppedMessages, records.size()), records.size());
     }
 
     private static SocketState extractSocketState(State state) {
