@@ -18,6 +18,7 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public enum TlsAnalyzedProperty implements AnalyzedProperty {
     PROTOCOL_TYPE(TlsAnalyzedPropertyCategory.CONNECTION),
+    STARTTLS_REQUIRES_CAPABILITY_DISCOVERY(TlsAnalyzedPropertyCategory.CONNECTION),
     CLOSED_AFTER_FINISHED_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
     CLOSED_AFTER_APP_DATA_DELTA(TlsAnalyzedPropertyCategory.CONNECTION),
     KNOWN_PADDING_ORACLE_VULNERABILITY(TlsAnalyzedPropertyCategory.ATTACKS),
