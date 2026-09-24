@@ -144,7 +144,7 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -100)));
         influencers.add(
                 new RatingInfluencer(
-                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+                        TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
@@ -1065,6 +1065,88 @@ public class DefaultInfluencersIT {
                         TlsAnalyzedProperty.SELECTS_TLS13_PSK_DHE,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, -50)));
+        // Pure post quantum key exchange is neither rewarded nor penalized as it provides post
+        // quantum security but drops the classical security of the hybrid groups
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_PURE_POST_QUANTUM_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_HYBRID_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.PREFERS_POST_QUANTUM_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 300),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Rating is already awarded for PQ support so there is no need to change the rating
+        // unless ML KEM gets broken
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_MLKEM,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_HYBRID_KYBER_DEPRECATED_DRAFT,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -10),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.EXCLUSIVELY_POST_QUANTUM_SECURE_KEX,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 100),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Post quantum signatures are still specified in drafts only, so we reward support but do
+        // not penalize servers that do not offer them yet
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Rating is already awarded for post quantum signature support so there is no need to
+        // change the rating for the specific algorithm families
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_MLDSA,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.SUPPORTS_SLHDSA,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 0),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -500, 1000),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 1500),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty.ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -200, 1000),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        // Skipping the input validation of FIPS 203 does not yield a known attack but shows lacking
+        // best practices
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_LENGTH_MISSING_VALIDATION_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
+                        TlsAnalyzedProperty
+                                .ML_KEM_ENCAPSULATION_KEY_POLYNOMIAL_MISSING_VALIDATION_GROUPS,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, -50),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
 
         // no impact on rating
         List<TlsAnalyzedProperty> neutralProperties =

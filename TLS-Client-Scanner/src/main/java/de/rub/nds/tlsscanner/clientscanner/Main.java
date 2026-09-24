@@ -11,13 +11,17 @@ package de.rub.nds.tlsscanner.clientscanner;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import de.rub.nds.protocol.exception.ConfigurationException;
+import de.rub.nds.scanner.core.config.ProbeTypeCatalog;
+import de.rub.nds.scanner.core.probe.ProbeType;
 import de.rub.nds.scanner.core.report.AnsiColor;
 import de.rub.nds.tlsattacker.core.config.delegate.GeneralDelegate;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
 import de.rub.nds.tlsscanner.clientscanner.execution.TlsClientScanner;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientContainerReportCreator;
 import de.rub.nds.tlsscanner.clientscanner.report.ClientReport;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import java.io.IOException;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -33,6 +37,12 @@ public class Main {
             commander.parse(args);
             if (config.getGeneralDelegate().isHelp()) {
                 commander.usage();
+                return;
+            }
+            if (config.getExecutorConfig().isListProbes()) {
+                System.out.println(
+                        ProbeTypeCatalog.toProfileProbesJson(
+                                List.<Class<? extends ProbeType>>of(TlsProbeType.class)));
                 return;
             }
             System.setProperty("debugMode", String.valueOf(config.getGeneralDelegate().isDebug()));

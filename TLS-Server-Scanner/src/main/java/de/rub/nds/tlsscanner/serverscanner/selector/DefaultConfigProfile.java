@@ -63,6 +63,11 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
             ConfigFilterType.SIGNATUREALGORITHM_RSA_PSS_PSS,
             ConfigFilterType.SIGNATUREALGORITHM_ED),
 
+    /**
+     * Some servers may enforce PQ if offered but also negotiate classic algorithms. As most probes
+     * don't require all groups, we want to restrict PQ groups where possible
+     */
+    BANDWIDTH_EFFICIENT_RICH_TLS_13(ConfigFilterType.NAMEDGROUP_PQ),
     RICH_TLS_13(),
     CLEAN_NAMED_GROUPS_TLS_13(ConfigFilterType.NAMEDGROUP_DEPRECATED),
     CLEAN_SIGNATUREALGORITHMS_TLS_13(ConfigFilterType.SIGNATUREALGORITHM_TLS13),
@@ -123,6 +128,7 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
      */
     public static DefaultConfigProfile[] getTls13ConfigProfiles() {
         return new DefaultConfigProfile[] {
+            BANDWIDTH_EFFICIENT_RICH_TLS_13,
             RICH_TLS_13,
             SLIGHTLY_REDUCED_NAMED_GROUPS,
             MODERATELY_REDUCED_NAMED_GROUPS,
@@ -130,5 +136,10 @@ public enum DefaultConfigProfile implements ConfigFilterProfile {
             CLEAN_SIGNATUREALGORITHMS_TLS_13,
             CLEAN_TLS_13
         };
+    }
+
+    @Override
+    public boolean isBestConfigProfile() {
+        return this == UNFILTERED || this == RICH_TLS_13 || this == BANDWIDTH_EFFICIENT_RICH_TLS_13;
     }
 }

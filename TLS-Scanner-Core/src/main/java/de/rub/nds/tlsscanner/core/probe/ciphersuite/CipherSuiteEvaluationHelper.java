@@ -94,7 +94,7 @@ public class CipherSuiteEvaluationHelper {
             TlsAnalyzedProperty.SUPPORTS_RC2,
             TlsAnalyzedProperty.SUPPORTS_RC4,
             TlsAnalyzedProperty.SUPPORTS_3DES,
-            TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM,
+            TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
             TlsAnalyzedProperty.SUPPORTS_AEAD,
             TlsAnalyzedProperty.SUPPORTS_PFS,
             TlsAnalyzedProperty.SUPPORTS_ONLY_PFS,
@@ -369,7 +369,9 @@ public class CipherSuiteEvaluationHelper {
         probe.put(TlsAnalyzedProperty.SUPPORTS_RC2, supportsRc2Ciphers);
         probe.put(TlsAnalyzedProperty.SUPPORTS_RC4, supportsRc4Ciphers);
         probe.put(TlsAnalyzedProperty.SUPPORTS_3DES, supportsTripleDesCiphers);
-        probe.put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM, supportsPostQuantumCiphers);
+        probe.put(
+                TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE,
+                supportsPostQuantumCiphers);
         probe.put(TlsAnalyzedProperty.SUPPORTS_AEAD, supportsAeadCiphers);
         probe.put(TlsAnalyzedProperty.SUPPORTS_PFS, supportsPfsCiphers);
         probe.put(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, supportsOnlyPfsCiphers);
