@@ -10,12 +10,15 @@ package de.rub.nds.tlsscanner.serverscanner.report;
 
 import de.rub.nds.modifiablevariable.util.DataConverter;
 import de.rub.nds.protocol.constants.HashAlgorithm;
+import de.rub.nds.protocol.constants.SlhDsaParameters;
 import de.rub.nds.protocol.crypto.key.DhPublicKey;
 import de.rub.nds.protocol.crypto.key.DsaPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdhPublicKey;
 import de.rub.nds.protocol.crypto.key.EcdsaPublicKey;
+import de.rub.nds.protocol.crypto.key.MlDsaPublicKey;
 import de.rub.nds.protocol.crypto.key.PublicKeyContainer;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
+import de.rub.nds.protocol.crypto.key.SlhDsaPublicKey;
 import de.rub.nds.scanner.core.config.ScannerDetail;
 import de.rub.nds.scanner.core.guideline.GuidelineCheckResult;
 import de.rub.nds.scanner.core.guideline.GuidelineReport;
@@ -1103,7 +1106,8 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                                     "Hash Algorithm",
                                     certReport.getHashAlgorithm().name() + " - Not critical");
                         }
-                    } else {
+                    } else if (certReport.getHashAlgorithm() != null) {
+                        // ML-DSA-Certs may come without a hash definition
                         prettyAppend(
                                 builder,
                                 "Hash Algorithm",
@@ -1223,6 +1227,57 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppend(builder, "Group", ecdsaPublicKey.getParameters().name());
             prettyAppendHexString(
                     builder, "Public Point", ecdsaPublicKey.getPublicPoint().toString());
+        } else if (publicKey instanceof MlDsaPublicKey) {
+            MlDsaPublicKey mlDsaPublicKey = (MlDsaPublicKey) publicKey;
+            byte[] verificationKey = mlDsaPublicKey.getVerificationKey();
+            prettyAppend(builder, "PublicKey Type:", "ML-DSA");
+            prettyAppend(
+                    builder,
+                    "Parameter Set",
+                    mlDsaPublicKey.getParameters() == null
+                            ? "Unknown"
+                            : mlDsaPublicKey.getParameters().getName());
+            if (verificationKey == null || verificationKey.length < MlDsaPublicKey.RHO_SIZE_BYTES) {
+                // Too short to split into rho and t1
+                prettyAppendHexString(
+                        builder,
+                        "Verification Key",
+                        verificationKey == null
+                                ? null
+                                : DataConverter.bytesToRawHexString(verificationKey));
+            } else {
+                prettyAppendHexString(
+                        builder, "Rho", DataConverter.bytesToRawHexString(mlDsaPublicKey.getRho()));
+                prettyAppendHexString(
+                        builder,
+                        "t1",
+                        DataConverter.bytesToRawHexString(mlDsaPublicKey.getPackedT1()));
+            }
+        } else if (publicKey instanceof SlhDsaPublicKey) {
+            SlhDsaPublicKey slhDsaPublicKey = (SlhDsaPublicKey) publicKey;
+            byte[] encodedKey = slhDsaPublicKey.getPublicKey();
+            SlhDsaParameters parameters = slhDsaPublicKey.getParameters();
+            prettyAppend(builder, "PublicKey Type:", "SLH-DSA");
+            prettyAppend(
+                    builder,
+                    "Parameter Set",
+                    parameters == null ? "Unknown" : parameters.getName());
+            if (parameters == null || encodedKey == null || encodedKey.length < parameters.getN()) {
+                // Cannot split into PK.seed and PK.root without a matching parameter set
+                prettyAppendHexString(
+                        builder,
+                        "Public Key",
+                        encodedKey == null ? null : DataConverter.bytesToRawHexString(encodedKey));
+            } else {
+                prettyAppendHexString(
+                        builder,
+                        "PK.seed",
+                        DataConverter.bytesToRawHexString(slhDsaPublicKey.getPkSeed()));
+                prettyAppendHexString(
+                        builder,
+                        "PK.root",
+                        DataConverter.bytesToRawHexString(slhDsaPublicKey.getPkRoot()));
+            }
         } else {
             builder.append(publicKey.toString()).append("\n");
         }
