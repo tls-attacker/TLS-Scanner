@@ -66,6 +66,12 @@ public class EcPublicKeyExtractor extends StatExtractor<State, Point> {
                         NamedGroup group =
                                 NamedGroup.getNamedGroup(keyShareEntry.getGroup().getValue());
 
+                        if (group == null
+                                || !(group.getGroupParameters()
+                                        instanceof NamedEllipticCurveParameters)) {
+                            continue;
+                        }
+
                         byte[] pointBytes = keyShareEntry.getPublicKey().getValue();
 
                         put(

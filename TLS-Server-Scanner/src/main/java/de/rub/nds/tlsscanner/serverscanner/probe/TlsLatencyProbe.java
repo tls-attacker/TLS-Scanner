@@ -11,6 +11,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 import de.rub.nds.scanner.core.probe.requirements.AndRequirement;
 import de.rub.nds.scanner.core.probe.requirements.OrRequirement;
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
+import de.rub.nds.scanner.core.probe.requirements.PropertyTrueRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.ListResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
@@ -139,7 +140,16 @@ public class TlsLatencyProbe extends TlsServerProbe {
                         new OrRequirement<ServerReport>(
                                 List.of(
                                         new ProtocolTypeTrueRequirement<>(ProtocolType.TLS),
-                                        new ProtocolTypeTrueRequirement<>(
-                                                ProtocolType.STARTTLS)))));
+                                        new ProtocolTypeTrueRequirement<>(ProtocolType.STARTTLS))),
+                        new OrRequirement<ServerReport>(
+                                List.of(
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_SSL_3),
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_0),
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_1),
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_2)))));
     }
 }
