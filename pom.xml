@@ -333,8 +333,8 @@
                             <phase>package</phase>
                             <configuration>
                                 <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
-                                <!--Ensures only runnable dependencies are included-->
-                                <includeScope>compile</includeScope>
+                                <!--Ensures only runnable dependencies (compile + runtime scope) are included-->
+                                <includeScope>runtime</includeScope>
                             </configuration>
                         </execution>
                     </executions>
