@@ -495,11 +495,6 @@ public class ConfigSelector {
         return speaksProtocol;
     }
 
-    /** Whether the target refused the minimal STARTTLS upgrade and needed capability discovery. */
-    public boolean isStarttlsCapabilityDiscoveryRequired() {
-        return false;
-    }
-
     /**
      * Indicates whether a QUIC retry is required for the connection.
      *

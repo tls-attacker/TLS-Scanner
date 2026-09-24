@@ -57,6 +57,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.tlsscanner.serverscanner.selector.StarttlsConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.*;
@@ -361,9 +362,11 @@ public final class TlsServerScanner
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
         report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
-        report.putResult(
-                TlsAnalyzedProperty.STARTTLS_REQUIRES_CAPABILITY_DISCOVERY,
-                configSelector.isStarttlsCapabilityDiscoveryRequired());
+        if (configSelector instanceof StarttlsConfigSelector starttlsConfigSelector) {
+            report.putResult(
+                    TlsAnalyzedProperty.STARTTLS_REQUIRES_CAPABILITY_DISCOVERY,
+                    starttlsConfigSelector.isStarttlsCapabilityDiscoveryRequired());
+        }
         report.putResult(QuicAnalyzedProperty.RETRY_REQUIRED, configSelector.isQuicRetryRequired());
         return isConnectable && speaksProtocol && isHandshaking;
     }

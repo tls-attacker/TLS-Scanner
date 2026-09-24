@@ -74,7 +74,7 @@ public class StarttlsConfigSelector extends ConfigSelector {
                 StarttlsCapabilityDiscoveryDecision.getMinimalUpgradeReply(trace);
     }
 
-    @Override
+    /** Whether the target refused the minimal STARTTLS upgrade and needed capability discovery. */
     public boolean isStarttlsCapabilityDiscoveryRequired() {
         return targetRequiresCapabilityDiscovery;
     }
