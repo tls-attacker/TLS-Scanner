@@ -1,0 +1,82 @@
+version: "2.1"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: "no"
+    ports:
+      - 127.0.0.1:5672:5672
+      - 127.0.0.1:15672:15672
+    networks:
+      - crawler_overlay
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 30s
+      retries: 5
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongodata:/db/data
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadminpw
+    ports:
+      - 127.0.0.1:27017:27017
+    networks:
+      - crawler_overlay
+  controller:
+    build: &local-dockerfile
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODVAR_BRANCH: ${MODVAR_BRANCH}
+        ASN1_BRANCH: ${ASN1_BRANCH}
+        X509_BRANCH: ${X509_BRANCH}
+        ATTACKER_BRANCH: ${ATTACKER_BRANCH}
+        SCANNER_BRANCH: ${SCANNER_BRANCH}
+        SCANNER_CORE_BRANCH: ${SCANNER_CORE_BRANCH}
+        CRAWLER_CORE_BRANCH: ${CRAWLER_CORE_BRANCH}
+      secrets:
+        - m2settings
+        - credentials_provider
+    restart: "no"
+    command: controller
+      -hostFile resources/hostfile.txt
+      -denylist resources/denylist.txt
+      -portToBeScanned 443
+      -mongoDbHost mongo -mongoDbPort 27017 -mongoDbUser mongoadmin -mongoDbPass mongoadminpw
+      -mongoDbAuthSource admin
+      -rabbitMqHost rabbitmq -rabbitMqPort 5672
+      -scanName scanResults
+      -monitorScan
+    volumes:
+      - "./resources:/resources"
+    networks:
+      - crawler_overlay
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  worker:
+    build: *local-dockerfile
+    command: worker
+      -mongoDbHost mongo -mongoDbPort 27017
+      -mongoDbUser mongoadmin -mongoDbPass mongoadminpw -mongoDbAuthSource admin
+      -rabbitMqHost rabbitmq -rabbitMqPort 5672
+      -numberOfThreads 30
+      -parallelProbeThreads 50
+    networks:
+      - crawler_overlay
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+volumes:
+  mongodata:
+
+networks:
+  crawler_overlay:
+
+secrets:
+  m2settings:
+    file: $HOME/.m2/settings.xml
+  credentials_provider:
+    file: build-docker-image.sh

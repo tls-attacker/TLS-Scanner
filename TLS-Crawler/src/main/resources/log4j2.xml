@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%-5level: %c{1} - %msg%n%throwable}"/>
+        </Console>
+        <Console name="Info" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%-5level: %c{1}} - %msg%n%highlight{%throwable}"/>
+        </Console>
+        <Console name="Direct" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%msg}%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="Direct" level="OFF" additivity="false">
+            <AppenderRef ref="Direct"/>
+        </Logger> 
+        <Logger name="de.rub.nds.tlsattacker" level="ERROR" additivity="false">
+            <AppenderRef ref="Direct"/>
+        </Logger>
+        <Logger name="de.rub.nds.tlsscanner" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="DirectLogger" level="OFF" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="de.rub.nds.tlsattacker.core.workflow.task" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.quartz.impl.StdSchedulerFactory" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.mongodb.driver.cluster" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="org.mongodb.driver" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

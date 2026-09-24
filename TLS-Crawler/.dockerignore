@@ -1,0 +1,5 @@
+# Use an allowlist approach
+*
+!src
+!pom.xml
+!docker/

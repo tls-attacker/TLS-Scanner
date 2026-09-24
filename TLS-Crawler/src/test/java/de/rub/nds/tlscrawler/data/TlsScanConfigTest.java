@@ -1,0 +1,107 @@
+/*
+ * TLS-Crawler - A TLS scanning tool to perform large scale scans with the TLS-Scanner
+ *
+ * Copyright 2018-2023 Ruhr University Bochum, Paderborn University, and Hackmanit GmbH
+ *
+ * Licensed under Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0.txt
+ */
+package de.rub.nds.tlscrawler.data;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import de.rub.nds.scanner.core.config.ScannerDetail;
+import de.rub.nds.scanner.core.probe.ProbeType;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
+import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+
+public class TlsScanConfigTest {
+
+    @Test
+    public void testTlsScanConfigInitialization() {
+        ScannerDetail scannerDetail = ScannerDetail.NORMAL;
+        int reexecutions = 2;
+        int timeout = 1000;
+        int parallelProbes = 1;
+        StarttlsType starttlsType = StarttlsType.NONE;
+
+        TlsScanConfig config =
+                new TlsScanConfig(
+                        scannerDetail, reexecutions, timeout, parallelProbes, starttlsType, null);
+
+        assertEquals(scannerDetail, config.getScannerDetail());
+        assertEquals(reexecutions, config.getReexecutions());
+        assertEquals(timeout, config.getTimeout());
+        assertEquals(parallelProbes, config.getParallelProbes());
+        assertEquals(starttlsType, config.getStarttlsType());
+    }
+
+    @Test
+    public void testStarttlsTypeSetter() {
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
+
+        assertEquals(StarttlsType.NONE, config.getStarttlsType());
+
+        config.setStarttlsType(StarttlsType.SMTP);
+        assertEquals(StarttlsType.SMTP, config.getStarttlsType());
+    }
+
+    @Test
+    public void testTlsScanConfigWithExcludedProbes() {
+        ScannerDetail scannerDetail = ScannerDetail.DETAILED;
+        int reexecutions = 3;
+        int timeout = 2000;
+        StarttlsType starttlsType = StarttlsType.IMAP;
+        List<ProbeType> excludedProbes =
+                Arrays.asList(TlsProbeType.CIPHER_SUITE, TlsProbeType.HEARTBLEED);
+
+        TlsScanConfig config =
+                new TlsScanConfig(
+                        scannerDetail, reexecutions, timeout, 1, starttlsType, excludedProbes);
+
+        assertEquals(scannerDetail, config.getScannerDetail());
+        assertEquals(reexecutions, config.getReexecutions());
+        assertEquals(timeout, config.getTimeout());
+        assertEquals(1, config.getParallelProbes());
+        assertEquals(starttlsType, config.getStarttlsType());
+        assertNotNull(config.getExcludedProbes());
+        assertEquals(2, config.getExcludedProbes().size());
+        assertEquals(
+                TlsProbeType.CIPHER_SUITE.getName(), config.getExcludedProbes().get(0).getName());
+        assertEquals(
+                TlsProbeType.HEARTBLEED.getName(), config.getExcludedProbes().get(1).getName());
+    }
+
+    @Test
+    public void testTlsScanConfigWithoutExcludedProbes() {
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
+
+        assertNull(config.getExcludedProbes());
+    }
+
+    @Test
+    public void testExcludedProbesSetterOnTlsScanConfig() {
+        TlsScanConfig config =
+                new TlsScanConfig(ScannerDetail.NORMAL, 1, 2000, 1, StarttlsType.NONE, null);
+        assertNull(config.getExcludedProbes());
+
+        List<ProbeType> excludedProbes =
+                Arrays.asList(
+                        TlsProbeType.BLEICHENBACHER, TlsProbeType.DROWN, TlsProbeType.EARLY_CCS);
+        config.setExcludedProbes(excludedProbes);
+
+        assertNotNull(config.getExcludedProbes());
+        assertEquals(3, config.getExcludedProbes().size());
+        assertEquals(
+                TlsProbeType.BLEICHENBACHER.getName(), config.getExcludedProbes().get(0).getName());
+        assertEquals(TlsProbeType.DROWN.getName(), config.getExcludedProbes().get(1).getName());
+        assertEquals(TlsProbeType.EARLY_CCS.getName(), config.getExcludedProbes().get(2).getName());
+    }
+}
