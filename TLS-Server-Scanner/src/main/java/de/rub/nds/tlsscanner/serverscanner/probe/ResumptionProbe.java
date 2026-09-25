@@ -19,8 +19,8 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ExtensionType;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
-import de.rub.nds.tlsattacker.core.constants.RunningModeType;
 import de.rub.nds.tlsattacker.core.layer.constant.StackConfiguration;
+import de.rub.nds.tlsattacker.core.protocol.ProtocolMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.*;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -123,16 +123,24 @@ public class ResumptionProbe extends TlsServerProbe {
         }
     }
 
+    /**
+     * Checks every receive after the reset, since a trace that stops early leaves the last one
+     * empty.
+     */
     private boolean performedFullHandShakeDuringResumption(State state) {
-        ReceivingAction action = state.getWorkflowTrace().getLastReceivingAction();
-
-        boolean receivedCertificate =
-                action.getReceivedMessages().stream()
-                        .anyMatch(CertificateMessage.class::isInstance);
-
-        if (receivedCertificate) {
-            LOGGER.debug("LastReceive Trace contains certificate.");
-            return true;
+        WorkflowTrace trace = state.getWorkflowTrace();
+        List<TlsAction> actions = trace.getTlsActions();
+        int resetIndex = actions.indexOf(trace.getFirstAction(ResetConnectionAction.class));
+        for (TlsAction action : actions.subList(resetIndex + 1, actions.size())) {
+            if (!(action instanceof ReceivingAction)) {
+                continue;
+            }
+            List<ProtocolMessage> received = ((ReceivingAction) action).getReceivedMessages();
+            if (received != null
+                    && received.stream().anyMatch(CertificateMessage.class::isInstance)) {
+                LOGGER.debug("Resumption trace contains certificate.");
+                return true;
+            }
         }
         return false;
     }
@@ -189,15 +197,8 @@ public class ResumptionProbe extends TlsServerProbe {
             WorkflowTrace trace =
                     new WorkflowConfigurationFactory(tlsConfig)
                             .createWorkflowTrace(
-                                    WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-            trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-            trace.addTlsAction(
-                    new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-            trace.addTlsAction(
-                    new ReceiveAction(
-                            new NewSessionTicketMessage(false),
-                            new ChangeCipherSpecMessage(),
-                            new FinishedMessage()));
+                                    WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                    tlsConfig.getDefaultRunningMode());
             addAlertToTrace(trace);
             trace.addTlsAction(new ResetConnectionAction());
             trace.addTlsAction(new SendAction(new ClientHelloMessage(tlsConfig)));
@@ -234,15 +235,8 @@ public class ResumptionProbe extends TlsServerProbe {
                 WorkflowTrace trace =
                         new WorkflowConfigurationFactory(tlsConfig)
                                 .createWorkflowTrace(
-                                        WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
-                trace.addTlsAction(new SendDynamicClientKeyExchangeAction());
-                trace.addTlsAction(
-                        new SendAction(new ChangeCipherSpecMessage(), new FinishedMessage()));
-                trace.addTlsAction(
-                        new ReceiveAction(
-                                new NewSessionTicketMessage(false),
-                                new ChangeCipherSpecMessage(),
-                                new FinishedMessage()));
+                                        WorkflowTraceType.DYNAMIC_HANDSHAKE,
+                                        tlsConfig.getDefaultRunningMode());
                 addAlertToTrace(trace);
                 trace.addTlsAction(new ResetConnectionAction());
                 tlsConfig.setDtlsCookieExchange(

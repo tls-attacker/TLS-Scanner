@@ -1313,7 +1313,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE,
                                 TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION,
                                 TlsAnalyzedProperty.FORCED_COMPRESSION,
-                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE));
+                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE,
+                                TlsAnalyzedProperty.STARTTLS_REQUIRES_CAPABILITY_DISCOVERY));
 
         influencers.addAll(
                 neutralProperties.stream().map(RatingInfluencer::new).collect(Collectors.toList()));
