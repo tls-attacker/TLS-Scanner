@@ -2308,6 +2308,17 @@
         </propertyRatingInfluencers>
     </ratingInfluencer>
     <ratingInfluencer>
+        <property>HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN</property>
+        <propertyRatingInfluencers>
+            <result>TRUE</result>
+            <influence>200</influence>
+        </propertyRatingInfluencers>
+        <propertyRatingInfluencers>
+            <result>FALSE</result>
+            <influence>0</influence>
+        </propertyRatingInfluencers>
+    </ratingInfluencer>
+    <ratingInfluencer>
         <property>ML_KEM_SHARED_SECRET_REUSE_GROUPS</property>
         <propertyRatingInfluencers>
             <result>TRUE</result>

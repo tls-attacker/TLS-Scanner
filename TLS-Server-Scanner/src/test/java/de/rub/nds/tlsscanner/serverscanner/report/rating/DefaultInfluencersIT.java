@@ -1120,6 +1120,11 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
+                        TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
                         TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -500, 1000),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));

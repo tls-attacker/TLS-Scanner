@@ -8,10 +8,12 @@
  */
 package de.rub.nds.tlsscanner.core.probe.certificate;
 
+import de.rub.nds.protocol.constants.SignatureAlgorithm;
 import de.rub.nds.protocol.crypto.key.RsaPublicKey;
 import de.rub.nds.tlsscanner.core.probe.certificate.roca.RocaBrokenKey;
 import de.rub.nds.tlsscanner.core.trust.TrustAnchorManager;
 import de.rub.nds.x509attacker.constants.X509NamedCurve;
+import de.rub.nds.x509attacker.constants.X509PublicKeyType;
 import de.rub.nds.x509attacker.x509.X509CertificateChain;
 import de.rub.nds.x509attacker.x509.model.Extension;
 import de.rub.nds.x509attacker.x509.model.Extensions;
@@ -40,6 +42,30 @@ public class CertificateReportGenerator {
             }
         }
         return reportList;
+    }
+
+    /**
+     * Evaluates whether the provided certificate reports form a complete post-quantum certificate
+     * chain that uses PQ signatures and a PQ leaf public key.
+     *
+     * @param certificateReports the certificate reports of all certificates in the chain
+     * @return true if all certificates in the (non-empty) chain are post-quantum, false otherwise
+     */
+    public static boolean isCompletePostQuantumChain(List<CertificateReport> certificateReports) {
+        if (certificateReports == null || certificateReports.isEmpty()) {
+            return false;
+        }
+        return certificateReports.stream()
+                .allMatch(CertificateReportGenerator::isPostQuantumCertificate);
+    }
+
+    private static boolean isPostQuantumCertificate(CertificateReport report) {
+        X509PublicKeyType publicKeyType = report.getPublicKeyType();
+        SignatureAlgorithm signatureAlgorithm = report.getSignatureAlgorithm();
+        return publicKeyType != null
+                && (publicKeyType.isMlDsa() || publicKeyType.isSlhDsa())
+                && (signatureAlgorithm == SignatureAlgorithm.ML_DSA
+                        || signatureAlgorithm == SignatureAlgorithm.SLH_DSA);
     }
 
     /**

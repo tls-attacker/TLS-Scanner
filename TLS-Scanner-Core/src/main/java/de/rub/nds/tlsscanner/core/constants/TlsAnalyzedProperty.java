@@ -403,6 +403,7 @@ public enum TlsAnalyzedProperty implements AnalyzedProperty {
     SUPPORTS_POST_QUANTUM_SIGNATURES(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_MLDSA(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     SUPPORTS_SLHDSA(TlsAnalyzedPropertyCategory.POST_QUANTUM),
+    HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     ML_KEM_SHARED_SECRET_REUSE_GROUPS(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     ML_KEM_HYBRID_ECC_MISSING_VALIDATION_GROUPS(TlsAnalyzedPropertyCategory.POST_QUANTUM),
     ML_KEM_HYBRID_STATIC_ECC_PUBLIC_KEY_GROUPS(TlsAnalyzedPropertyCategory.POST_QUANTUM),
