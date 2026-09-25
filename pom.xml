@@ -41,6 +41,7 @@
 
     <modules>
         <module>TLS-Client-Scanner</module>
+        <module>TLS-Crawler</module>
         <module>TLS-Scanner-Core</module>
         <module>TLS-Server-Scanner</module>
     </modules>
@@ -69,9 +70,20 @@
     <!-- Override dependency versions from BOM for all submodules to match parent version -->
     <dependencyManagement>
         <dependencies>
+            <!-- Only required by TLS-Crawler -->
+            <dependency>
+                <groupId>de.rub.nds</groupId>
+                <artifactId>crawler-core</artifactId>
+                <version>1.6.0</version>
+            </dependency>
             <dependency>
                 <groupId>de.rub.nds.tls.scanner</groupId>
                 <artifactId>tls-client-scanner</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.rub.nds.tls.scanner</groupId>
+                <artifactId>tls-crawler</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -140,7 +152,7 @@
         <dependency>
             <groupId>de.rub.nds</groupId>
             <artifactId>scanner-core</artifactId>
-            <version>6.6.1</version>
+            <version>6.6.2</version>
         </dependency>
         <dependency>
             <groupId>de.rub.nds</groupId>
@@ -321,8 +333,8 @@
                             <phase>package</phase>
                             <configuration>
                                 <outputDirectory>${main.basedir}/apps/lib</outputDirectory>
-                                <!--Ensures only runnable dependencies are included-->
-                                <includeScope>compile</includeScope>
+                                <!--Ensures only runnable dependencies (compile + runtime scope) are included-->
+                                <includeScope>runtime</includeScope>
                             </configuration>
                         </execution>
                     </executions>
