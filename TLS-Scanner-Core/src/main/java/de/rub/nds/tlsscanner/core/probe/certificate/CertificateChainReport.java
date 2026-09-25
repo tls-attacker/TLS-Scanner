@@ -48,6 +48,8 @@ public class CertificateChainReport {
 
     private Boolean containsWeakSignedNonTrustStoresCertificates;
 
+    private Boolean completePostQuantumChain = null;
+
     private List<TrustPlatform> platformsTrustingCertificate;
 
     private List<TrustPlatform> platformsNotTrustingCertificate;
@@ -108,6 +110,8 @@ public class CertificateChainReport {
         containsNotYetValid = certificateChain.containsNotYetValidCertificate();
         containsExpired = certificateChain.containsExpiredCertificate();
         containsWeakSignedNonTrustStoresCertificates = null; // TODO
+        completePostQuantumChain =
+                CertificateReportGenerator.isCompletePostQuantumChain(certificateReportList);
         for (CertificateReport report : certificateReportList) {
             if (Objects.equals(report.isTrustAnchor(), Boolean.FALSE)
                     && Objects.equals(report.getSelfSigned(), Boolean.TRUE)
@@ -242,6 +246,24 @@ public class CertificateChainReport {
             Boolean containsWeakSignedNonTrustStoresCertificates) {
         this.containsWeakSignedNonTrustStoresCertificates =
                 containsWeakSignedNonTrustStoresCertificates;
+    }
+
+    /**
+     * Returns whether all certificates in the chain use post-quantum public keys and signatures.
+     *
+     * @return true if the chain is a complete post-quantum chain, false otherwise
+     */
+    public Boolean getCompletePostQuantumChain() {
+        return completePostQuantumChain;
+    }
+
+    /**
+     * Sets whether all certificates in the chain use post-quantum public keys and signatures.
+     *
+     * @param completePostQuantumChain true if the chain is a complete post-quantum chain
+     */
+    public void setCompletePostQuantumChain(Boolean completePostQuantumChain) {
+        this.completePostQuantumChain = completePostQuantumChain;
     }
 
     /**
@@ -384,7 +406,9 @@ public class CertificateChainReport {
                 || !Objects.equals(containsExpired, otherCert.getContainsExpired())
                 || !Objects.equals(
                         containsWeakSignedNonTrustStoresCertificates,
-                        otherCert.getContainsWeakSignedNonTrustStoresCertificates())) {
+                        otherCert.getContainsWeakSignedNonTrustStoresCertificates())
+                || !Objects.equals(
+                        completePostQuantumChain, otherCert.getCompletePostQuantumChain())) {
             return false;
         } else {
             for (int i = 0; i < certificateReportList.size(); i++) {
@@ -411,6 +435,7 @@ public class CertificateChainReport {
         hash = 29 * hash + Objects.hashCode(this.containsNotYetValid);
         hash = 29 * hash + Objects.hashCode(this.containsExpired);
         hash = 29 * hash + Objects.hashCode(this.containsWeakSignedNonTrustStoresCertificates);
+        hash = 29 * hash + Objects.hashCode(this.completePostQuantumChain);
         hash = 29 * hash + Objects.hashCode(this.certificateReportList);
         hash = 29 * hash + Objects.hashCode(this.trustAnchor);
         hash = 29 * hash + Objects.hashCode(this.certificateIssues);

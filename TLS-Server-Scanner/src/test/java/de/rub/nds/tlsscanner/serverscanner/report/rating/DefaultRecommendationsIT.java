@@ -493,6 +493,12 @@ public class DefaultRecommendationsIT {
                         ""));
         recommendations.add(
                 new Recommendation(
+                        TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN,
+                        "Complete post quantum certificate chain",
+                        "Evaluates whether the server presents a certificate chain in which all certificates use post quantum public keys and signatures",
+                        ""));
+        recommendations.add(
+                new Recommendation(
                         TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
                         "ML-KEM shared secret reuse",
                         "Evaluates whether the server encapsulates a fresh ML-KEM shared secret for each handshake",

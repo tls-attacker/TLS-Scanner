@@ -508,6 +508,12 @@
         <detailedDescription/>
     </recommendation>
     <recommendation>
+        <property>HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN</property>
+        <shortName>Complete post quantum certificate chain</shortName>
+        <shortDescription>Evaluates whether the server presents a certificate chain in which all certificates use post quantum public keys and signatures</shortDescription>
+        <detailedDescription/>
+    </recommendation>
+    <recommendation>
         <property>ML_KEM_SHARED_SECRET_REUSE_GROUPS</property>
         <shortName>ML-KEM shared secret reuse</shortName>
         <shortDescription>Evaluates whether the server encapsulates a fresh ML-KEM shared secret for each handshake</shortDescription>

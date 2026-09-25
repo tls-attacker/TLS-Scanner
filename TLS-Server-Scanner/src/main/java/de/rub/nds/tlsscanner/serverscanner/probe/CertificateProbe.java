@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -62,7 +63,8 @@ public class CertificateProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS,
                 TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS,
                 TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS,
-                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
+                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS,
+                TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN);
     }
 
     @Override
@@ -549,11 +551,27 @@ public class CertificateProbe extends TlsServerProbe {
             }
         }
         put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, certificateChainReports);
+        put(
+                TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN,
+                getCompletePostQuantumChainResult(certificateChainReports));
         put(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, ecdsaPkGroupsStatic);
         put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, ecdsaPkGroupsEphemeral);
         put(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, ecdsaPkGroupsTls13);
         put(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsStatic);
         put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsEphemeral);
         put(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsTls13);
+    }
+
+    private TestResult getCompletePostQuantumChainResult(
+            List<CertificateChainReport> certificateChainReports) {
+        if (certificateChainReports.isEmpty()) {
+            return TestResults.COULD_NOT_TEST;
+        }
+        return TestResults.of(
+                certificateChainReports.stream()
+                        .anyMatch(
+                                chainReport ->
+                                        Boolean.TRUE.equals(
+                                                chainReport.getCompletePostQuantumChain())));
     }
 }
