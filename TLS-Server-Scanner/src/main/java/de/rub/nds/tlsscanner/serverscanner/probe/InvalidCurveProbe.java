@@ -28,8 +28,10 @@ import de.rub.nds.tlsattacker.core.constants.PskKeyExchangeMode;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
+import de.rub.nds.tlsscanner.core.constants.ProtocolType;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
+import de.rub.nds.tlsscanner.core.probe.requirements.ProtocolTypeTrueRequirement;
 import de.rub.nds.tlsscanner.core.probe.result.VersionSuiteListPair;
 import de.rub.nds.tlsscanner.core.vector.statistics.DistributionTest;
 import de.rub.nds.tlsscanner.serverscanner.leak.InvalidCurveTestInfo;
@@ -121,8 +123,10 @@ public class InvalidCurveProbe extends TlsServerProbe {
                         TlsProbeType.PROTOCOL_VERSION,
                         TlsProbeType.CIPHER_SUITE,
                         TlsProbeType.NAMED_GROUPS,
-                        TlsProbeType.RESUMPTION,
-                        TlsProbeType.RENEGOTIATION)
+                        TlsProbeType.RESUMPTION)
+                .and(
+                        new ProtocolTypeTrueRequirement<ServerReport>(ProtocolType.QUIC)
+                                .or(new ProbeRequirement<>(TlsProbeType.RENEGOTIATION)))
                 .and(
                         new PropertyTrueRequirement<ServerReport>(
                                         TlsAnalyzedProperty.SUPPORTS_TLS_1_3)
