@@ -12,10 +12,12 @@ import de.rub.nds.scanner.core.probe.requirements.Requirement;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
+import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.quic.frame.CryptoFrame;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
+import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsscanner.core.constants.ProtocolType;
@@ -48,12 +50,15 @@ public class QuicFragmentationProbe extends QuicServerProbe {
                 new WorkflowConfigurationFactory(config)
                         .createDynamicHelloWorkflow(config.getDefaultClientConnection());
         SendAction sendAction = (SendAction) trace.getFirstSendingAction();
-        sendAction.setConfiguredQuicFrames(new CryptoFrame(250), new CryptoFrame(250));
+        sendAction.setConfiguredQuicFrames(new CryptoFrame(250));
 
         State state = new State(config, trace);
         executeState(state);
 
-        return state.getWorkflowTrace().executedAsPlanned() ? TestResults.TRUE : TestResults.FALSE;
+        boolean serverHelloReceived =
+                WorkflowTraceResultUtil.didReceiveMessage(trace, HandshakeMessageType.SERVER_HELLO);
+
+        return serverHelloReceived ? TestResults.TRUE : TestResults.FALSE;
     }
 
     @Override
