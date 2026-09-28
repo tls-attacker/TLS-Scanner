@@ -11,12 +11,16 @@ package de.rub.nds.tlsscanner.serverscanner.report.rating;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.rub.nds.scanner.core.probe.AnalyzedProperty;
+import de.rub.nds.scanner.core.probe.result.FaultListResult;
 import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
+import de.rub.nds.scanner.core.report.rating.PropertyResultRecommendation;
 import de.rub.nds.scanner.core.report.rating.ScoreReport;
 import de.rub.nds.scanner.core.report.rating.SiteReportRater;
+import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import java.util.HashMap;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class ServerReportRaterTest {
@@ -42,5 +46,41 @@ public class ServerReportRaterTest {
         ScoreReport report = rater.getScoreReport(resultMap);
 
         assertEquals(3, report.getInfluencers().size());
+    }
+
+    private static HashMap<AnalyzedProperty, TestResult> sharedSecretReuseFor(
+            List<NamedGroup> affectedGroups) {
+        HashMap<AnalyzedProperty, TestResult> resultMap = new HashMap<>();
+        resultMap.put(
+                TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                new FaultListResult<>(
+                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS, affectedGroups));
+        return resultMap;
+    }
+
+    @Test
+    public void testFaultListResultAffectsScore() throws Exception {
+        SiteReportRater rater = DefaultRatingLoader.getServerReportRater("en");
+
+        assertEquals(
+                -500,
+                rater.getScoreReport(sharedSecretReuseFor(List.of(NamedGroup.X25519_MLKEM768)))
+                        .getScore());
+        assertEquals(0, rater.getScoreReport(sharedSecretReuseFor(List.of())).getScore());
+    }
+
+    @Test
+    public void testFaultListResultResolvesRecommendation() throws Exception {
+        SiteReportRater rater = DefaultRatingLoader.getServerReportRater("en");
+
+        PropertyResultRecommendation recommendation =
+                rater.getRecommendations()
+                        .getPropertyRecommendation(
+                                TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                                new FaultListResult<>(
+                                        TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
+                                        List.of(NamedGroup.X25519_MLKEM768)));
+
+        assertTrue(recommendation.getShortDescription().contains("same ML-KEM ciphertext"));
     }
 }

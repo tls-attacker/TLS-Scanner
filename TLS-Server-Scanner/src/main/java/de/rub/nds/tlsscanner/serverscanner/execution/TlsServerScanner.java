@@ -44,10 +44,7 @@ import de.rub.nds.tlsscanner.serverscanner.afterprobe.ServerRandomnessAfterProbe
 import de.rub.nds.tlsscanner.serverscanner.afterprobe.SessionTicketAfterProbe;
 import de.rub.nds.tlsscanner.serverscanner.config.ServerScannerConfig;
 import de.rub.nds.tlsscanner.serverscanner.connectivity.ConnectivityChecker;
-import de.rub.nds.tlsscanner.serverscanner.passive.CookieExtractor;
-import de.rub.nds.tlsscanner.serverscanner.passive.DestinationPortExtractor;
-import de.rub.nds.tlsscanner.serverscanner.passive.SessionIdExtractor;
-import de.rub.nds.tlsscanner.serverscanner.passive.SessionTicketExtractor;
+import de.rub.nds.tlsscanner.serverscanner.passive.*;
 import de.rub.nds.tlsscanner.serverscanner.probe.*;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAfterHandshakeProbe;
 import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicAntiDosLimitProbe;
@@ -60,6 +57,7 @@ import de.rub.nds.tlsscanner.serverscanner.probe.quic.QuicVersionProbe;
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.report.rating.DefaultRatingLoader;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
+import de.rub.nds.tlsscanner.serverscanner.selector.StarttlsConfigSelector;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.file.*;
@@ -106,7 +104,7 @@ public final class TlsServerScanner
                         config.getExecutorConfig().getOverallThreads(),
                         3,
                         new NamedThreadFactory(config.getClientDelegate().getHost() + "-Worker"));
-        this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.configSelector = ConfigSelector.forTarget(config, parallelExecutor);
         setCallbacks();
     }
 
@@ -135,7 +133,7 @@ public final class TlsServerScanner
             ProbeProgressCallback<ServerReport, State> progressCallback) {
         super(config.getExecutorConfig(), progressCallback);
         this.config = config;
-        this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.configSelector = ConfigSelector.forTarget(config, parallelExecutor);
         this.parallelExecutor = parallelExecutor;
         closeAfterFinishParallel = false;
         setCallbacks();
@@ -177,7 +175,7 @@ public final class TlsServerScanner
         super(config.getExecutorConfig(), probeList, afterList, progressCallback);
         this.parallelExecutor = parallelExecutor;
         this.config = config;
-        this.configSelector = new ConfigSelector(config, parallelExecutor);
+        this.configSelector = ConfigSelector.forTarget(config, parallelExecutor);
         closeAfterFinishParallel = false;
         setCallbacks();
     }
@@ -217,6 +215,7 @@ public final class TlsServerScanner
         statsWriter.addExtractor(new SessionTicketExtractor());
         statsWriter.addExtractor(new DtlsRetransmissionsExtractor());
         statsWriter.addExtractor(new DestinationPortExtractor());
+        statsWriter.addExtractor(new ConnectionIssueExtractor());
         return statsWriter;
     }
 
@@ -279,6 +278,7 @@ public final class TlsServerScanner
         registerProbeForExecution(new DestinationPortAfterProbe());
         // TLS-specific
         registerProbeForExecution(new HelloRetryProbe(configSelector, parallelExecutor));
+        registerProbeForExecution(new MlKemProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new RecordFragmentationProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new EarlyCcsProbe(configSelector, parallelExecutor));
         registerProbeForExecution(new EsniProbe(configSelector, parallelExecutor));
@@ -362,6 +362,11 @@ public final class TlsServerScanner
         report.setSpeaksProtocol(speaksProtocol);
         report.setIsHandshaking(isHandshaking);
         report.putResult(TlsAnalyzedProperty.PROTOCOL_TYPE, getProtocolType());
+        if (configSelector instanceof StarttlsConfigSelector starttlsConfigSelector) {
+            report.putResult(
+                    TlsAnalyzedProperty.STARTTLS_REQUIRES_CAPABILITY_DISCOVERY,
+                    starttlsConfigSelector.isStarttlsCapabilityDiscoveryRequired());
+        }
         report.putResult(QuicAnalyzedProperty.RETRY_REQUIRED, configSelector.isQuicRetryRequired());
         return isConnectable && speaksProtocol && isHandshaking;
     }

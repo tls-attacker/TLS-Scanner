@@ -20,7 +20,8 @@ public enum TrackableValueType implements TrackableValue {
     GCM_NONCE_EXPLICIT,
     CBC_IV,
     DTLS_RETRANSMISSIONS,
-    DESTINATION_PORT;
+    DESTINATION_PORT,
+    CONNECTION_ISSUE;
 
     /** Default constructor for serialization. */
     @SuppressWarnings("unused")

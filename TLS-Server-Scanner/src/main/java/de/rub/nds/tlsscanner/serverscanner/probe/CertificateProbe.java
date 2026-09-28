@@ -10,6 +10,7 @@ package de.rub.nds.tlsscanner.serverscanner.probe;
 
 import de.rub.nds.scanner.core.probe.requirements.ProbeRequirement;
 import de.rub.nds.scanner.core.probe.requirements.Requirement;
+import de.rub.nds.scanner.core.probe.result.TestResult;
 import de.rub.nds.scanner.core.probe.result.TestResults;
 import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
@@ -62,7 +63,8 @@ public class CertificateProbe extends TlsServerProbe {
                 TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS,
                 TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS,
                 TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS,
-                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS);
+                TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS,
+                TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN);
     }
 
     @Override
@@ -303,6 +305,7 @@ public class CertificateProbe extends TlsServerProbe {
             tls13Certs.addAll(sm2SigHashCerts);
         }
         tls13Certs.addAll(getTls13CertsEcdsaSigHash());
+        tls13Certs.addAll(getTls13PqCerts());
         return tls13Certs;
     }
 
@@ -371,9 +374,16 @@ public class CertificateProbe extends TlsServerProbe {
         configSelector.repairConfig(tlsConfig);
         State state = new State(tlsConfig);
         executeState(state);
+        if (cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())) {
+            return extractX509Chain(state);
+        } else {
+            return null;
+        }
+    }
+
+    private X509CertificateChain extractX509Chain(State state) {
         if (WorkflowTraceResultUtil.didReceiveMessage(
                         state.getWorkflowTrace(), HandshakeMessageType.CERTIFICATE)
-                && cipherSuitesToTest.contains(state.getTlsContext().getSelectedCipherSuite())
                 && state.getTlsContext().getServerCertificateChain() != null) {
             return state.getTlsContext().getServerCertificateChain();
         } else {
@@ -492,6 +502,39 @@ public class CertificateProbe extends TlsServerProbe {
         return algorithms;
     }
 
+    private List<SignatureAndHashAlgorithm> getTls13PqSigHash() {
+        return SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms().stream()
+                .filter(SignatureAndHashAlgorithm::isPostQuantum)
+                .toList();
+    }
+
+    private List<X509CertificateChain> getTls13PqCerts() {
+        // TODO determine if tests need to be extended to evaluate the full mix of PQ and classic
+        // algorithms across the chain
+        List<X509CertificateChain> tls13PqCerts = new LinkedList<>();
+        List<SignatureAndHashAlgorithm> algorithmsToTest = new LinkedList<>(getTls13PqSigHash());
+        while (!algorithmsToTest.isEmpty()) {
+            Config tlsConfig = configSelector.getTls13BaseConfig();
+            tlsConfig.setDefaultClientSupportedSignatureAndHashAlgorithms(algorithmsToTest);
+            State state = new State(tlsConfig);
+            executeState(state);
+            if (algorithmsToTest.contains(
+                    state.getTlsContext().getSelectedSignatureAndHashAlgorithm())) {
+                X509CertificateChain chain = extractX509Chain(state);
+                if (chain == null) {
+                    break;
+                } else {
+                    tls13PqCerts.add(chain);
+                    algorithmsToTest.remove(
+                            state.getTlsContext().getSelectedSignatureAndHashAlgorithm());
+                }
+            } else {
+                break;
+            }
+        }
+        return tls13PqCerts;
+    }
+
     @Override
     protected void mergeData(ServerReport report) {
         List<CertificateChainReport> certificateChainReports = new LinkedList<>();
@@ -508,11 +551,27 @@ public class CertificateProbe extends TlsServerProbe {
             }
         }
         put(TlsAnalyzedProperty.CERTIFICATE_CHAINS, certificateChainReports);
+        put(
+                TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN,
+                getCompletePostQuantumChainResult(certificateChainReports));
         put(TlsAnalyzedProperty.STATIC_ECDSA_PK_GROUPS, ecdsaPkGroupsStatic);
         put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_PK_GROUPS, ecdsaPkGroupsEphemeral);
         put(TlsAnalyzedProperty.TLS13_ECDSA_PK_GROUPS, ecdsaPkGroupsTls13);
         put(TlsAnalyzedProperty.STATIC_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsStatic);
         put(TlsAnalyzedProperty.EPHEMERAL_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsEphemeral);
         put(TlsAnalyzedProperty.TLS13_ECDSA_SIG_GROUPS, ecdsaCertSigGroupsTls13);
+    }
+
+    private TestResult getCompletePostQuantumChainResult(
+            List<CertificateChainReport> certificateChainReports) {
+        if (certificateChainReports.isEmpty()) {
+            return TestResults.COULD_NOT_TEST;
+        }
+        return TestResults.of(
+                certificateChainReports.stream()
+                        .anyMatch(
+                                chainReport ->
+                                        Boolean.TRUE.equals(
+                                                chainReport.getCompletePostQuantumChain())));
     }
 }

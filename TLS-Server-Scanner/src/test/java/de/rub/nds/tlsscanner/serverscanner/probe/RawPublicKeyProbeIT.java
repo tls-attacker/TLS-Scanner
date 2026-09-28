@@ -33,6 +33,6 @@ public class RawPublicKeyProbeIT extends AbstractProbeIT {
     protected boolean executedAsPlanned() {
         return verifyProperty(
                 TlsAnalyzedProperty.SUPPORTS_RAW_PUBLIC_KEY_CERTIFICATES,
-                TestResults.NOT_TESTED_YET);
+                TestResults.NOT_SCHEDULED);
     }
 }

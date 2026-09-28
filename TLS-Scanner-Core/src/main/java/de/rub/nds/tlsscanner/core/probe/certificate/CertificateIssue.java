@@ -28,9 +28,9 @@ public enum CertificateIssue {
     UNKNOWN_CRITICAL_EXTENSION(
             "A certificate in your chain has a critical extension which we do not recognize"),
     DECODING_ERROR("A certificate in your chain could not be decoded by our scanner"),
-    EMPTY_CHAIN("The peer sent an empty certificate chain (weired)"),
+    EMPTY_CHAIN("The peer sent an empty certificate chain (weird)"),
     UNHANDLED_CRITICAL_EXTENSIONS("The peer certificate contains an us unknown critical extension"),
-    MULTIPLE_LEAVES("The peer sent multiple leaf certificates (weired)");
+    MULTIPLE_LEAVES("The peer sent multiple leaf certificates (weird)");
 
     private String humanReadable;
 

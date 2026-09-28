@@ -1,0 +1,6 @@
+FROM eclipse-temurin:21
+
+COPY ./apps/TLS-Crawler.jar /apps/TLS-Crawler.jar
+COPY ./apps/lib/ /apps/lib/
+WORKDIR /apps
+ENTRYPOINT ["java", "-jar", "TLS-Crawler.jar"]
