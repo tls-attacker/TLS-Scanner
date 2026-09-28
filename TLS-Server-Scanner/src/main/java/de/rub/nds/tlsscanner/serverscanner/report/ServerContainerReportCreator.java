@@ -393,6 +393,9 @@ public class ServerContainerReportCreator extends TlsReportCreator<ServerReport>
         container.add(createKeyValueContainer(TlsAnalyzedProperty.SUPPORTS_SLHDSA, report));
         container.add(
                 createKeyValueContainer(
+                        TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN, report));
+        container.add(
+                createKeyValueContainer(
                         TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE, report));
         return container;
     }

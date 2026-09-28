@@ -234,6 +234,10 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
                 TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES);
         prettyAppend(builder, "Supports ML-DSA", TlsAnalyzedProperty.SUPPORTS_MLDSA);
         prettyAppend(builder, "Supports SLH-DSA", TlsAnalyzedProperty.SUPPORTS_SLHDSA);
+        prettyAppend(
+                builder,
+                "Has full post quantum certificate chain",
+                TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN);
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_LEGACY_POST_QUANTUM_CIPHER_SUITE)
                 == TestResults.TRUE) {
             // PQ cipher suites have not seen wide-spread adoption. Hence, to avoid confusion with

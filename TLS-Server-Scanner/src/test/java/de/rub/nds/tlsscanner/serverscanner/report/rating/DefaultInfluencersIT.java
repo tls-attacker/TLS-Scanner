@@ -1120,6 +1120,11 @@ public class DefaultInfluencersIT {
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
         influencers.add(
                 new RatingInfluencer(
+                        TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN,
+                        new PropertyResultRatingInfluencer(TestResults.TRUE, 200),
+                        new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
+        influencers.add(
+                new RatingInfluencer(
                         TlsAnalyzedProperty.ML_KEM_SHARED_SECRET_REUSE_GROUPS,
                         new PropertyResultRatingInfluencer(TestResults.TRUE, -500, 1000),
                         new PropertyResultRatingInfluencer(TestResults.FALSE, 0)));
@@ -1308,7 +1313,8 @@ public class DefaultInfluencersIT {
                                 TlsAnalyzedProperty.ACCEPTS_EMPTY_COOKIE,
                                 TlsAnalyzedProperty.TLS_1_3_DOWNGRADE_PROTECTION,
                                 TlsAnalyzedProperty.FORCED_COMPRESSION,
-                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE));
+                                TlsAnalyzedProperty.SENDS_APPLICATION_MESSAGE,
+                                TlsAnalyzedProperty.STARTTLS_REQUIRES_CAPABILITY_DISCOVERY));
 
         influencers.addAll(
                 neutralProperties.stream().map(RatingInfluencer::new).collect(Collectors.toList()));

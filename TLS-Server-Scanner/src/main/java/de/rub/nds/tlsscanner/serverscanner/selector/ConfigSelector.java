@@ -15,6 +15,7 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.constants.StarttlsType;
 import de.rub.nds.tlsattacker.core.record.Record;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
@@ -86,6 +87,17 @@ public class ConfigSelector {
     private boolean speaksProtocol = false;
     private boolean isHandshaking = false;
     private boolean quicRetryRequired = false;
+
+    /**
+     * Returns a {@link StarttlsConfigSelector} behind a STARTTLS upgrade, a plain one otherwise.
+     */
+    public static ConfigSelector forTarget(
+            ServerScannerConfig scannerConfig, ParallelExecutor parallelExecutor) {
+        if (scannerConfig.getStartTlsDelegate().getStarttlsType() != StarttlsType.NONE) {
+            return new StarttlsConfigSelector(scannerConfig, parallelExecutor);
+        }
+        return new ConfigSelector(scannerConfig, parallelExecutor);
+    }
 
     /**
      * Constructs a new ConfigSelector with the specified scanner configuration and executor.
@@ -234,6 +246,7 @@ public class ConfigSelector {
                         WorkflowTraceType.DYNAMIC_HELLO, RunningModeType.CLIENT);
         State state = new State(config, trace);
         parallelExecutor.bulkExecuteStateTasks(state);
+        onTraceExecuted(trace);
 
         List<Record> reveicedRecords =
                 state.getWorkflowTrace().getFirstReceivingAction().getReceivedRecords();
@@ -250,6 +263,9 @@ public class ConfigSelector {
         }
         return trace.executedAsPlanned();
     }
+
+    /** Hook for subclasses that need to read something out of each trace the search executes. */
+    protected void onTraceExecuted(WorkflowTrace trace) {}
 
     private void applyPerformanceParamters(Config config) {
         config.setStopReceivingAfterFatal(true);

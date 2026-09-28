@@ -104,6 +104,7 @@ public class DefaultPrintingScheme {
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_POST_QUANTUM_SIGNATURES, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_MLDSA, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_SLHDSA, trueGood);
+        colorMap.put(TlsAnalyzedProperty.HAS_FULL_POST_QUANTUM_CERTIFICATE_CHAIN, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_ONLY_PFS, trueGood);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_AES, defaultColorEncoding);
         colorMap.put(TlsAnalyzedProperty.SUPPORTS_CAMELLIA, defaultColorEncoding);

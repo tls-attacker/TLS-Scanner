@@ -17,5 +17,9 @@ standardPipeline(
                     nameApp: 'tlsscanner',
                     dockerfile: 'Dockerfile_Jenkins'
             )
+            dockerBuild(
+                    nameApp: 'tls-crawler',
+                    dockerfile: 'Dockerfile_Crawler_Jenkins'
+            )
         }
 )
