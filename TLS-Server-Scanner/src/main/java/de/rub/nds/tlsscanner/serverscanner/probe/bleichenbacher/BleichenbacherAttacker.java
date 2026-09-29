@@ -226,6 +226,12 @@ public class BleichenbacherAttacker {
         try {
             publicKey = CertificateFetcher.fetchServerPublicKey(tlsConfig);
         } catch (CertificateParsingException ignored) {
+        } catch (de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException e) {
+            LOGGER.warn("Unable to connect to server for public key retrieval: {}", e.getMessage());
+            return null;
+        } catch (Exception e) {
+            LOGGER.warn("Failed to retrieve server public key: {}", e.getMessage());
+            return null;
         }
         if (publicKey == null) {
             LOGGER.debug("Could not retrieve PublicKey from Server - is the Server running?");
