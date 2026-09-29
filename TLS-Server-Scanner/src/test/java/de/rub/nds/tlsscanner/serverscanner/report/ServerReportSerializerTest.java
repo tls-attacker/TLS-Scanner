@@ -143,4 +143,27 @@ public class ServerReportSerializerTest {
         System.out.println(new String(outstream.toByteArray()));
         // This should not throw an exception
     }
+
+    @Test
+    void testSerializeOcspAndSessionTicketProperties() {
+        ServerReport report = new ServerReport();
+        report.putResult(TlsAnalyzedProperty.SUPPORTS_OCSP_STAPLING, TestResults.TRUE);
+        report.putResult(
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE, TestResults.TRUE);
+        report.putResult(
+                TlsAnalyzedProperty.ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA,
+                TestResults.FALSE);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ServerReportSerializer.serialize(outputStream, report);
+
+        String jsonOutput = outputStream.toString();
+        // Verify that the properties are included in the JSON output
+        assert jsonOutput.contains("SUPPORTS_OCSP_STAPLING")
+                : "JSON doesn't contain SUPPORTS_OCSP_STAPLING";
+        assert jsonOutput.contains("ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE")
+                : "JSON doesn't contain ISSUES_TLS13_SESSION_TICKETS_AFTER_HANDSHAKE";
+        assert jsonOutput.contains("ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA")
+                : "JSON doesn't contain ISSUES_TLS13_SESSION_TICKETS_WITH_APPLICATION_DATA";
+    }
 }
