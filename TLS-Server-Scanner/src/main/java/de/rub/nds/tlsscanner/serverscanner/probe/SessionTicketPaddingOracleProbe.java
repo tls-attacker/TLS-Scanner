@@ -19,13 +19,9 @@ import de.rub.nds.tlsscanner.core.constants.TlsAnalyzedProperty;
 import de.rub.nds.tlsscanner.core.constants.TlsProbeType;
 import de.rub.nds.tlsscanner.core.task.FingerPrintTask;
 import de.rub.nds.tlsscanner.core.task.FingerprintTaskVectorPair;
-import de.rub.nds.tlsscanner.core.vector.Vector;
 import de.rub.nds.tlsscanner.core.vector.VectorResponse;
-import de.rub.nds.tlsscanner.core.vector.response.ResponseFingerprint;
 import de.rub.nds.tlsscanner.core.vector.statistics.InformationLeakTest;
-import de.rub.nds.tlsscanner.core.vector.statistics.ResponseCounter;
 import de.rub.nds.tlsscanner.core.vector.statistics.TestInfo;
-import de.rub.nds.tlsscanner.core.vector.statistics.VectorContainer;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleLastByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.leak.TicketPaddingOracleSecondByteTestInfo;
 import de.rub.nds.tlsscanner.serverscanner.probe.result.VersionDependentSummarizableResult;
@@ -41,10 +37,8 @@ import de.rub.nds.tlsscanner.serverscanner.probe.sessionticket.vector.TicketPadd
 import de.rub.nds.tlsscanner.serverscanner.report.ServerReport;
 import de.rub.nds.tlsscanner.serverscanner.selector.ConfigSelector;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
@@ -183,7 +177,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
     private boolean foundDefinitiveResult(
             InformationLeakTest<TicketPaddingOracleSecondByteTestInfo> secondByteLeakTest) {
         return secondByteLeakTest.isSignificantDistinctAnswers()
-                && !getRareResponses(secondByteLeakTest, 1).isEmpty();
+                && !secondByteLeakTest.getRareResponses(1).isEmpty();
     }
 
     private TicketPaddingOracleResult checkPaddingOracle(ProtocolVersion version) {
@@ -222,7 +216,7 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
                     new ArrayList<>();
 
             if (lastByteLeakTest.isSignificantDistinctAnswers()) {
-                List<VectorResponse> rareResponses = getRareResponses(lastByteLeakTest, 2);
+                List<VectorResponse> rareResponses = lastByteLeakTest.getRareResponses(2);
                 LOGGER.debug(
                         "At Offset {} found significant difference with {} rare response(s)",
                         offset,
@@ -271,29 +265,6 @@ public class SessionTicketPaddingOracleProbe extends SessionTicketBaseProbe {
         }
 
         return new TicketPaddingOracleResult(offsetResults);
-    }
-
-    public static <T extends TestInfo> List<VectorResponse> getRareResponses(
-            InformationLeakTest<T> informationLeakTest, int mostOccurrences) {
-        Map<ResponseFingerprint, List<Vector>> map = new HashMap<>();
-        for (VectorContainer container : informationLeakTest.getVectorContainerList()) {
-            for (ResponseCounter counter : container.getDistinctResponsesCounterList()) {
-                map.computeIfAbsent(counter.getFingerprint(), k -> new ArrayList<>());
-                map.get(counter.getFingerprint()).add(container.getVector());
-            }
-        }
-
-        List<VectorResponse> ret = new ArrayList<>();
-        for (var entry : map.entrySet()) {
-            ResponseFingerprint fingerprint = entry.getKey();
-            List<Vector> vectors = entry.getValue();
-            if (vectors.size() <= mostOccurrences) {
-                for (Vector vector : vectors) {
-                    ret.add(new VectorResponse(vector, fingerprint));
-                }
-            }
-        }
-        return ret;
     }
 
     private List<TicketPaddingOracleVector> createPaddingVectorsLastByte(Integer paddingIvOffset) {
