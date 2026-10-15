@@ -14,11 +14,13 @@ import de.rub.nds.tlsattacker.core.config.Config;
 import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.AckMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -54,7 +56,7 @@ public class CipherSuiteProbe extends TlsClientProbe {
 
             while (!toTestList.isEmpty()) {
                 Config config;
-                if (version.isTLS13()) {
+                if (version.is13()) {
                     config = getTls13Config();
                 } else {
                     config = getBaseConfig();
@@ -70,6 +72,9 @@ public class CipherSuiteProbe extends TlsClientProbe {
                                 .createWorkflowTrace(
                                         WorkflowTraceType.HELLO, RunningModeType.SERVER);
                 trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+                if (config.getHighestProtocolVersion().isDTLS13()) {
+                    trace.addTlsAction(new SendAction(new AckMessage()));
+                }
 
                 State state = new State(config, trace);
                 statesToExecute.add(state);
@@ -109,7 +114,9 @@ public class CipherSuiteProbe extends TlsClientProbe {
 
     private Config getTls13Config() {
         Config config = getBaseConfig();
+        config.setHighestProtocolVersion(ProtocolVersion.TLS13);
         config.setSupportedVersions(ProtocolVersion.TLS13);
+        scannerConfig.getDtlsDelegate().applyDelegate(config);
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);

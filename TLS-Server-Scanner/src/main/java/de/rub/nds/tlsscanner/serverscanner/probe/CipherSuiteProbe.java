@@ -45,7 +45,7 @@ public class CipherSuiteProbe extends TlsServerProbe {
         evaluationHelper.setPairLists(new LinkedList<>());
         for (ProtocolVersion version : evaluationHelper.getProtocolVersions()) {
             LOGGER.debug("Testing: {}", version);
-            if (version.isTLS13()) {
+            if (version.is13()) {
                 evaluationHelper
                         .getPairLists()
                         .add(new VersionSuiteListPair(version, getSupportedTls13CipherSuites()));

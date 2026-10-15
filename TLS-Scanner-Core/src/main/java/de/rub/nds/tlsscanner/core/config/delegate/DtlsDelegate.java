@@ -37,8 +37,13 @@ public class DtlsDelegate extends Delegate {
     @Override
     public void applyDelegate(Config config) throws ConfigurationException {
         if (dtls) {
-            config.setHighestProtocolVersion(ProtocolVersion.DTLS12);
-            config.setDefaultSelectedProtocolVersion(ProtocolVersion.DTLS12);
+            ProtocolVersion version =
+                    config.getHighestProtocolVersion().is13()
+                            ? ProtocolVersion.DTLS13
+                            : ProtocolVersion.DTLS12;
+            config.setHighestProtocolVersion(version);
+            config.setDefaultSelectedProtocolVersion(version);
+            config.setSupportedVersions(version);
 
             if (config.getDefaultClientConnection() == null) {
                 config.setDefaultClientConnection(new OutboundConnection());
@@ -51,7 +56,11 @@ public class DtlsDelegate extends Delegate {
 
             config.setDefaultLayerConfiguration(StackConfiguration.DTLS);
             config.setWorkflowExecutorType(WorkflowExecutorType.DTLS);
-            config.setFinishWithCloseNotify(true);
+            config.setFinishWithCloseNotify(!version.isDTLS13());
+            if (version.isDTLS13()) {
+                config.setTls13BackwardsCompatibilityMode(false);
+                config.setDtlsCookieExchange(false);
+            }
             config.setIgnoreRetransmittedCssInDtls(true);
             config.setAddRetransmissionsToWorkflowTraceInDtls(true);
         }

@@ -120,7 +120,8 @@ public class CertificateProbe extends TlsServerProbe {
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_GOST) == TestResults.FALSE) {
             scanForGostCert = false;
         }
-        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE) {
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3) != TestResults.TRUE
+                && report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3) != TestResults.TRUE) {
             scanForTls13 = false;
         }
     }
