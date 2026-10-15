@@ -139,7 +139,7 @@ public class CipherSuiteEvaluationHelper {
         if (version == ProtocolVersion.SSL3) {
             return (List<CipherSuite>) CipherSuite.SSL3_SUPPORTED_CIPHERSUITES;
         }
-        if (version == ProtocolVersion.TLS13) {
+        if (version.is13()) {
             return CipherSuite.getImplementedTls13CipherSuites();
         }
         List<CipherSuite> realCipherSuites =
@@ -414,6 +414,9 @@ public class CipherSuiteEvaluationHelper {
         }
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2) == TestResults.TRUE) {
             getProtocolVersions().add(ProtocolVersion.DTLS12);
+        }
+        if (report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3) == TestResults.TRUE) {
+            getProtocolVersions().add(ProtocolVersion.DTLS13);
         }
         if (report.getResult(TlsAnalyzedProperty.SUPPORTS_SSL_3) == TestResults.TRUE) {
             getProtocolVersions().add(ProtocolVersion.SSL3);

@@ -17,11 +17,13 @@ import de.rub.nds.tlsattacker.core.constants.CipherSuite;
 import de.rub.nds.tlsattacker.core.constants.CompressionMethod;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.RunningModeType;
+import de.rub.nds.tlsattacker.core.protocol.message.AckMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.state.State;
 import de.rub.nds.tlsattacker.core.workflow.ParallelExecutor;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveTillAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -45,6 +47,7 @@ public class ProtocolVersionProbe extends TlsClientProbe {
                 TlsAnalyzedProperty.SUPPORTS_DTLS_1_0_DRAFT,
                 TlsAnalyzedProperty.SUPPORTS_DTLS_1_0,
                 TlsAnalyzedProperty.SUPPORTS_DTLS_1_2,
+                TlsAnalyzedProperty.SUPPORTS_DTLS_1_3,
                 TlsAnalyzedProperty.SUPPORTS_SSL_2,
                 TlsAnalyzedProperty.SUPPORTS_SSL_3,
                 TlsAnalyzedProperty.SUPPORTS_TLS_1_0,
@@ -63,7 +66,7 @@ public class ProtocolVersionProbe extends TlsClientProbe {
             LOGGER.debug("Testing version {}", version);
 
             Config config;
-            if (version.isTLS13()) {
+            if (version.is13()) {
                 config = getTls13Config();
             } else {
                 config = getBaseConfig();
@@ -94,7 +97,11 @@ public class ProtocolVersionProbe extends TlsClientProbe {
     private List<CipherSuite> getSuitableCipherSuites(ProtocolVersion version) {
         List<CipherSuite> suitableCiphersuites =
                 clientAdvertisedCipherSuites.stream()
-                        .filter(suite -> suite.isSupportedInProtocol(version))
+                        .filter(
+                                suite ->
+                                        version.is13()
+                                                ? suite.isTls13()
+                                                : suite.isSupportedInProtocol(version))
                         .collect(Collectors.toList());
         if (suitableCiphersuites.isEmpty()) {
             CipherSuite fallbackCipherSuite;
@@ -122,6 +129,9 @@ public class ProtocolVersionProbe extends TlsClientProbe {
                 new WorkflowConfigurationFactory(config)
                         .createWorkflowTrace(WorkflowTraceType.HELLO, RunningModeType.SERVER);
         trace.addTlsAction(new ReceiveTillAction(new FinishedMessage()));
+        if (config.getHighestProtocolVersion().isDTLS13()) {
+            trace.addTlsAction(new SendAction(new AckMessage()));
+        }
 
         return new State(config, trace);
     }
@@ -135,6 +145,8 @@ public class ProtocolVersionProbe extends TlsClientProbe {
 
     private Config getTls13Config() {
         Config config = getBaseConfig();
+        config.setHighestProtocolVersion(ProtocolVersion.TLS13);
+        scannerConfig.getDtlsDelegate().applyDelegate(config);
         config.setAddRenegotiationInfoExtension(false);
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);
@@ -162,6 +174,9 @@ public class ProtocolVersionProbe extends TlsClientProbe {
                 }
                 if (version == ProtocolVersion.DTLS12) {
                     put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.TRUE);
+                }
+                if (version == ProtocolVersion.DTLS13) {
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3, TestResults.TRUE);
                 }
                 if (version == ProtocolVersion.SSL2) {
                     put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.TRUE);
@@ -193,6 +208,9 @@ public class ProtocolVersionProbe extends TlsClientProbe {
                 if (version == ProtocolVersion.DTLS12) {
                     put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.FALSE);
                 }
+                if (version == ProtocolVersion.DTLS13) {
+                    put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3, TestResults.FALSE);
+                }
                 if (version == ProtocolVersion.SSL2) {
                     put(TlsAnalyzedProperty.SUPPORTS_SSL_2, TestResults.FALSE);
                 }
@@ -220,6 +238,9 @@ public class ProtocolVersionProbe extends TlsClientProbe {
             }
             if (!toTestList.contains(ProtocolVersion.DTLS12)) {
                 put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_2, TestResults.COULD_NOT_TEST);
+            }
+            if (!toTestList.contains(ProtocolVersion.DTLS13)) {
+                put(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3, TestResults.COULD_NOT_TEST);
             }
 
             if (!toTestList.contains(ProtocolVersion.SSL2)) {
@@ -254,6 +275,7 @@ public class ProtocolVersionProbe extends TlsClientProbe {
             toTestList.add(ProtocolVersion.DTLS10_DRAFT);
             toTestList.add(ProtocolVersion.DTLS10);
             toTestList.add(ProtocolVersion.DTLS12);
+            toTestList.add(ProtocolVersion.DTLS13);
         } else {
             toTestList.add(ProtocolVersion.SSL2);
             toTestList.add(ProtocolVersion.SSL3);

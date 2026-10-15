@@ -82,7 +82,10 @@ public class ExtensionProbe extends TlsServerProbe {
             }
         }
         if (supportsTls13) {
-            commonExtensions = getCommonExtension(ProtocolVersion.TLS13, CipherSuite::isTls13);
+            commonExtensions =
+                    getCommonExtension(
+                            configSelector.getTls13BaseConfig().getHighestProtocolVersion(),
+                            CipherSuite::isTls13);
             if (commonExtensions != null) {
                 allSupportedExtensions.addAll(commonExtensions);
             }
@@ -107,7 +110,7 @@ public class ExtensionProbe extends TlsServerProbe {
     private List<ExtensionType> getCommonExtension(
             ProtocolVersion highestVersion, Predicate<CipherSuite> cipherSuitePredicate) {
         Config tlsConfig;
-        if (highestVersion.isTLS13()) {
+        if (highestVersion.is13()) {
             tlsConfig = configSelector.getTls13BaseConfig();
         } else {
             tlsConfig = configSelector.getBaseConfig();
@@ -169,7 +172,9 @@ public class ExtensionProbe extends TlsServerProbe {
     @Override
     public void adjustConfig(ServerReport report) {
         supportsTls13 =
-                TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3));
+                TestResults.TRUE.equals(report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_3))
+                        || TestResults.TRUE.equals(
+                                report.getResult(TlsAnalyzedProperty.SUPPORTS_DTLS_1_3));
         supportsPreTls13 =
                 report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_0) == TestResults.TRUE
                         || report.getResult(TlsAnalyzedProperty.SUPPORTS_TLS_1_1)

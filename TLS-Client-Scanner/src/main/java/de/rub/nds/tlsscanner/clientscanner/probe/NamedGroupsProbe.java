@@ -19,6 +19,7 @@ import de.rub.nds.tlsattacker.core.constants.HandshakeMessageType;
 import de.rub.nds.tlsattacker.core.constants.KeyExchangeAlgorithm;
 import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
+import de.rub.nds.tlsattacker.core.protocol.message.AckMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HandshakeMessage;
@@ -31,6 +32,8 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.SendAction;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -48,6 +51,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
     private final List<NamedGroup> ffdheToTest = new LinkedList<>();
 
     private final List<NamedGroup> advertisedKeyShareGroups = new LinkedList<>();
+    private List<NamedGroup> advertisedNamedGroups;
     private List<CipherSuite> supportedDheCipherSuites;
     private List<CipherSuite> supportedEcdheCipherSuites;
     private List<CipherSuite> supportedTls13CipherSuites;
@@ -93,6 +97,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
     private List<NamedGroup> getTls13GroupsToTest() {
         List<NamedGroup> groupList = getCurvesToTest();
         NamedGroup.getImplemented().stream().filter(NamedGroup::isDhGroup).forEach(groupList::add);
+        groupList.retainAll(advertisedNamedGroups);
         return groupList;
     }
 
@@ -125,6 +130,8 @@ public class NamedGroupsProbe extends TlsClientProbe {
             setSharedConfigFields(config, group, cipherSuites);
             config.setHighestProtocolVersion(ProtocolVersion.TLS13);
             config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS13);
+            config.setSupportedVersions(ProtocolVersion.TLS13);
+            scannerConfig.getDtlsDelegate().applyDelegate(config);
             config.setAddKeyShareExtension(true);
             config.setAddSupportedVersionsExtension(true);
             WorkflowTrace workflowTrace;
@@ -132,7 +139,14 @@ public class NamedGroupsProbe extends TlsClientProbe {
                 workflowTrace =
                         new WorkflowConfigurationFactory(config)
                                 .createDynamicHelloWorkflow(config.getDefaultServerConnection());
-                workflowTrace.addTlsAction(new ReceiveAction(new FinishedMessage()));
+                ReceiveAction receiveFinished = new ReceiveAction(new FinishedMessage());
+                if (config.getHighestProtocolVersion().isDTLS13()) {
+                    receiveFinished.addActionOption(ActionOption.IGNORE_ACK_MESSAGES);
+                }
+                workflowTrace.addTlsAction(receiveFinished);
+                if (config.getHighestProtocolVersion().isDTLS13()) {
+                    workflowTrace.addTlsAction(new SendAction(new AckMessage()));
+                }
             } else {
                 workflowTrace =
                         new WorkflowConfigurationFactory(config)
@@ -191,6 +205,7 @@ public class NamedGroupsProbe extends TlsClientProbe {
 
     @Override
     public void adjustConfig(ClientReport report) {
+        advertisedNamedGroups = report.getClientAdvertisedNamedGroupsList();
         report.getClientAdvertisedNamedGroupsList().stream()
                 .filter(NamedGroup::isDhGroup)
                 .forEach(ffdheToTest::add);
@@ -219,6 +234,8 @@ public class NamedGroupsProbe extends TlsClientProbe {
                                         new PropertyTrueRequirement<>(
                                                 TlsAnalyzedProperty.SUPPORTS_ECDHE),
                                         new PropertyTrueRequirement<>(
-                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3))));
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3),
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_3))));
     }
 }
