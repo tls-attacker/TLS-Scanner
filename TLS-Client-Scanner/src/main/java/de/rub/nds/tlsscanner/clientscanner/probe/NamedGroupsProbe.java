@@ -51,7 +51,6 @@ public class NamedGroupsProbe extends TlsClientProbe {
     private final List<NamedGroup> ffdheToTest = new LinkedList<>();
 
     private final List<NamedGroup> advertisedKeyShareGroups = new LinkedList<>();
-    private List<NamedGroup> advertisedNamedGroups;
     private List<CipherSuite> supportedDheCipherSuites;
     private List<CipherSuite> supportedEcdheCipherSuites;
     private List<CipherSuite> supportedTls13CipherSuites;
@@ -97,7 +96,6 @@ public class NamedGroupsProbe extends TlsClientProbe {
     private List<NamedGroup> getTls13GroupsToTest() {
         List<NamedGroup> groupList = getCurvesToTest();
         NamedGroup.getImplemented().stream().filter(NamedGroup::isDhGroup).forEach(groupList::add);
-        groupList.retainAll(advertisedNamedGroups);
         return groupList;
     }
 
@@ -205,7 +203,6 @@ public class NamedGroupsProbe extends TlsClientProbe {
 
     @Override
     public void adjustConfig(ClientReport report) {
-        advertisedNamedGroups = report.getClientAdvertisedNamedGroupsList();
         report.getClientAdvertisedNamedGroupsList().stream()
                 .filter(NamedGroup::isDhGroup)
                 .forEach(ffdheToTest::add);
