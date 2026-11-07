@@ -33,8 +33,25 @@ public abstract class TlsProbe<ReportT extends TlsScanReport> extends ScannerPro
     }
 
     public final void executeState(Iterable<State> states) {
-        parallelExecutor.bulkExecuteStateTasks(states);
-        extractStats(states);
+        try {
+            parallelExecutor.bulkExecuteStateTasks(states);
+            extractStats(states);
+        } catch (de.rub.nds.tlsattacker.core.exceptions.TransportHandlerConnectException e) {
+            LOGGER.warn("Connection failed during probe execution: {}", e.getMessage());
+            // Don't propagate the exception, allowing the scan to continue with other probes
+        } catch (RuntimeException e) {
+            if (e.getMessage() != null
+                    && e.getMessage().contains("Cannot add Tasks to already shutdown executor")) {
+                LOGGER.warn(
+                        "ParallelExecutor was shutdown during execution, skipping remaining tasks");
+            } else {
+                LOGGER.error("Exception during probe execution: {}", e.getMessage(), e);
+            }
+            // Log the exception but don't crash the scanner
+        } catch (Exception e) {
+            LOGGER.error("Exception during probe execution: {}", e.getMessage(), e);
+            // Log the full exception but don't crash the scanner
+        }
     }
 
     @Override
