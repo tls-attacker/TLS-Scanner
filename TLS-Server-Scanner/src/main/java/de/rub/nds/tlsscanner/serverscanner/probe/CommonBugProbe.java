@@ -23,6 +23,7 @@ import de.rub.nds.tlsattacker.core.constants.NamedGroup;
 import de.rub.nds.tlsattacker.core.constants.ProtocolVersion;
 import de.rub.nds.tlsattacker.core.constants.SignatureAndHashAlgorithm;
 import de.rub.nds.tlsattacker.core.protocol.message.ClientHelloMessage;
+import de.rub.nds.tlsattacker.core.protocol.message.FinishedMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.HelloVerifyRequestMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloDoneMessage;
 import de.rub.nds.tlsattacker.core.protocol.message.ServerHelloMessage;
@@ -169,7 +170,11 @@ public class CommonBugProbe extends TlsServerProbe {
             trace.addTlsAction(new ReceiveAction(new HelloVerifyRequestMessage()));
             trace.addTlsAction(new SendAction(clientHello));
         }
-        trace.addTlsAction(new ReceiveTillAction(new ServerHelloDoneMessage()));
+        trace.addTlsAction(
+                new ReceiveTillAction(
+                        config.getHighestProtocolVersion().is13()
+                                ? new FinishedMessage()
+                                : new ServerHelloDoneMessage()));
         return trace;
     }
 
@@ -180,8 +185,11 @@ public class CommonBugProbe extends TlsServerProbe {
             return checkForTrue
                             == (WorkflowTraceResultUtil.didReceiveMessage(
                                             trace, HandshakeMessageType.SERVER_HELLO_DONE)
-                                    || (state.getTlsContext().getSelectedProtocolVersion()
-                                                    == ProtocolVersion.TLS13
+                                    || ((state.getTlsContext().getSelectedProtocolVersion()
+                                                            == ProtocolVersion.TLS13
+                                                    || state.getTlsContext()
+                                                                    .getSelectedProtocolVersion()
+                                                            == ProtocolVersion.DTLS13)
                                             && (WorkflowTraceResultUtil.didReceiveMessage(
                                                     trace, HandshakeMessageType.FINISHED))))
                     ? TestResults.TRUE

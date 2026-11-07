@@ -63,7 +63,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
         Set<SignatureAndHashAlgorithm> supportedSke = new HashSet<>();
         Set<SignatureAndHashAlgorithm> supportedTls13 = new HashSet<>();
         for (ProtocolVersion version : versions) {
-            if (version.isTLS13()) {
+            if (version.is13()) {
                 supportedTls13.addAll(testForVersion(version, CipherSuite::isTls13));
             } else {
                 supportedSke.addAll(
@@ -80,7 +80,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
         Set<List<SignatureAndHashAlgorithm>> tested = new HashSet<>();
 
         Config tlsConfig =
-                version.isTLS13()
+                version.is13()
                         ? configSelector.getTls13BaseConfig()
                         : configSelector.getBaseConfig();
         tlsConfig.setWorkflowTraceType(WorkflowTraceType.DYNAMIC_HELLO);
@@ -91,7 +91,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
 
         Queue<List<SignatureAndHashAlgorithm>> testQueue = new LinkedList<>();
         testQueue.add(
-                version.isTLS13()
+                version.is13()
                         ? SignatureAndHashAlgorithm.getTls13SignatureAndHashAlgorithms()
                         : Arrays.asList(SignatureAndHashAlgorithm.values()));
 
@@ -107,7 +107,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
             state = testAlgorithms(testSet, tlsConfig);
             if (state != null) {
                 SignatureAndHashAlgorithm selected =
-                        version.isTLS13()
+                        version.is13()
                                 ? getSelectedSignatureAndHashAlgorithmCV(state)
                                 : getSelectedSignatureAndHashAlgorithmSke(state);
                 if (selected == null) {
@@ -192,7 +192,8 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
                 .and(
                         new ProtocolVersionRequirement<ServerReport>(ProtocolVersion.TLS12)
                                 .or(new ProtocolVersionRequirement<>(ProtocolVersion.TLS13))
-                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.DTLS12)));
+                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.DTLS12))
+                                .or(new ProtocolVersionRequirement<>(ProtocolVersion.DTLS13)));
     }
 
     @Override
@@ -201,7 +202,7 @@ public class SignatureAndHashAlgorithmProbe extends TlsServerProbe {
         for (ProtocolVersion version : report.getSupportedProtocolVersions()) {
             if (version.equals(ProtocolVersion.DTLS12)
                     || version.equals(ProtocolVersion.TLS12)
-                    || version.isTLS13()) {
+                    || version.is13()) {
                 versions.add(version);
             }
         }

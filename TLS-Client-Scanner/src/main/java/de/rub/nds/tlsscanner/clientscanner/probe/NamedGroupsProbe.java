@@ -31,6 +31,7 @@ import de.rub.nds.tlsattacker.core.workflow.WorkflowTrace;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceConfigurationUtil;
 import de.rub.nds.tlsattacker.core.workflow.WorkflowTraceResultUtil;
 import de.rub.nds.tlsattacker.core.workflow.action.ReceiveAction;
+import de.rub.nds.tlsattacker.core.workflow.action.executor.ActionOption;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowConfigurationFactory;
 import de.rub.nds.tlsattacker.core.workflow.factory.WorkflowTraceType;
 import de.rub.nds.tlsscanner.clientscanner.config.ClientScannerConfig;
@@ -125,6 +126,8 @@ public class NamedGroupsProbe extends TlsClientProbe {
             setSharedConfigFields(config, group, cipherSuites);
             config.setHighestProtocolVersion(ProtocolVersion.TLS13);
             config.setDefaultSelectedProtocolVersion(ProtocolVersion.TLS13);
+            config.setSupportedVersions(ProtocolVersion.TLS13);
+            scannerConfig.getDtlsDelegate().applyDelegate(config);
             config.setAddKeyShareExtension(true);
             config.setAddSupportedVersionsExtension(true);
             WorkflowTrace workflowTrace;
@@ -132,7 +135,11 @@ public class NamedGroupsProbe extends TlsClientProbe {
                 workflowTrace =
                         new WorkflowConfigurationFactory(config)
                                 .createDynamicHelloWorkflow(config.getDefaultServerConnection());
-                workflowTrace.addTlsAction(new ReceiveAction(new FinishedMessage()));
+                ReceiveAction receiveFinished = new ReceiveAction(new FinishedMessage());
+                if (config.getHighestProtocolVersion().isDTLS13()) {
+                    receiveFinished.addActionOption(ActionOption.IGNORE_ACK_MESSAGES);
+                }
+                workflowTrace.addTlsAction(receiveFinished);
             } else {
                 workflowTrace =
                         new WorkflowConfigurationFactory(config)
@@ -219,6 +226,8 @@ public class NamedGroupsProbe extends TlsClientProbe {
                                         new PropertyTrueRequirement<>(
                                                 TlsAnalyzedProperty.SUPPORTS_ECDHE),
                                         new PropertyTrueRequirement<>(
-                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3))));
+                                                TlsAnalyzedProperty.SUPPORTS_TLS_1_3),
+                                        new PropertyTrueRequirement<>(
+                                                TlsAnalyzedProperty.SUPPORTS_DTLS_1_3))));
     }
 }

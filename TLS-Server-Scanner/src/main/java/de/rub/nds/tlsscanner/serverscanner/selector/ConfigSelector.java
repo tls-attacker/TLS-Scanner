@@ -120,9 +120,7 @@ public class ConfigSelector {
         if (!scannerConfig.getQuicDelegate().isQuic()) {
             findWorkingConfig();
         }
-        if (!scannerConfig.getDtlsDelegate().isDTLS()) {
-            findWorkingTls13Config();
-        }
+        findWorkingTls13Config();
         return workingConfig != null || workingTl13Config != null;
     }
 
@@ -315,7 +313,7 @@ public class ConfigSelector {
      */
     public Config repairConfig(Config config) {
         restrictBasicFeatures(config);
-        if (config.getHighestProtocolVersion().isTLS13()) {
+        if (config.getHighestProtocolVersion().is13()) {
             adjustKeyShareFields(config);
         } else {
             adjustEccExtensionsPreTls13(config);
@@ -420,7 +418,7 @@ public class ConfigSelector {
      */
     public void restrictBasicFeatures(Config config) {
         Config relevantConfig =
-                config.getHighestProtocolVersion().isTLS13() ? workingTl13Config : workingConfig;
+                config.getHighestProtocolVersion().is13() ? workingTl13Config : workingConfig;
         if (relevantConfig != null) {
             config.setDefaultClientSupportedCipherSuites(
                     config.getDefaultClientSupportedCipherSuites().stream()

@@ -71,10 +71,15 @@ public class ResumptionProbe extends TlsServerProbe {
     protected void executeTest() {
         this.respectsPskModes = TestResults.TRUE;
         if (configSelector.getScannerConfig().getDtlsDelegate().isDTLS()) {
-            supportsDtlsCookieExchangeInResumption = getSupportsDtlsCookieExchangeInResumption();
+            supportsDtlsCookieExchangeInResumption =
+                    configSelector.foundWorkingConfig()
+                            ? getSupportsDtlsCookieExchangeInResumption()
+                            : TestResults.CANNOT_BE_TESTED;
 
             supportsDtlsCookieExchangeInSessionTicketResumption =
-                    getSupportsDtlsCookieExchangeInSessionTicketResumption();
+                    configSelector.foundWorkingConfig()
+                            ? getSupportsDtlsCookieExchangeInSessionTicketResumption()
+                            : TestResults.CANNOT_BE_TESTED;
             issuesTls13SessionTicketAfterHandshake =
                     issuesTls13SessionTicketWithApplicationData =
                             supportsTls13PskDhe =

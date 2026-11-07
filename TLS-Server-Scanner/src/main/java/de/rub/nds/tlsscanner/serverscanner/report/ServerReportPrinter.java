@@ -2528,6 +2528,7 @@ public class ServerReportPrinter extends ReportPrinter<ServerReport> {
             prettyAppendHeading(builder, "Versions");
             prettyAppend(builder, "DTLS 1.0", TlsAnalyzedProperty.SUPPORTS_DTLS_1_0);
             prettyAppend(builder, "DTLS 1.2", TlsAnalyzedProperty.SUPPORTS_DTLS_1_2);
+            prettyAppend(builder, "DTLS 1.3", TlsAnalyzedProperty.SUPPORTS_DTLS_1_3);
             prettyAppend(builder, "SSL 2.0", TlsAnalyzedProperty.SUPPORTS_SSL_2);
             prettyAppend(builder, "SSL 3.0", TlsAnalyzedProperty.SUPPORTS_SSL_3);
             prettyAppend(builder, "TLS 1.0", TlsAnalyzedProperty.SUPPORTS_TLS_1_0);

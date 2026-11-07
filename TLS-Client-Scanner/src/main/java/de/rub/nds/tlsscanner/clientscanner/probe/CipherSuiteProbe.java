@@ -54,7 +54,7 @@ public class CipherSuiteProbe extends TlsClientProbe {
 
             while (!toTestList.isEmpty()) {
                 Config config;
-                if (version.isTLS13()) {
+                if (version.is13()) {
                     config = getTls13Config();
                 } else {
                     config = getBaseConfig();
@@ -109,7 +109,9 @@ public class CipherSuiteProbe extends TlsClientProbe {
 
     private Config getTls13Config() {
         Config config = getBaseConfig();
+        config.setHighestProtocolVersion(ProtocolVersion.TLS13);
         config.setSupportedVersions(ProtocolVersion.TLS13);
+        scannerConfig.getDtlsDelegate().applyDelegate(config);
         config.setAddECPointFormatExtension(false);
         config.setAddEllipticCurveExtension(true);
         config.setAddSignatureAndHashAlgorithmsExtension(true);
